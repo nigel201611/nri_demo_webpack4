@@ -1,0 +1,32 @@
+{
+    "zh-CH": {
+        "esl-update": "ESL更新",
+        "intelligent-identification-API": "智能识别API",
+        "smoke-face-recognition": "烟雾人脸喷嘴识别",
+        "ocr-recognition": "OCR识别",
+        "waybill-recognition": "运单识别",
+        "zipcode-recognition": "邮编识别",
+        "self-defined-area-recognition": "自定区域图片识别",
+        "opencamera": "调用摄像头拍照"
+    },
+    "en": {
+        "esl-update": "ESL update",
+        "intelligent-identification-API": "Intelli API",
+        "smoke-face-recognition": "Smoke face",
+        "ocr-recognition": "OCR recognition",
+        "waybill-recognition": "Waybill",
+        "zipcode-recognition": "Zip code",
+        "self-defined-area-recognition": "Self defined area",
+        "opencamera": "Call camera"
+    },
+    "ja": {
+        "esl-update": "ESL更新",
+        "intelligent-identification-API": "インテリジェント",
+        "smoke-face-recognition": "スモッグ顔ノズル",
+        "ocr-recognition": "OCR認識",
+        "waybill-recognition": "運送状の",
+        "zipcode-recognition": "郵便番号の",
+        "self-defined-area-recognition": "指定区域の画像",
+        "opencamera": "カメラを動かす"
+    }
+}

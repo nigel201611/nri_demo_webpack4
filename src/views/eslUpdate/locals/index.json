@@ -1,0 +1,41 @@
+{
+    "zh-CH": {
+        "esl-loading-text": "拼命加载中~",
+        "no-empty-tip": "数量不能为空",
+        "number-tip": "数量必须为数字值",
+        "submit-text": "提交",
+        "tip-text": "提示",
+        "qty-tip": "Qty没有修改，可以增加或者减少",
+        "success-text": "成功",
+        "update-succ": "更新成功！",
+        "update-fail": "更新失败！",
+        "warning-text": "警告",
+        "no-related-result": "没有找到相应编号的数据"
+    },
+    "en": {
+        "esl-loading-text": "Desperately loading~",
+        "no-empty-tip": "Quantity cannot be empty",
+        "number-tip": "Quantity must be a numeric value",
+        "submit-text": "Submission",
+        "tip-text": "Tips",
+        "qty-tip": "Qty has not been modified. It can be added or decreased",
+        "success-text": "Success",
+        "update-succ": "Update succeeded!",
+        "update-fail": "Update failed!",
+        "warning-text": "Warning",
+        "no-related-result": "No corresponding number data found"
+    },
+    "ja": {
+        "esl-loading-text": "ロード中~",
+        "no-empty-tip": "数量は空ではないです",
+        "number-tip": "数は必ず数値でなければなりません。",
+        "submit-text": "送信",
+        "tip-text": "ヒント",
+        "qty-tip": "Qtyは修正されていません。増加または減少できます。",
+        "success-text": "成功",
+        "update-succ": "更新成功！",
+        "update-fail": "更新失敗！",
+        "warning-text": "警告",
+        "no-related-result": "該当番号のデータが見つかりませんでした。"
+    }
+}

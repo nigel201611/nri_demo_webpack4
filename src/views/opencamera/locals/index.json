@@ -1,0 +1,20 @@
+{
+    "zh-CH": {
+        "esl-loading-text": "拼命加载中~",
+        "warning-text": "警告",
+        "no-surport": "不支持调用本地摄像头,建议您使用谷歌浏览器或者更新当前浏览器到最新版本~",
+        "opencamera-fail": "调用摄像头失败，请检查是否正确连接本地摄像头~"
+    },
+    "en": {
+        "esl-loading-text": "Desperately loading~",
+        "warning-text": "Warning",
+        "no-surport": "Calling local camera is not supported. It is recommended that you use Google browser or update the current browser to the latest version~",
+        "opencamera-fail": "Failed to call camera, please check whether the local camera is connected correctly~"
+    },
+    "ja": {
+        "esl-loading-text": "ロード中~",
+        "warning-text": "警告",
+        "no-surport": "ローカルカメラの起動はサポートされていません。Googleブラウザを使うか、最新のブラウザに更新することをお勧めします~",
+        "opencamera-fail": "カメラの起動に失敗しました。ローカルカメラと正しく接続されているか確認してください~"
+    }
+}

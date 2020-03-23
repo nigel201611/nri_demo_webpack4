@@ -1,0 +1,20 @@
+{
+    "root": true,
+    "extends": "eslint:recommended",
+    "parser": "babel-eslint", //一个对Babel解析器的包装，使其能够与 ESLint 兼容。
+    "env": {
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "plugins": [
+        "babel"
+    ]
+}
