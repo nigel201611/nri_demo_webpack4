@@ -152,10 +152,12 @@ export default {
     border-right-style: solid;
     text-align: center;
     img {
-      float: left;
+      // float: left;
       width: 100%;
+      // width: 94px;
       height: 60px;
       // margin: 10px 0 0 0;
+      // margin: 0 auto;
       padding: 0;
     }
     .txt {

@@ -1,4 +1,4 @@
-import babelpolyfill from 'babel-polyfill';
+// import babelpolyfill from 'babel-polyfill';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import App from './App';
@@ -18,12 +18,12 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import routes from './routes';
 import './styles/main.scss';
+import 'font-awesome/css/font-awesome.min.css';
 
 // 启动模拟接口
 // import Mock from './mock/index.js'
 // Mock.bootstrap();
 import utils from './common/js/util.js';
-import 'font-awesome/css/font-awesome.min.css';
 window.storeLocal = utils.storeLocal;
 window.storeSession = utils.storeSession;
 window.Exif = Exif;
@@ -50,22 +50,32 @@ const i18n = new VueI18n({
 router.beforeEach((to, from, next) => {
   NProgress.start();
   let token = storeSession.get('token');
-  if (!token && to.name !== 'login') {
-    next({
-      path: '/login',
-      query: { redirect: to.fullPath }
-    });
-  } else {
-    let locale = store.state.menuStore.locals;
-    i18n.locale = locale;
-    // let map = new Map([['zh-CH', 'zhLocale'], ['en', 'enLocale'], ['ja', 'jaLocale']]);
-    switch (locale) {
-      case 'zh-CH': Vue.use(ElementUI, zhLocale); break;
-      case 'en': Vue.use(ElementUI, enLocale); break;
-      case 'ja': Vue.use(ElementUI, jaLocale); break;
-    };
-    next();
+  // if (!token && to.name !== 'login') {
+  //   next({
+  //     path: '/login',
+  //     query: { redirect: to.fullPath }
+  //   });
+  // } else {
+  //   let locale = store.state.menuStore.locals;
+  //   i18n.locale = locale;
+  //   // let map = new Map([['zh-CH', 'zhLocale'], ['en', 'enLocale'], ['ja', 'jaLocale']]);
+  //   switch (locale) {
+  //     case 'zh-CH': Vue.use(ElementUI, zhLocale); break;
+  //     case 'en': Vue.use(ElementUI, enLocale); break;
+  //     case 'ja': Vue.use(ElementUI, jaLocale); break;
+  //   }
+  //   next();
+  // }
+
+  let locale = store.state.menuStore.locals;
+  i18n.locale = locale;
+  // let map = new Map([['zh-CH', 'zhLocale'], ['en', 'enLocale'], ['ja', 'jaLocale']]);
+  switch (locale) {
+    case 'zh-CH': Vue.use(ElementUI, zhLocale); break;
+    case 'en': Vue.use(ElementUI, enLocale); break;
+    case 'ja': Vue.use(ElementUI, jaLocale); break;
   }
+  next();
 
   // if (to.path == '/login') {
   //   sessionStorage.removeItem('user');

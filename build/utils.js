@@ -1,11 +1,11 @@
-var path = require('path')
-var config = require('../config')
+const path = require('path')
+const config = require('../config')
 // var ExtractTextPlugin = require('extract-text-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 exports.assetsPath = function (_path) {
-  var assetsSubDirectory = process.env.NODE_ENV === 'production'
+  let assetsSubDirectory = process.env.NODE_ENV === 'production'
     ? config.build.assetsSubDirectory
-    : config.dev.assetsSubDirectory
+    : config.dev.assetsSubDirectory;
   return path.posix.join(assetsSubDirectory, _path)
 }
 
@@ -15,7 +15,6 @@ exports.cssLoaders = function (options) {
   var cssLoader = {
     loader: 'css-loader',
     options: {
-      minimize: process.env.NODE_ENV === 'production',
       sourceMap: options.sourceMap
     }
   };
