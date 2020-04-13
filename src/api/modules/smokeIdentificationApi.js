@@ -1,6 +1,5 @@
 import axios from '../axiosWrapper';
 let prefix = process.env.API_ROOT;
-let isdev = process.env.NODE_ENV == 'development';
 //烟雾识别api
 export const smokeDetection = (params) => {
     let config = {
@@ -9,7 +8,6 @@ export const smokeDetection = (params) => {
         }
     };
     // dev server
-    // let url = isdev ? `${prefix}/api/detection/smokeDetection.php` : `${prefix}/detection/smokeDetection.php`;
     let url = `${prefix}/api/detection/smokeDetection`;
     return axios.post(url, params, config);
 
@@ -22,7 +20,6 @@ export const ageGenderDetection = (params) => {
         }
     };
     // dev server
-    // let url = isdev ? `${prefix}/api/detection/ageGenderDetection.php` : `${prefix}/detection/ageGenderDetection.php`;
     let url = `${prefix}/api/detection/ageGenderDetection`;
     return axios.post(url, params, config);
 
@@ -35,8 +32,6 @@ export const nozzleDetection = (params) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     };
-    // dev server
-    // let url = isdev ? `${prefix}/api/detection/nozzleDetection.php` : `${prefix}/detection/nozzleDetection.php`;
     // 云服务器
     let url = `${prefix}/api/detection/nozzleDetection`;
     return axios.post(url, params, config);
@@ -52,7 +47,6 @@ export const expressBillDetection = (params) => {
         }
     };
     // dev server
-    // let url = isdev ? `${prefix}/api/detection/expressBillDetection.php` : `${prefix}/detection/expressBillDetection.php`;
     let url = `${prefix}/api/detection/expressBillDetection`;
     return axios.post(url, params, config);
 

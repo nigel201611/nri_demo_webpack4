@@ -1,3 +1,4 @@
+/* eslint-disable */
 // import babelpolyfill from 'babel-polyfill';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
@@ -49,7 +50,7 @@ const i18n = new VueI18n({
 
 router.beforeEach((to, from, next) => {
   NProgress.start();
-  let token = storeSession.get('token');
+  // let token = storeSession.get('token');
   // if (!token && to.name !== 'login') {
   //   next({
   //     path: '/login',
@@ -89,7 +90,7 @@ router.beforeEach((to, from, next) => {
   next();
 })
 
-router.afterEach(transition => {
+router.afterEach(() => {
   NProgress.done();
 });
 

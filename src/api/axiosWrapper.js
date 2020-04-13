@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { Loading, MessageBox } from 'element-ui';
-let loadingInstance = null;
-let prefix = process.env.API_ROOT
-// let prefix = ''
+import { MessageBox } from 'element-ui';
+// let loadingInstance = null;
+// let prefix = process.env.API_ROOT
 import rootVueObj from '../main';
 
 // Add a request interceptor 
@@ -16,8 +15,9 @@ axios.interceptors.request.use(function (config) {
     config.withCredentials = true;
     config.headers = config.headers || {};
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
-    let token = storeSession.get('token');
-    config.headers['x-nri_admin-token'] = token;
+    // 目前不需要登录，所以先注释
+    // let token = storeSession.get('token');
+    // config.headers['x-nri_admin-token'] = token;
     return config;
 }, function (error) {
     // loadingInstance.close();

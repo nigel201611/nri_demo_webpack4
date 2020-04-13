@@ -427,7 +427,7 @@ export default {
           }
 
         })
-        .catch(res => {
+        .catch(() => {
           this.isRequestingXml = false;
           this.loading = false;
           this.skuError = true;

@@ -27,18 +27,19 @@ module.exports = {
   },
   module: {
     rules: [
-      // {
-      //   enforce: 'pre',
-      //   test: /\.(js|vue)$/,
-      //   include: [resolve('src'), resolve('test')],
-      //   loader: 'eslint-loader',
-      //   options: {
-      //     cache: true,
-      //     // fix: true,
-      //     // failOnError Will cause the module build to fail if there are any errors, if option is set to true.
-      //     // failOnError: true,  
-      //   }
-      // },
+      {
+        enforce: 'pre',
+        test: /\.(js)$/,
+        include: [resolve('src'), resolve('test')],
+        loader: 'eslint-loader',
+        options: {
+          cache: true,
+          fix: true,
+          formatter: require('eslint-friendly-formatter'),
+          // failOnError Will cause the module build to fail if there are any errors, if option is set to true.
+          failOnError: true,
+        }
+      },
       {
         resourceQuery: /blockType=i18n/,
         type: 'javascript/auto',

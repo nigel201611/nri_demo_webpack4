@@ -7,7 +7,15 @@
         "waybill-recognition": "运单识别",
         "zipcode-recognition": "邮编识别",
         "self-defined-area-recognition": "自定区域图片识别",
-        "opencamera": "调用摄像头拍照"
+        "opencamera": "调用摄像头拍照",
+        "tencent-general": "T-通用",
+        "printed-character-recog": "印刷体文字识别",
+        "handwriting_recog": "手写体文字识别",
+        "ehocr_general": "英文识别",
+        "hpgeneralocr": "高精度文字识别",
+        "seal_ocr": "印章识别",
+        "worddetect": "快速文本检测",
+        "google-general": "G-通用"
     },
     "en": {
         "esl-update": "ESL update",
@@ -17,7 +25,15 @@
         "waybill-recognition": "Waybill",
         "zipcode-recognition": "Zip code",
         "self-defined-area-recognition": "Self defined area",
-        "opencamera": "Call camera"
+        "opencamera": "Call camera",
+        "tencent-general": "T-general",
+        "printed-character-recog": "Printed character",
+        "handwriting_recog": "Handwriting",
+        "ehocr_general": "English OCR",
+        "hpgeneralocr": "hpgeneralocr",
+        "seal_ocr": "Seal OCR",
+        "worddetect": "Fast text detection",
+        "google-general": "G-general"
     },
     "ja": {
         "esl-update": "ESL更新",
@@ -27,6 +43,14 @@
         "waybill-recognition": "運送状の",
         "zipcode-recognition": "郵便番号の",
         "self-defined-area-recognition": "指定区域の画像",
-        "opencamera": "カメラを動かす"
+        "opencamera": "カメラを動かす",
+        "tencent-general": "T-汎用",
+        "printed-character-recog": "印刷体の文字",
+        "handwriting_recog": "手書き文字認識",
+        "ehocr_general": "英語の認識",
+        "hpgeneralocr": "高精度文字認識",
+        "seal_ocr": "印鑑の識別",
+        "worddetect": "クイックテキスト検出",
+        "google-general": "G-汎用"
     }
 }

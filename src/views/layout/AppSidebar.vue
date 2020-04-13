@@ -59,124 +59,174 @@ export default {
     const menudata = [
       {
         id: 67,
-        systemCode: "nri-applicationplatform",
         permName: "esl-update",
         parentPermId: 0,
         permCode: "",
         permType: "MENU",
         permUrl: "/eslUpdate?itemNo=009&Site=10-100&Location=010&LotNO=111",
         iconClass: "fa fa-android",
-        permDesc: "esl-update",
-        permOrder: 79,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permDesc: "esl-update"
       },
       {
         id: 69,
-        systemCode: "nri-applicationplatform",
         permName: "intelligent-identification-API",
         parentPermId: 0,
         permCode: "",
         permType: "MENU",
         permUrl: "",
         iconClass: "fa fa-linux",
-        permDesc: "intelligent-identification-API",
-        permOrder: 80,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permDesc: "intelligent-identification-API"
       },
       {
         id: 70,
-        systemCode: "nri-applicationplatform",
         permName: "smoke-face-recognition",
         parentPermId: 69,
         permCode: "",
         permType: "MENU",
         permUrl: "/dectectApi",
         iconClass: "",
-        permDesc: "smoke-face-recognition",
-        permOrder: 80,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permDesc: "smoke-face-recognition"
       },
       {
         id: 71,
-        systemCode: "nri-applicationplatform",
         permName: "ocr-recognition",
         parentPermId: 0,
         permCode: "",
         permType: "MENU",
         permUrl: "",
         iconClass: "fa fa-bell-o",
-        permDesc: "ocr-recognition",
-        permOrder: 80,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permDesc: "ocr-recognition"
       },
       {
         id: 72,
-        systemCode: "nri-applicationplatform",
         permName: "waybill-recognition",
         parentPermId: 71,
         permCode: "",
         permType: "MENU",
         permUrl: "/ocr",
         iconClass: "fa fa-bell-o",
-        permDesc: "waybill-recognition",
-        permOrder: 80,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permDesc: "waybill-recognition"
       },
       {
         id: 73,
-        systemCode: "nri-applicationplatform",
         permName: "zipcode-recognition",
         parentPermId: 71,
         permCode: "",
         permType: "MENU",
         permUrl: "/postCodeOcr",
         iconClass: "fa fa-bell-o",
-        permDesc: "zipcode-recognition",
-        permOrder: 80,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permDesc: "zipcode-recognition"
       },
       {
         id: 74,
-        systemCode: "nri-applicationplatform",
         permName: "self-defined-area-recognition",
         parentPermId: 71,
         permCode: "",
         permType: "MENU",
         permUrl: "/drawImg",
         iconClass: "fa fa-bell-o",
-        permDesc: "self-defined-area-recognition",
-        permOrder: 80,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permDesc: "self-defined-area-recognition"
       },
+      // {
+      //   id: 75,
+      //   permName: "opencamera",
+      //   parentPermId: 0,
+      //   permCode: "",
+      //   permType: "MENU",
+      //   permUrl: "/opencamera",
+      //   iconClass: "fa fa-camera",
+      //   permDesc: "opencamera"
+      // },
       {
-        id: 75,
-        systemCode: "nri-applicationplatform",
-        permName: "opencamera",
+        id: 76,
+        permName: "tencent-general",
         parentPermId: 0,
         permCode: "",
         permType: "MENU",
-        permUrl: "/opencamera",
-        iconClass: "fa fa-camera",
-        permDesc: "opencamera",
-        permOrder: 79,
-        permStatus: "ENABLE",
-        createTime: 1508932152000,
-        updateTime: 1508934363000
+        permUrl: "",
+        iconClass: "iconfont icon-Penguin",
+        permDesc: "tencent-general"
+      },
+      {
+        id: 77,
+        permName: "printed-character-recog",
+        parentPermId: 76,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "/generalocr",
+        iconClass: "iconfont icon-Penguin",
+        permDesc: "printed-character-recog"
+      },
+      {
+        id: 82,
+        permName: "google-general",
+        parentPermId: 0,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "",
+        iconClass: "iconfont icon-google",
+        permDesc: "google-general"
+      },
+      {
+        id: 83,
+        permName: "printed-character-recog",
+        parentPermId: 82,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "/googleOcr",
+        iconClass: "",
+        permDesc: "printed-character-recog"
       }
+      // {
+      //   id: 78,
+      //   permName: "handwriting_recog",
+      //   parentPermId: 76,
+      //   permCode: "",
+      //   permType: "MENU",
+      //   permUrl: "/handwritingocr",
+      //   iconClass: "iconfont icon-Penguin",
+      //   permDesc: "handwriting_recog"
+      // },
+      // {
+      //   id: 79,
+      //   permName: "ehocr_general",
+      //   parentPermId: 76,
+      //   permCode: "",
+      //   permType: "MENU",
+      //   permUrl: "/ehocr",
+      //   iconClass: "iconfont icon-Penguin",
+      //   permDesc: "ehocr_general"
+      // },
+      // {
+      //   id: 79,
+      //   permName: "hpgeneralocr",
+      //   parentPermId: 76,
+      //   permCode: "",
+      //   permType: "MENU",
+      //   permUrl: "/hpgeneralocr",
+      //   iconClass: "iconfont icon-Penguin",
+      //   permDesc: "hpgeneralocr"
+      // },
+      // {
+      //   id: 80,
+      //   permName: "seal_ocr",
+      //   parentPermId: 76,
+      //   permCode: "",
+      //   permType: "MENU",
+      //   permUrl: "/seal_ocr",
+      //   iconClass: "iconfont icon-Penguin",
+      //   permDesc: "seal_ocr"
+      // },
+      // {
+      //   id: 81,
+      //   permName: "worddetect",
+      //   parentPermId: 76,
+      //   permCode: "",
+      //   permType: "MENU",
+      //   permUrl: "/worddetect",
+      //   iconClass: "iconfont icon-Penguin",
+      //   permDesc: "worddetect"
+      // }
     ];
     menudata.forEach(function(element) {
       //菜单映射

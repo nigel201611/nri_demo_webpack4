@@ -1,20 +1,31 @@
 {
     "root": true,
-    "extends": "eslint:recommended",
-    "parser": "babel-eslint", //一个对Babel解析器的包装，使其能够与 ESLint 兼容。
+    "extends": [
+        "eslint:recommended",
+        "plugin:vue/recommended"
+    ],
     "env": {
         "browser": true,
         "node": true,
-        "es6": true
+        "es6": true,
+        "commonjs": true
     },
     "parserOptions": {
+        "parser": "babel-eslint", //一个对Babel解析器的包装，使其能够与 ESLint 兼容。
         "ecmaVersion": 6,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "jsx": true
-        }
+        "sourceType": "module"
+        // "ecmaFeatures": {
+        //     "jsx": true
+        // }
+    },
+    "globals": {
+        "store": "readonly",
+        "storeLocal": "readonly",
+        "storeSession": "readonly",
+        "Exif": "readonly"
     },
     "plugins": [
-        "babel"
+        "html",
+        "vue"
     ]
 }

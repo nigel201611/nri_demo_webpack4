@@ -12,7 +12,7 @@
     </el-col>
 
     <el-col :span="4" class="language-set">
-      <el-dropdown class="userinfo" trigger="hover">
+      <!-- <el-dropdown class="userinfo" trigger="hover">
         <span class="el-dropdown-link userinfo-inner">
           {{userName}}
           <i class="fa fa-user-o"></i>
@@ -20,11 +20,11 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
       <el-dropdown @command="handleSetLanguage">
         <span class="el-dropdown-link userinfo-inner">
           {{$t(languageMap[locals])}}
-          <span class="iconfont icon-lang langati"></span>
+          <span class="iconfont icon-duoyuyan langati"></span>
           <!-- <i class="el-icon-arrow-down el-icon--right"></i> -->
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -152,12 +152,10 @@ export default {
     border-right-style: solid;
     text-align: center;
     img {
-      // float: left;
+      float: left;
       width: 100%;
-      // width: 94px;
       height: 60px;
       // margin: 10px 0 0 0;
-      // margin: 0 auto;
       padding: 0;
     }
     .txt {

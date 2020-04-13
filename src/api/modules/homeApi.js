@@ -1,7 +1,6 @@
 import axios from '../axiosWrapper';
 
 let prefix = process.env.API_ROOT;
-let isdev = process.env.NODE_ENV == 'development';
 //更新数据到QAD，发送xml格式数据
 export const shopwebIntegrationByXml = (params) => {
     let config = {

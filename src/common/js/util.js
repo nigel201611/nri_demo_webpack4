@@ -1,10 +1,10 @@
 let SIGN_REGEXP = /([yMdhsm])(\1*)/g;
 let DEFAULT_PATTERN = 'yyyy-MM-dd';
 function padding(s, len) {
-    var len = len - (s + '').length;
+    len = len - (s + '').length;
     for (let i = 0; i < len; i++) { s = '0' + s; }
     return s;
-};
+}
 
 export default {
     getQueryStringByName: function (name) {
@@ -45,7 +45,7 @@ export default {
             } else {
                 tree.push(item);
             }
-        };
+        }
 
         return tree;
     },

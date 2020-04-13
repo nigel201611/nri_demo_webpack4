@@ -5,6 +5,8 @@ import * as smokeIdentificationApi from './modules/smokeIdentificationApi.js';
 import * as aliImgApi from './modules/aliImgApi.js';
 import * as opencameraApi from './modules/opencameraApi.js';
 import * as authApi from './modules/authApi.js';
+import * as tengxunApi from './modules/tengxunApi.js';
+import * as googleOcrApi from './modules/googleOcrApi.js';
 export default {
     account,
     menu,
@@ -12,5 +14,7 @@ export default {
     smokeIdentificationApi,
     aliImgApi,
     opencameraApi,
-    authApi
+    authApi,
+    tengxunApi,
+    googleOcrApi
 }
