@@ -19,12 +19,16 @@
           @click="ageGenderDetection"
           :type="btnActive=='ageGender'?'primary':'default'"
         >{{$t('age-detect')}}</el-button>
-
         <el-button
           icon="el-icon-setting"
           @click="nozzleDetection"
           :type="btnActive=='nozzle'?'primary':'default'"
         >{{$t('nozzle-detect')}}</el-button>
+        <el-button
+          icon="fa fa-hand-peace-o"
+          @click="gestureDetection"
+          :type="btnActive=='gesture'?'primary':'default'"
+        >{{$t('gesture-detect')}}</el-button>
       </el-row>
     </div>
 
@@ -158,6 +162,11 @@ export default {
       this.imageUrl = "";
       this.result = "";
     },
+    gestureDetection() {
+      this.btnActive = "gesture";
+      this.imageUrl = "";
+      this.result = "";
+    },
     //**blob to dataURL**
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
@@ -238,9 +247,14 @@ export default {
         .then(res => {
           this.isRequesting = false;
           this.fail = false;
-          // console.log(res);
+          // console.log(res.data.data.code);
           if (res.status == 200) {
-            this.result = res.data.data;
+            let code = res.data.data.code;
+            if (code == 500) {
+              this.result = "server error,please connect the developer";
+            } else {
+              this.result = res.data.data;
+            }
           } else {
             this.result = res.statusText;
           }

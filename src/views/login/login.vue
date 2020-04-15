@@ -2,14 +2,16 @@
 <template>
   <div class="login-wrap">
     <el-form
+      ref="authInfo"
       :model="authInfo"
       :rules="formRules"
-      ref="authInfo"
       label-position="left"
       label-width="0px"
       class="demo-ruleForm login-container"
     >
-      <h3 class="title">NRI演示平台登录</h3>
+      <h3 class="title">
+        NRI演示平台登录
+      </h3>
       <!-- <el-form-item prop="accountType">
       <el-select v-model="authInfo.accountType" placeholder="账号类型">
         <el-option value="PHONE" label="手机" />
@@ -17,10 +19,20 @@
       </el-select>
       </el-form-item>-->
       <el-form-item prop="account">
-        <el-input type="text" v-model="authInfo.account" auto-complete="off" placeholder="账号"></el-input>
+        <el-input
+          v-model="authInfo.account"
+          type="text"
+          auto-complete="off"
+          placeholder="账号"
+        />
       </el-form-item>
       <el-form-item prop="password">
-        <el-input type="password" v-model="authInfo.password" auto-complete="off" placeholder="密码"></el-input>
+        <el-input
+          v-model="authInfo.password"
+          type="password"
+          auto-complete="off"
+          placeholder="密码"
+        />
       </el-form-item>
       <!-- <el-form-item prop="code" v-else>
       <el-input type="password" v-model="authInfo.captcha" auto-complete="off" placeholder="验证码"></el-input>
@@ -34,14 +46,17 @@
         :loading="captchaGetting"
       >获取验证码</el-button>
       </el-form-item>-->
-      <el-form-item label prop="token">
+      <el-form-item
+        label
+        prop="token"
+      >
         <!-- 点击式按钮建议宽度不低于200px,高度介于36px与46px  -->
         <!-- 嵌入式仅需设置宽度，高度根据宽度自适应，最小宽度为200px -->
         <div id="vaptcha_container">
           <!--vaptcha_container是用来引入Vaptcha的容器，下面代码为预加载动画，仅供参考-->
           <div class="vaptcha-init-main">
             <div class="vaptcha-init-loading">
-              <img src="/static/images/vaptcha-loading.gif" />
+              <img src="/static/images/vaptcha-loading.gif">
               <span class="vaptcha-text">Vaptcha启动中...</span>
             </div>
           </div>
@@ -51,9 +66,11 @@
         <el-button
           type="primary"
           style="width:100%;"
-          @click.native.prevent="handleSubmit"
           :loading="logining"
-        >登录</el-button>
+          @click.native.prevent="handleSubmit"
+        >
+          登录
+        </el-button>
         <!--<el-button @click.native.prevent="handleReset2">重置</el-button>-->
       </el-form-item>
     </el-form>
@@ -71,54 +88,55 @@
         <div class="main">
           <div class="boat-top-layer">
             <div class="top">
-              <div class="pole"></div>
+              <div class="pole" />
               <div class="help">
-                <span></span>
+                <span />
               </div>
             </div>
-            <div class="bottom"></div>
+            <div class="bottom" />
           </div>
           <div class="boat-mid-layer">
-            <div class="top"></div>
-            <div class="bottom"></div>
+            <div class="top" />
+            <div class="bottom" />
           </div>
           <div class="boat-bot-layer">
-            <div class="top"></div>
-            <div class="bottom"></div>
+            <div class="top" />
+            <div class="bottom" />
           </div>
         </div>
       </div>
       <div class="water">
         <div class="drops clearfix drops-1">
-          <span class="drop drop-a"></span>
-          <span class="drop drop-b"></span>
-          <span class="drop drop-c"></span>
-          <span class="drop drop-d"></span>
-          <span class="drop drop-e"></span>
-          <span class="drop drop-f"></span>
-          <span class="drop drop-g"></span>
-          <span class="drop drop-h"></span>
+          <span class="drop drop-a" />
+          <span class="drop drop-b" />
+          <span class="drop drop-c" />
+          <span class="drop drop-d" />
+          <span class="drop drop-e" />
+          <span class="drop drop-f" />
+          <span class="drop drop-g" />
+          <span class="drop drop-h" />
         </div>
         <div class="drops clearfix drops-2">
-          <span class="drop drop-a"></span>
-          <span class="drop drop-b"></span>
-          <span class="drop drop-c"></span>
-          <span class="drop drop-d"></span>
-          <span class="drop drop-e"></span>
-          <span class="drop drop-f"></span>
-          <span class="drop drop-g"></span>
-          <span class="drop drop-h"></span>
+          <span class="drop drop-a" />
+          <span class="drop drop-b" />
+          <span class="drop drop-c" />
+          <span class="drop drop-d" />
+          <span class="drop drop-e" />
+          <span class="drop drop-f" />
+          <span class="drop drop-g" />
+          <span class="drop drop-h" />
         </div>
       </div>
     </div>
 
-    <div class="footer">Copyright © 2020 All rights reserved. 深圳野村综合研究所技术支持</div>
+    <div class="footer">
+      Copyright © 2020 All rights reserved. 深圳野村综合研究所技术支持
+    </div>
   </div>
 </template>
 
 <script>
 import api from "../../api";
-import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -179,7 +197,7 @@ export default {
     //     });
     //   });
     // },
-    handleSubmit(ev) {
+    handleSubmit() {
       this.$refs.authInfo.validate(valid => {
         if (valid) {
           this.logining = true;
@@ -239,21 +257,21 @@ export default {
   height: 100%;
   background-color: #eeeeee;
 }
-​ .vaptcha-init-loading {
+​.vaptcha-init-loading {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
 }
-​ .vaptcha-init-loading > a {
+​.vaptcha-init-loading > a {
   display: inline-block;
   width: 18px;
   height: 18px;
   border: none;
 }
-​ .vaptcha-init-loading > a img {
+​.vaptcha-init-loading > a img {
   vertical-align: middle;
 }
-​ .vaptcha-init-loading .vaptcha-text {
+​.vaptcha-init-loading .vaptcha-text {
   font-family: sans-serif;
   font-size: 12px;
   color: #cccccc;

@@ -1,27 +1,39 @@
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div
-    class="ocr-wrap"
     v-loading="isRequesting"
+    class="ocr-wrap"
     :element-loading-text="$t('loading-text')"
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.6)"
   >
-    <div class="preview_image" v-if="canPreview">
-      <img :height="bill_height" :width="bill_width" :src="imageUrl" />
-      <i class="el-icon-circle-close close_preview" @click="handlepreview"></i>
+    <div
+      v-if="canPreview"
+      class="preview_image"
+    >
+      <img
+        :height="bill_height"
+        :width="bill_width"
+        :src="imageUrl"
+      >
+      <i
+        class="el-icon-circle-close close_preview"
+        @click="handlepreview"
+      />
     </div>
 
     <p class="tip">
       <el-button
         class="preview_btn"
         :disabled="!imageUrl"
-        @click="handlepreview"
         type="primary"
         icon="el-icon-zoom-in"
         circle
-      >{{$t('preview')}}</el-button>
-      {{$t('upload-tip')}}
+        @click="handlepreview"
+      >
+        {{ $t('preview') }}
+      </el-button>
+      {{ $t('upload-tip') }}
     </p>
     <el-upload
       class="avatar-uploader"
@@ -34,9 +46,18 @@
       :show-file-list="false"
       :on-success="handleUploadSuccess"
     >
-      <img v-if="imageUrl" :height="bill_height" :width="bill_width" :src="imageUrl" class="avatar" />
+      <img
+        v-if="imageUrl"
+        :height="bill_height"
+        :width="bill_width"
+        :src="imageUrl"
+        class="avatar"
+      >
       <!-- <p class="avatar_image" v-if="imageUrl"></p> -->
-      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      <i
+        v-else
+        class="el-icon-plus avatar-uploader-icon"
+      />
     </el-upload>
     <div class="upload-result">
       <el-alert
@@ -44,18 +65,26 @@
         :title="$t('confidence-rate')"
         type="success"
         effect="dark"
-      >{{confidence}}</el-alert>
+      >
+        {{ confidence }}
+      </el-alert>
       <el-form label-width="0">
         <el-form-item label>
           <el-input
             v-if="!fail"
-            type="textarea"
             v-model="result"
+            type="textarea"
             autosize
             :readonly="true"
             :placeholder="$t('detect-result')"
-          ></el-input>
-          <el-input v-else type="textarea" :value="$t('result-fail')" autosize :readonly="true"></el-input>
+          />
+          <el-input
+            v-else
+            type="textarea"
+            :value="$t('result-fail')"
+            autosize
+            :readonly="true"
+          />
         </el-form-item>
       </el-form>
     </div>
@@ -162,23 +191,22 @@ export default {
       fail: false //标识是否识别成功
     };
   },
+  computed: {
+    ...mapState({
+      locals: state => state.menuStore.locals
+    })
+  },
+  watch: {
+    locals(val) {
+      this.$i18n.locale = val;
+    }
+  },
   mounted() {
     this.exceedSize = false; //用于标识上传图片是否超过限制D
   },
   created() {
     //运单识别生成的唯一标识，用于请求参数
     // this.request_id = uuidv4();
-  },
-  computed: {
-    ...mapState({
-      locals: state => state.menuStore.locals
-    })
-  },
-
-  watch: {
-    locals(val) {
-      this.$i18n.locale = val;
-    }
   },
   methods: {
     // 图片对象转base64
@@ -287,7 +315,6 @@ export default {
       if (this.isRequesting) {
         return;
       }
-      // let base64ImageData = base64js.fromByteArray(file.file);
       let requestObj = {
         request_id: Date.now() + "",
         appid: "nri-express-bill", //管理员分配,字符串
@@ -295,7 +322,7 @@ export default {
       };
 
       let that = this;
-      let base64ImageData = this.blobToDataURL(file.file, function(dataurl) {
+      this.blobToDataURL(file.file, function(dataurl) {
         dataurl = dataurl.substring(dataurl.indexOf(",") + 1);
         requestObj.image = dataurl;
         let detectionName = "expressBillDetection";
@@ -316,7 +343,7 @@ export default {
               that.result = responesedata.message;
             }
           })
-          .catch(error => {
+          .catch(() => {
             that.isRequesting = false;
             that.fail = true;
             that.result = "result-fail";

@@ -1,17 +1,33 @@
 <i18n src="./locals/AppHeader.json"></i18n>
 <template>
-  <el-col :span="24" class="header">
-    <el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-      {{collapsed?sysName:''}}
-      <img :src="logoSrc" v-show="!collapsed" />
+  <el-col
+    :span="24"
+    class="header"
+  >
+    <el-col
+      :span="10"
+      class="logo"
+      :class="collapsed?'logo-collapse-width':'logo-width'"
+    >
+      {{ collapsed?sysName:'' }}
+      <img
+        v-show="!collapsed"
+        :src="logoSrc"
+      >
     </el-col>
     <el-col :span="10">
-      <div class="tools" @click.prevent="collapse">
-        <i class="fa fa-align-justify"></i>
+      <div
+        class="tools"
+        @click.prevent="collapse"
+      >
+        <i class="fa fa-align-justify" />
       </div>
     </el-col>
 
-    <el-col :span="4" class="language-set">
+    <el-col
+      :span="4"
+      class="language-set"
+    >
       <!-- <el-dropdown class="userinfo" trigger="hover">
         <span class="el-dropdown-link userinfo-inner">
           {{userName}}
@@ -20,11 +36,11 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown> -->
+      </el-dropdown>-->
       <el-dropdown @command="handleSetLanguage">
         <span class="el-dropdown-link userinfo-inner">
-          {{$t(languageMap[locals])}}
-          <span class="iconfont icon-duoyuyan langati"></span>
+          {{ $t(languageMap[locals]) }}
+          <span class="iconfont icon-duoyuyan langati" />
           <!-- <i class="el-icon-arrow-down el-icon--right"></i> -->
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -32,7 +48,9 @@
             v-for="(value,key) in languageMap"
             :key="key"
             :command="key"
-          >{{$t(value)}}</el-dropdown-item>
+          >
+            {{ $t(value) }}
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-col>
@@ -41,7 +59,6 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import api from "../../api";
 import logoSrc from "../../assets/nri_logo.png";
 
 export default {
@@ -60,9 +77,27 @@ export default {
       }
     };
   },
+  computed: {
+    ...mapState({
+      collapsed: state => state.menuStore.collapsed
+    }),
+    ...mapState({
+      locals: state => state.menuStore.locals
+    })
+  },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
+    }
+  },
+  created() {
+    // this.userName = "nigel";
+  },
+  mounted() {
+    let userInfo = storeLocal.get("userInfo");
+    // console.log(userInfo);
+    if (userInfo) {
+      this.userName = userInfo.username;
     }
   },
   methods: {
@@ -84,27 +119,6 @@ export default {
           name: "login"
         });
       });
-    }
-  },
-  computed: {
-    ...mapState({
-      collapsed: state => state.menuStore.collapsed
-    }),
-    ...mapState({
-      locals: state => state.menuStore.locals
-    })
-    // ...mapState({
-    //   userinfo: state => state.accountStore.accountInfo
-    // })
-  },
-  created() {
-    // this.userName = "nigel";
-  },
-  mounted() {
-    let userInfo = storeLocal.get("userInfo");
-    // console.log(userInfo);
-    if (userInfo) {
-      this.userName = userInfo.username;
     }
   }
 };

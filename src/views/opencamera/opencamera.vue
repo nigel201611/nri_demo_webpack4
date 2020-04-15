@@ -1,8 +1,21 @@
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div class="opencamera-wrap">
-    <video id="video" ref="video" autoplay="autoplay" controls :src="src" width="1280" height="720"></video>
-    <canvas class="canvas" ref="canvas" :width="resolvingPowerX" :height="resolvingPowerY"></canvas>
+    <video
+      id="video"
+      ref="video"
+      autoplay="autoplay"
+      controls
+      :src="src"
+      width="1280"
+      height="720"
+    />
+    <canvas
+      ref="canvas"
+      class="canvas"
+      :width="resolvingPowerX"
+      :height="resolvingPowerY"
+    />
   </div>
 </template>
 
@@ -22,6 +35,9 @@ import { mapState } from "vuex";
 // import xml2js from 'xml2js';
 
 export default {
+  components: {
+    // 定义组件
+  },
   data() {
     // 选项 数据
     return {
@@ -29,9 +45,6 @@ export default {
       resolvingPowerX: 3840,
       resolvingPowerY: 2160
     };
-  },
-  components: {
-    // 定义组件
   },
 
   created() {

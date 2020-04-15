@@ -1,7 +1,6 @@
 <!-- 自定义Table -->
 <template>
-    <div :style="{height: height, width: width}">
-    </div>
+  <div :style="{height: height, width: width}" />
 </template>
 
 <style lang="sass" scoped>
@@ -56,6 +55,11 @@ export default {
             editor: null,
         };
     },
+    watch: {
+        theme: function(newTheme) {
+            this.editor.setTheme('ace/theme/' + newTheme);
+        }
+    },
     mounted() {
         let editor = this.editor = ace.edit(this.$el);
         editor.$blockScrolling = Infinity;
@@ -94,11 +98,6 @@ export default {
         //     }
         // });
         // console.log(editor.completers);
-    },
-    watch: {
-        theme: function(newTheme) {
-            this.editor.setTheme('ace/theme/' + newTheme);
-        }
     },
     methods: {
         getSelection() {

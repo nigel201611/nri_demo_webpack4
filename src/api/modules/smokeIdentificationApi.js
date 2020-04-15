@@ -7,7 +7,6 @@ export const smokeDetection = (params) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     };
-    // dev server
     let url = `${prefix}/api/detection/smokeDetection`;
     return axios.post(url, params, config);
 
@@ -19,7 +18,6 @@ export const ageGenderDetection = (params) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     };
-    // dev server
     let url = `${prefix}/api/detection/ageGenderDetection`;
     return axios.post(url, params, config);
 
@@ -32,10 +30,19 @@ export const nozzleDetection = (params) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     };
-    // 云服务器
     let url = `${prefix}/api/detection/nozzleDetection`;
     return axios.post(url, params, config);
+};
 
+//手势识别api
+export const gestureDetection = (params) => {
+    let config = {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
+    let url = `${prefix}/api/detection/gestureDetection`;
+    return axios.post(url, params, config);
 };
 
 
@@ -46,7 +53,6 @@ export const expressBillDetection = (params) => {
             'Content-Type': 'application/json;charset=utf-8'
         }
     };
-    // dev server
     let url = `${prefix}/api/detection/expressBillDetection`;
     return axios.post(url, params, config);
 
@@ -60,8 +66,6 @@ export const postCodeOcrDetection = (params) => {
             'Content-Type': 'application/json;charset=utf-8'
         }
     };
-    // dev server
-    // let url = isdev ? `${prefix}/api/detection/postCodeOcrDetection.php` : `${prefix}/detection/postCodeOcrDetection.php`;
     let url = `${prefix}/api/detection/postCodeOcrDetection`;
     return axios.post(url, params, config);
 
@@ -74,8 +78,6 @@ export const userCustomizeImgDetection = (params) => {
             'Content-Type': 'application/json;charset=utf-8'
         }
     };
-    // dev server
-    // let url = isdev ? `${prefix}/api/detection/postCodeOcrDetection.php` : `${prefix}/detection/postCodeOcrDetection.php`;
     let url = `${prefix}/api/detection/userCustomizeImgDetection`;
     return axios.post(url, params, config);
 

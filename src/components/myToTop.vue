@@ -38,11 +38,15 @@
 </style>
 
 <template>
-    <transition name='slide-fade'>
-        <div class='page-component-up' v-show='isShow' @click='getTop'>
-            <i class='tri'></i>
-        </div>
-    </transition>
+  <transition name="slide-fade">
+    <div
+      v-show="isShow"
+      class="page-component-up"
+      @click="getTop"
+    >
+      <i class="tri" />
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -52,6 +56,13 @@ export default {
                 isShow: false,
                 target: ''
             }
+    },
+    mounted () {
+        this.target = document.querySelector(".content-container");
+        this.target.addEventListener('scroll', this.showIcon);
+    },
+    beforeDestroy () {
+        this.target.removeEventListener('scroll', this.showIcon);
     },
     methods: {
         showIcon () {
@@ -73,13 +84,6 @@ export default {
                 }
             }, 20)
         }
-    },
-    mounted () {
-        this.target = document.querySelector(".content-container");
-        this.target.addEventListener('scroll', this.showIcon);
-    },
-    beforeDestroy () {
-        this.target.removeEventListener('scroll', this.showIcon);
     }
 }
 </script>

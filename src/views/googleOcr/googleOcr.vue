@@ -3,12 +3,12 @@
   <div class="generalocr_wrap">
     <el-row class="picture-container">
       <img
-        @click="handleClickImg(item.url,index)"
         v-for="(item,index) in imgArr"
         :key="index"
         :src="item.url"
         :class="[curentIndex==index ? 'pic-item_active' : '', 'pic-item']"
-      />
+        @click="handleClickImg(item.url,index)"
+      >
     </el-row>
     <el-row class="input_form">
       <el-upload
@@ -19,36 +19,64 @@
         :on-success="handleUploadSuccess"
         :before-upload="beforeRead"
       >
-        <el-button type="primary">{{ $t('upload-btn-text') }}</el-button>
+        <el-button type="primary">
+          {{ $t('upload-btn-text') }}
+        </el-button>
       </el-upload>
       <div class="url_input">
-        <el-input :placeholder="$t('input_url_tip')" v-model="input_url"></el-input>
+        <el-input
+          v-model="input_url"
+          :placeholder="$t('input_url_tip')"
+        />
       </div>
-      <el-button @click="handleAnalyse" class="analyse-btn" type="primary">{{ $t('analyse-btn') }}</el-button>
+      <el-button
+        class="analyse-btn"
+        type="primary"
+        @click="handleAnalyse"
+      >
+        {{ $t('analyse-btn') }}
+      </el-button>
     </el-row>
     <el-row class="ocr-result">
       <img
-        class="imgOrigin"
         ref="imgOrigin"
+        class="imgOrigin"
         :height="img_height"
         :width="img_width"
         :src="imageUrl"
-      />
+      >
       <div
+        ref="imgEdit"
         v-loading="uploadImgLoading"
         :element-loading-text="$t('customize-area-loading-tip')"
         element-loading-spinner="el-icon-loading"
         element-loading-background="rgba(0, 0, 0, 0.6)"
         class="ocr_image"
         :style="imgObj"
-        ref="imgEdit"
       >
-        <canvas ref="myCanvas" class="ocrGeneralCanvas"></canvas>
+        <canvas
+          ref="myCanvas"
+          class="ocrGeneralCanvas"
+        />
       </div>
       <div class="result-details">
-        <el-table :data="tableData" height="400" style="width: 100%" :empty-text="$t('nodata')" v-loading="isRequesting">
-          <el-table-column prop="parag.parag_no" :label="$t('number')" align="left"></el-table-column>
-          <el-table-column prop="itemstring" :label="$t('recog_result')" align="left"></el-table-column>
+        <el-table
+          v-loading="isRequesting"
+          :data="tableData"
+          height="400"
+          style="width: 100%"
+          :empty-text="$t('nodata')"
+        >
+          <el-table-column
+            prop="parag.parag_no"
+            :label="$t('number')"
+            align="left"
+          />
+          <el-table-column
+            prop="itemstring"
+            :label="$t('recog_result')"
+            align="left"
+          />
         </el-table>
       </div>
     </el-row>
@@ -160,7 +188,7 @@ const imgArrOrigin = [
   { url: "/static/images/ocr_common05.jpg" },
   { url: "/static/images/ocr_common06.jpg" }
 ];
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 import api from "../../api";
 export default {
   data() {
@@ -179,6 +207,16 @@ export default {
       tableData: []
     };
   },
+  computed: {
+    ...mapState({
+      locals: state => state.menuStore.locals
+    })
+  },
+  watch: {
+    locals(val) {
+      this.$i18n.locale = val;
+    }
+  },
   mounted() {
     this.imgOptions = {}; //中引文体验，多角度，其他语种体验不同选项
     this.box_w = 400;
@@ -187,16 +225,6 @@ export default {
     this.myCtx = this.myCanvas.getContext("2d");
     //默认使用第一张图片
     this.init(this.imgArr[0].url);
-  },
-  watch: {
-    locals(val) {
-      this.$i18n.locale = val;
-    }
-  },
-  computed: {
-    ...mapState({
-      locals: state => state.menuStore.locals
-    })
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
@@ -312,7 +340,7 @@ export default {
               this.tableData = resData.items;
               //coordpoint 文本行对应在原图上的四点坐标
               //使用canvas绘制识别出的文本行在原图中矩形框
-              let coordpointArr = resData.items.map((value, index) => {
+              let coordpointArr = resData.items.map(value => {
                 return value.coordpoint;
               });
               this.drawRectangleByCanvas(coordpointArr);
@@ -430,7 +458,6 @@ export default {
       }
       let type = file.type;
       this.exceedSize = false;
-      let that = this;
       this.blobToDataURL(file, function(dataurl) {
         let image = new Image();
         image.onload = function() {
@@ -458,7 +485,7 @@ export default {
       this.uploadImgLoading = true;
     },
 
-    afterRead(file) {
+    afterRead() {
       // console.log(file);
     }
   }

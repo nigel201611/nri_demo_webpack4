@@ -5,9 +5,6 @@
       theme="dark"
       :default-active="$route.path"
       class="el-menu-vertical"
-      @open="handleopen"
-      @close="handleclose"
-      @select="handleselect"
       background-color="#324157"
       text-color="#bfcbd9"
       active-text-color="#20a0ff"
@@ -15,20 +12,35 @@
       router
       :collapse="collapsed"
       :default-openeds="openedIndex"
+      @open="handleopen"
+      @close="handleclose"
+      @select="handleselect"
     >
       <template v-for="(item,index) in menus">
-        <el-submenu :index="index+''" v-if="!item.leaf && !item.hidden" :key="index+''">
+        <el-submenu
+          v-if="!item.leaf && !item.hidden"
+          :key="index+''"
+          :index="index+''"
+        >
           <template slot="title">
-            <i :class="item.iconCls"></i>
-            <span slot="title">{{$t(item.alias||item.name)}}</span>
+            <i :class="item.iconCls" />
+            <span slot="title">{{ $t(item.alias||item.name) }}</span>
           </template>
-          <el-menu-item v-for="child in item.children" :index="child.path" :key="child.path">
-            <span v-if="!child.hidden">{{$t(child.alias||child.name)}}</span>
+          <el-menu-item
+            v-for="child in item.children"
+            :key="child.path"
+            :index="child.path"
+          >
+            <span v-if="!child.hidden">{{ $t(child.alias||child.name) }}</span>
           </el-menu-item>
         </el-submenu>
-        <el-menu-item v-if="item.leaf && !item.hidden" :index="item.path" :key="item.path">
-          <i :class="item.iconCls"></i>
-          <span slot="title">{{$t(item.alias||item.name)}}</span>
+        <el-menu-item
+          v-if="item.leaf && !item.hidden"
+          :key="item.path"
+          :index="item.path"
+        >
+          <i :class="item.iconCls" />
+          <span slot="title">{{ $t(item.alias||item.name) }}</span>
         </el-menu-item>
       </template>
     </el-menu>
@@ -36,7 +48,6 @@
 </template>
 <script>
 import { mapState } from "vuex";
-import api from "../../api";
 import util from "../../common/js/util";
 
 export default {
@@ -53,6 +64,21 @@ export default {
     ...mapState({
       locals: state => state.menuStore.locals
     })
+  },
+  watch: {
+    //解决menu收缩后在展开，子菜单不展开的问题
+    collapsed: {
+      handler(curVal) {
+        //菜单收缩，不进行此操作,curVal=true表示收缩
+        if (curVal) {
+          return;
+        }
+        this.openMenu();
+      }
+    },
+    locals(val) {
+      this.$i18n.locale = val;
+    }
   },
   created() {
     let tempMenus = [];
@@ -243,7 +269,7 @@ export default {
 
     let treeData = util.listToTree(tempMenus, { parentKey: "parentPermId" });
 
-    treeData.forEach((element, index) => {
+    treeData.forEach(element => {
       if (!element.children || element.children.length == 0) {
         element.leaf = true;
       }
@@ -280,21 +306,6 @@ export default {
     //   this.openMenu();
     // });
   },
-  watch: {
-    //解决menu收缩后在展开，子菜单不展开的问题
-    collapsed: {
-      handler(curVal, oldVal) {
-        //菜单收缩，不进行此操作,curVal=true表示收缩
-        if (curVal) {
-          return;
-        }
-        this.openMenu();
-      }
-    },
-    locals(val) {
-      this.$i18n.locale = val;
-    }
-  },
   methods: {
     openMenu() {
       this.menus.forEach((element, index) => {
@@ -313,9 +324,7 @@ export default {
     },
     handleopen() {},
     handleclose() {},
-    handleselect(a, b) {
-      // console.log(a, b);
-    }
+    handleselect() {}
   }
 };
 </script>

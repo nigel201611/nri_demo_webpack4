@@ -1,14 +1,23 @@
 <template>
-    <el-col :span="24" class="breadcrumb-container">
-        <strong class="title">{{getShowName($route.name)}}</strong>
-        <!--<strong class="title">{{$route.name}}</strong>-->
-        <el-breadcrumb separator="/" class="breadcrumb-inner">
-            <el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
-                {{getShowName(item.name)}}
-                <!--{{item.name}}-->
-            </el-breadcrumb-item>
-        </el-breadcrumb>
-    </el-col>
+  <el-col
+    :span="24"
+    class="breadcrumb-container"
+  >
+    <strong class="title">{{ getShowName($route.name) }}</strong>
+    <!--<strong class="title">{{$route.name}}</strong>-->
+    <el-breadcrumb
+      separator="/"
+      class="breadcrumb-inner"
+    >
+      <el-breadcrumb-item
+        v-for="item in $route.matched"
+        :key="item.path"
+      >
+        {{ getShowName(item.name) }}
+        <!--{{item.name}}-->
+      </el-breadcrumb-item>
+    </el-breadcrumb>
+  </el-col>
 </template>
 
 <script>

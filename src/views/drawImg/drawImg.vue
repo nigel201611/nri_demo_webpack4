@@ -27,6 +27,7 @@
           @clear="handleClearSelect"
           clearable
           :disabled="!imageUrl"
+          @change="handleChangeSelect"
           class="detectionList"
           v-model="type"
           :placeholder="$t('upload-placehoder')"
@@ -126,7 +127,7 @@
         <el-card class="box-card" v-for="(item,index) in resDetectDataArr" :key="index">
           <div slot="header" class="clearfix box-card_header">
             <span>{{$t(resTitleArr[item.type])}}</span>
-            <el-badge v-if="item.confidence!=0" :value="item.confidence" class="confidence">
+            <el-badge v-if="item.confidence!=0" :value="item.confidence+'%'" class="confidence">
               <span>{{$t('result-confidence')}}</span>
             </el-badge>
             <el-badge v-else value="0" class="confidence">
@@ -135,9 +136,18 @@
           </div>
           <div class="text item">
             <img :src="item.imgUrl" />
-            <!-- item.code=0,有时候返回的text是空的，看是否要做下处理 -->
-            <p v-if="item.code==0">{{item.text}}</p>
-            <p class="error" v-else>{{$t('reuslt-error')}}</p>
+            <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
+            <p v-if="item.code==0&&item.type!='nri_T_general'">{{item.text}}</p>
+            <p v-else-if="item.code==0&&item.type=='nri_T_general'">
+              <el-table :data="item.text" height="300" style="width: 100%">
+                <!-- <el-table-column prop="parag.parag_no" :label="$t('number')" align="left"></el-table-column> -->
+                <el-table-column type="index" width="50"></el-table-column>
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left"></el-table-column>
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left"></el-table-column>
+              </el-table>
+            </p>
+            <p class="error" v-else-if="item.code==-1">{{$t('reuslt-error')}}</p>
+            <p class="error" v-else>{{$t('backend_error')}}</p>
           </div>
         </el-card>
       </div>
@@ -266,7 +276,7 @@
 </style>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 import api from "../../api";
 export default {
   data() {
@@ -275,11 +285,13 @@ export default {
       imageUrl: "",
       btnList: [
         { flag: false, text: "express-bill-dectect", type: "expressbill" },
-        { flag: false, text: "postcode-dectect", type: "postcode" }
+        { flag: false, text: "postcode-dectect", type: "postcode" },
+        { flag: false, text: "T_general", type: "T_general" }
       ], //用于保存类型功能按钮
       resTitleArr: {
         nri_expressbill: "waybill-result",
-        nri_postcode: "zipcode-result"
+        nri_postcode: "zipcode-result",
+        nri_T_general: "T_general"
       }, //保存标题和识别类型映射关系，
       imgObj: {
         background: `url(${this.imageUrl}) no-repeat 0 0`,
@@ -307,6 +319,16 @@ export default {
       editImageArr: [] //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
     };
   },
+  computed: {
+    ...mapState({
+      locals: state => state.menuStore.locals
+    })
+  },
+  watch: {
+    locals(val) {
+      this.$i18n.locale = val;
+    }
+  },
   mounted() {
     this.userCustomizeArr = []; //用于保存用户自定义区域图片相关发送接口请求参数
     this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
@@ -317,7 +339,6 @@ export default {
       height: 0
     };
     this.exceedSize = false; //用于标识上传图片是否超过限制D
-
     // 从缓存读取editImageArr
     this.customizeImageArrInLocal = storeLocal.get("customizeImageArr") || [];
     // 提前创建好canvas元素
@@ -328,76 +349,71 @@ export default {
     this.scaleMax = 1; //放大比例
     this.scaleStep = 0;
   },
-  watch: {
-    locals(val) {
-      this.$i18n.locale = val;
-    }
-  },
-  computed: {
-    ...mapState({
-      locals: state => state.menuStore.locals
-    })
-  },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
   },
   methods: {
     addEditableFunc() {
-      let that = this;
       let oBox = this.$refs.imgEdit;
       //鼠标按下，获取初始点
-      oBox.onmousedown = function(ev) {
+      oBox.onmousedown = ev => {
+        //事件延迟性，如果用户框选了区域后，再次选择识别类型下拉框，这里的this.type还是上次的，并没有及时获取到
+        // console.log(this.type);
+        //那么需要提示用户选择对应类型
+        if (!this.type) {
+          this.$notify({
+            title: this.$t("warning-text"),
+            type: "warning",
+            message: this.$t("choice-recognition-type")
+          });
+          //把之前画出的区域删除,并且oBox不只有一个孩子节点
+          oBox.innerHTML = "";
+          return false;
+        }
         ev = window.event || ev;
         //1.获取按下的点
-        // let x1 = ev.clientX - oBox.offsetLeft;
-        // let y1 = ev.clientY - oBox.offsetTop;
         let x1 = ev.offsetX;
         let y1 = ev.offsetY;
         //记录鼠标按下的点
-        that.origin = {
+        this.origin = {
           x: x1,
           y: y1
         };
-        that.startXY = {
+        this.startXY = {
           x: ev.x,
           y: ev.y
         };
-        // console.log("鼠标按下的点：" + that.startXY.x1 + "-" + that.startXY.y1);
         //2.创建div
         let oDiv = document.createElement("div");
         oDiv.setAttribute("class", "rect_item");
-        oBox.onmousemove = function(e) {
+        oBox.onmousemove = e => {
           // 会不断触发
           e = window.event || e;
           let x2 = e.offsetX;
           let y2 = e.offsetY;
-          that.endXY = {
+          this.endXY = {
             x: e.x,
             y: e.y
           };
-          let x1 = that.origin.x,
-            y1 = that.origin.y;
+          let x1 = this.origin.x,
+            y1 = this.origin.y;
           // 鼠标移动的点处理，为啥往右下移动过程中，横坐标会变小,offsetX有问题
-          let width = Math.abs(that.endXY.x - that.startXY.x);
-          let height = Math.abs(that.endXY.y - that.startXY.y);
+          let width = Math.abs(this.endXY.x - this.startXY.x);
+          let height = Math.abs(this.endXY.y - this.startXY.y);
 
           //对width和height做限制至少大于25
-          that.dragInfoWidthHeight = {
+          this.dragInfoWidthHeight = {
             width,
             height
           };
           //3.设置div的样式,2,61分别矫正位置用
-          // oDiv.style.left = (x2 > x1 ? x1 : x2) + "px";
-          // oDiv.style.top = (y2 > y1 ? y1 : y2) + "px";
           oDiv.style.left = x1 + "px";
           oDiv.style.top = y1 + "px";
-          // oDiv.style.width = Math.abs(x2 - x1) + "px";
-          // oDiv.style.height = Math.abs(y2 - y1) + "px";
           oDiv.style.width = width + "px";
           oDiv.style.height = height + "px";
           oDiv.style.border = "1px solid red";
           oDiv.style.position = "absolute";
-          that.endpoint = {
+          this.endpoint = {
             x: x2,
             y: y2
           };
@@ -405,26 +421,13 @@ export default {
           if (width <= 30) {
             oBox.removeChild(oDiv);
           }
-
           // 记录用户自定义区域的原点和宽高，保存在对象中,并且添加是什么类型的识别，比如运单还是邮编，typearr=[expressbill,postcode]
           //如果在这里面记录坐标相关信息,会反复触发多次
         };
 
-        oBox.onmouseup = function(ev) {
-          //那么需要提示用户选择对应类型
-          // console.log(that.type);
-          if (!that.type) {
-            that.$notify({
-              title: that.$t("warning-text"),
-              type: "warning",
-              message: that.$t("choice-recognition-type")
-            });
-            //把之前画出的区域删除,并且oBox不只有一个孩子节点
-            oBox.innerHTML = "";
-            return false;
-          }
-          let x1 = that.origin.x,
-            y1 = that.origin.y;
+        oBox.onmouseup = () => {
+          let x1 = this.origin.x,
+            y1 = this.origin.y;
           // 记录用户自定义区域的原点和宽高，保存在对象中,并且添加是什么类型的识别，比如运单还是邮编，typearr=[expressbill,postcode]
           // 目前限制每个类型识别只能自定义一个区域
           //推送到editImageArr可以判断对应类型有没有数据，如果有，提示用户
@@ -435,10 +438,10 @@ export default {
           // }
           // console.log(that.dragInfoWidthHeight);
           // 对width和height做限制,至少大于25
-          let { width, height } = that.dragInfoWidthHeight;
+          let { width, height } = this.dragInfoWidthHeight;
           if (width > 30) {
-            that.editImageArr.push({
-              type: that.type,
+            this.editImageArr.push({
+              type: this.type,
               x: x1,
               y: y1,
               width: width,
@@ -453,6 +456,7 @@ export default {
         oBox.onmouseup = null;
       };
     },
+    // 限制某种识别类型只能是一个区域
     hasClickedTypeFunc() {
       let imageArr = this.editImageArr;
       let hastypeFlag = imageArr.some(item => {
@@ -517,7 +521,7 @@ export default {
       this.imgObj.background = `url(${this.imageUrl}) no-repeat 0 0`;
       this.imgObj.transform = `scale(1)`;
     },
-    rotateCanvasDeg(deg) {
+    rotateCanvasDeg() {
       let imgElem = this.$refs.imgElem;
       //不是通过样式旋转背景,而是通过canvas旋转，然后在转换图片，后面框图得到的数据才会准确
       let width = imgElem.width;
@@ -596,11 +600,14 @@ export default {
       this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
       this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
     },
+    handleChangeSelect(type) {
+      this.type = type;
+    },
     // 获取图片的元数据属性
     getExif(img) {
       Exif.getData(img, function() {
         let Orientation = Exif.getTag(this, "Orientation");
-        console.log(Orientation);
+        // console.log(Orientation);
       });
     },
     handleUploadSuccess(res, file) {
@@ -794,7 +801,13 @@ export default {
     // 确认识别
     confirmDetect() {
       //将this.editImageArr里保存的数据取出来，转换对应区域图片
+      //判断editImageArr当前是否只有一个区域数据，如果只有一个，用户切换识别类型的时候需要更改对应的type
       let imgArr = this.editImageArr;
+      if (imgArr.length == 1) {
+        //矫正当前识别类型,以免用户误解
+        imgArr[0].type = this.type;
+      }
+      // 这里有时候，用户明明已经编辑了区域，却还是提示！！！可能有些问题
       if (imgArr.length == 0) {
         this.$notify({
           title: this.$t("warning-text"),
@@ -845,7 +858,6 @@ export default {
         obj.appid = "nri_" + type; //管理员分配,字符串,比userDataImage里的type多了nri前缀
         this.userCustomizeArr.push(obj);
       }
-      // console.log(imgArr);
       //将数据传到后台接口，处理，识别
       if (this.isRequesting) {
         return;
@@ -855,23 +867,48 @@ export default {
         .userCustomizeImgDetection(this.userCustomizeArr)
         .then(res => {
           this.isRequesting = false;
-          // console.log(res);
           if (res.status == 200) {
             let resDataArr = res.data.data;
             // 遍历处理相关数据
             for (let i = 0; i < resDataArr.length; i++) {
               let item = resDataArr[i];
               let resObj = {};
-              resObj.code = item.code;
-              if (item.code == 0) {
+              if (item.type != "nri_T_general") {
+                //针对腾讯优图通用返回不一样数据结构处理
+                if (item.code == 0) {
+                  resObj.code = item.code;
+                  resObj.type = item.type;
+                  resObj.text = item.data.text;
+                  resObj.confidence = item.data.confidence;
+                  resObj.width = item.data.width;
+                  resObj.height = item.data.height;
+                } else {
+                  if (item.statusCode == 404) {
+                    //友好话用户提示，目前404这种直接提示联系开发人员
+                    resObj.code = 404;
+                  } else {
+                    resObj.code = -1;
+                  }
+                  resObj.type = item.type; //返回来的type,和appid一致,添加了nri前缀
+                  resObj.text = item.message; //没有识别成功,text赋值为messge
+                  resObj.confidence = 0;
+                }
+              } else if (item.type == "nri_T_general") {
                 resObj.type = item.type;
-                resObj.text = item.data.text;
-                resObj.confidence = item.data.confidence;
-                resObj.width = item.data.width;
-                resObj.height = item.data.height;
-              } else {
-                resObj.type = item.type; //返回来的type,和appid一致,添加了nri前缀
-                resObj.text = item.message; //没有识别成功,text赋值为messge
+                resObj.text = item.items;
+                resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
+                //计算平均准确度
+                let avg_confidence = 0.0;
+                item.items.forEach((value, index) => {
+                  avg_confidence += Number(value.itemconf);
+                  value.itemconf = Number(value.itemconf).toFixed(2);
+                });
+                if (item.items.length != 0) {
+                  avg_confidence = (avg_confidence / item.items.length).toFixed(
+                    2
+                  );
+                }
+                resObj.confidence = avg_confidence * 100;
               }
               this.resDetectDataArr.push(resObj);
             }
@@ -883,7 +920,6 @@ export default {
               item.imgUrl = this.userDataImage[i].imgUrl;
             }
             this.resDetectDataArr = resDetectDataArrCp;
-            // console.log(this.resDetectDataArr);
           }
         })
         .catch(error => {

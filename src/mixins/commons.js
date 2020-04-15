@@ -4,7 +4,7 @@ function padding(s, len) {
     var len = len - (s + '').length;
     for (var i = 0; i < len; i++) { s = '0' + s; }
     return s;
-};
+}
 import moment from 'moment';
 
 export default {
