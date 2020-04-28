@@ -257,21 +257,21 @@ export default {
   height: 100%;
   background-color: #eeeeee;
 }
-​.vaptcha-init-loading {
+.vaptcha-init-loading {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
 }
-​.vaptcha-init-loading > a {
+.vaptcha-init-loading > a {
   display: inline-block;
   width: 18px;
   height: 18px;
   border: none;
 }
-​.vaptcha-init-loading > a img {
+.vaptcha-init-loading > a img {
   vertical-align: middle;
 }
-​.vaptcha-init-loading .vaptcha-text {
+.vaptcha-init-loading .vaptcha-text {
   font-family: sans-serif;
   font-size: 12px;
   color: #cccccc;

@@ -1,8 +1,8 @@
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div
-    class="ocr-wrap"
     v-loading="isRequesting"
+    class="ocr-wrap"
     :element-loading-text="$t('during-recognition')"
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.6)"
@@ -16,28 +16,34 @@
       accept="image/jpg, image/jpeg, image/png"
       :on-success="handleUploadSuccess"
     >
-      <el-button class="upload_btn" size="small" type="primary">{{ $t('upload-btn-text') }}</el-button>
-      <span class="tip">{{$t('upload-btn-tip')}}</span>
+      <el-button
+        class="upload_btn"
+        size="small"
+        type="primary"
+      >
+        {{ $t('upload-btn-text') }}
+      </el-button>
+      <span class="tip">{{ $t('upload-btn-tip') }}</span>
     </el-upload>
 
     <div class="btn-list">
       <el-row class="choice-type">
         <el-select
+          v-model="type"
           size="small"
-          @clear="handleClearSelect"
           clearable
           :disabled="!imageUrl"
-          @change="handleChangeSelect"
           class="detectionList"
-          v-model="type"
           :placeholder="$t('upload-placehoder')"
+          @clear="handleClearSelect"
+          @change="handleChangeSelect"
         >
           <el-option
             v-for="item in btnList"
             :key="$t(item.text)"
             :label="$t(item.text)"
             :value="item.type"
-          ></el-option>
+          />
         </el-select>
 
         <el-button
@@ -45,51 +51,60 @@
           type="success"
           size="small"
           @click="confirmDetect"
-        >{{$t('confirm-detect')}}</el-button>
+        >
+          {{ $t('confirm-detect') }}
+        </el-button>
         <el-button
           :disabled="!imageUrl"
           type="primary"
           size="small"
           @click="saveCustomize"
-        >{{$t('save-current')}}</el-button>
+        >
+          {{ $t('save-current') }}
+        </el-button>
         <el-button
           :disabled="!imageUrl"
           type="primary"
           size="small"
           @click="cancelEditBtn"
-        >{{$t('clear-area')}}</el-button>
+        >
+          {{ $t('clear-area') }}
+        </el-button>
       </el-row>
 
-      <el-row class="image-btn" v-show="imageUrl">
+      <el-row
+        v-show="imageUrl"
+        class="image-btn"
+      >
         <el-button
           :title="$t('rotate')"
           type="info"
           size="small"
-          @click="handleClockwise"
           class="fa fa-rotate-right"
-        ></el-button>
+          @click="handleClockwise"
+        />
         <el-button
           :disabled="deg==-360"
           :title="$t('anticlock-rotate')"
           type="info"
           size="small"
-          @click="handleAnticlockwise"
           class="fa fa-rotate-left"
-        ></el-button>
+          @click="handleAnticlockwise"
+        />
         <el-button
           :title="$t('scale-pic')"
           type="info"
           size="small"
-          @click="handleEnlarge"
           class="fa fa-search-plus"
-        ></el-button>
+          @click="handleEnlarge"
+        />
         <el-button
           :title="$t('zooms-in')"
           type="info"
           size="small"
-          @click="handleShrink"
           class="fa fa-search-minus"
-        ></el-button>
+          @click="handleShrink"
+        />
         <el-button
           :title="$t('reset-btn')"
           class="fa fa-hand-stop-o"
@@ -97,57 +112,121 @@
           type="primary"
           size="small"
           @click="handleReset"
-        ></el-button>
+        />
       </el-row>
     </div>
 
-    <el-dialog :title="$t('confirm-dialog-title')" :visible.sync="restoreDialogVisible" width="30%">
-      <span>{{$t('confirm-dialog-tip')}}</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleNoTip" type="info">{{$t('no-tip')}}</el-button>
-        <el-button @click="restoreDialogVisible = false">{{$t('dialog-cancel-btn')}}</el-button>
-        <el-button type="primary" @click="handleConfirmRestore">{{$t('dialog-confirm-btn')}}</el-button>
+    <el-dialog
+      :title="$t('confirm-dialog-title')"
+      :visible.sync="restoreDialogVisible"
+      width="30%"
+    >
+      <span>{{ $t('confirm-dialog-tip') }}</span>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="info"
+          @click="handleNoTip"
+        >{{ $t('no-tip') }}</el-button>
+        <el-button @click="restoreDialogVisible = false">{{ $t('dialog-cancel-btn') }}</el-button>
+        <el-button
+          type="primary"
+          @click="handleConfirmRestore"
+        >{{ $t('dialog-confirm-btn') }}</el-button>
       </span>
     </el-dialog>
 
     <!-- 可以供用户自定义区域 -->
     <div class="usercustomize_area">
-      <img class="imgElem" ref="imgElem" :height="bill_height" :width="bill_width" :src="imageUrl" />
+      <img
+        ref="imgElem"
+        class="imgElem"
+        :height="bill_height"
+        :width="bill_width"
+        :src="imageUrl"
+      >
       <div
+        ref="imgEdit"
         v-loading="uploadImgLoading"
         :element-loading-text="$t('customize-area-loading-tip')"
         element-loading-spinner="el-icon-loading"
         element-loading-background="rgba(0, 0, 0, 0.6)"
         class="img-wrap"
         :style="imgObj"
-        ref="imgEdit"
-      ></div>
+      />
       <!-- 展示自定义区域识别结果 -->
-      <div class="result_wrap" v-if="resDetectDataArr.length">
-        <el-card class="box-card" v-for="(item,index) in resDetectDataArr" :key="index">
-          <div slot="header" class="clearfix box-card_header">
-            <span>{{$t(resTitleArr[item.type])}}</span>
-            <el-badge v-if="item.confidence!=0" :value="item.confidence+'%'" class="confidence">
-              <span>{{$t('result-confidence')}}</span>
+      <div
+        v-if="resDetectDataArr.length"
+        class="result_wrap"
+      >
+        <el-card
+          v-for="(item,index) in resDetectDataArr"
+          :key="index"
+          class="box-card"
+        >
+          <div
+            slot="header"
+            class="clearfix box-card_header"
+          >
+            <span>{{ $t(resTitleArr[item.type]) }}</span>
+            <el-badge
+              v-if="item.confidence!=0"
+              :value="item.confidence+'%'"
+              class="confidence"
+            >
+              <span>{{ $t('result-confidence') }}</span>
             </el-badge>
-            <el-badge v-else value="0" class="confidence">
-              <span>{{$t('result-confidence')}}</span>
+            <el-badge
+              v-else
+              value="0"
+              class="confidence"
+            >
+              <span>{{ $t('result-confidence') }}</span>
             </el-badge>
           </div>
           <div class="text item">
-            <img :src="item.imgUrl" />
+            <img :src="item.imgUrl">
             <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
-            <p v-if="item.code==0&&item.type!='nri_T_general'">{{item.text}}</p>
+            <p v-if="item.code==0&&item.type!='nri_T_general'">
+              {{ item.text }}
+            </p>
             <p v-else-if="item.code==0&&item.type=='nri_T_general'">
-              <el-table :data="item.text" height="300" style="width: 100%">
+              <el-table
+                :data="item.text"
+                height="300"
+                style="width: 100%"
+              >
                 <!-- <el-table-column prop="parag.parag_no" :label="$t('number')" align="left"></el-table-column> -->
-                <el-table-column type="index" width="50"></el-table-column>
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left"></el-table-column>
-                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left"></el-table-column>
+                <el-table-column
+                  type="index"
+                  width="50"
+                />
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
+                <el-table-column
+                  prop="itemconf"
+                  :label="$t('recog_confidence')"
+                  align="left"
+                />
               </el-table>
             </p>
-            <p class="error" v-else-if="item.code==-1">{{$t('reuslt-error')}}</p>
-            <p class="error" v-else>{{$t('backend_error')}}</p>
+            <p
+              v-else-if="item.code==-1"
+              class="error"
+            >
+              {{ $t('reuslt-error') }}
+            </p>
+            <p
+              v-else
+              class="error"
+            >
+              {{ $t('backend_error') }}
+            </p>
           </div>
         </el-card>
       </div>
@@ -476,7 +555,7 @@ export default {
           ? oBox.lastElementChild
           : oBox.lastChild;
         if (oBox.childElementCount != 1) {
-          oBox.removeChild(oBox.lastChild);
+          oBox.removeChild(lastChild);
         }
 
         return true;
@@ -604,12 +683,12 @@ export default {
       this.type = type;
     },
     // 获取图片的元数据属性
-    getExif(img) {
-      Exif.getData(img, function() {
-        let Orientation = Exif.getTag(this, "Orientation");
-        // console.log(Orientation);
-      });
-    },
+    // getExif(img) {
+    //   Exif.getData(img, function() {
+    //     let Orientation = Exif.getTag(this, "Orientation");
+    //     // console.log(Orientation);
+    //   });
+    // },
     handleUploadSuccess(res, file) {
       //先删除之前添加的框图事件，以免重复添加
       this.removeEditableFunc();
@@ -723,11 +802,6 @@ export default {
       }
       return true;
     },
-
-    afterRead(file) {
-      // console.log(file);
-    },
-
     drawRect(x1, y1, width, height) {
       let oDiv = document.createElement("div");
       oDiv.setAttribute("class", "rect_item");
@@ -785,7 +859,7 @@ export default {
       }
     },
     cancelEditBtn() {
-      this.btnList.map((item, index) => {
+      this.btnList.map(item => {
         return (item.flag = false);
       });
       // this.removeEditableFunc();
@@ -899,7 +973,7 @@ export default {
                 resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
                 //计算平均准确度
                 let avg_confidence = 0.0;
-                item.items.forEach((value, index) => {
+                item.items.forEach(value => {
                   avg_confidence += Number(value.itemconf);
                   value.itemconf = Number(value.itemconf).toFixed(2);
                 });
@@ -922,7 +996,7 @@ export default {
             this.resDetectDataArr = resDetectDataArrCp;
           }
         })
-        .catch(error => {
+        .catch(() => {
           this.isRequesting = false;
           // this.result = "识别失败，请检查网络是否正常~";
           this.result = this.$t("recognition-fail");

@@ -1,34 +1,45 @@
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div
-    class="detect-wrap"
     v-loading="isRequesting"
+    class="detect-wrap"
     :element-loading-text="$t('loading-text')"
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.6)"
   >
     <div class="btn-list">
-      <el-row type="flex" justify="end">
+      <el-row
+        type="flex"
+        justify="end"
+      >
         <el-button
           icon="el-icon-star-off"
-          @click="smokeDetection"
           :type="btnActive=='smoke'?'primary':'default'"
-        >{{$t('smoke-detect')}}</el-button>
+          @click="smokeDetection"
+        >
+          {{ $t('smoke-detect') }}
+        </el-button>
         <el-button
           icon="fa fa-user-o"
-          @click="ageGenderDetection"
           :type="btnActive=='ageGender'?'primary':'default'"
-        >{{$t('age-detect')}}</el-button>
+          @click="ageGenderDetection"
+        >
+          {{ $t('age-detect') }}
+        </el-button>
         <el-button
           icon="el-icon-setting"
-          @click="nozzleDetection"
           :type="btnActive=='nozzle'?'primary':'default'"
-        >{{$t('nozzle-detect')}}</el-button>
+          @click="nozzleDetection"
+        >
+          {{ $t('nozzle-detect') }}
+        </el-button>
         <el-button
           icon="fa fa-hand-peace-o"
-          @click="gestureDetection"
           :type="btnActive=='gesture'?'primary':'default'"
-        >{{$t('gesture-detect')}}</el-button>
+          @click="gestureDetection"
+        >
+          {{ $t('gesture-detect') }}
+        </el-button>
       </el-row>
     </div>
 
@@ -42,15 +53,30 @@
       :show-file-list="true"
       :on-success="handleUploadSuccess"
     >
-      <img v-if="imageUrl" :src="imageUrl" class="avatar-detect" />
-      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      <img
+        v-if="imageUrl"
+        :src="imageUrl"
+        class="avatar-detect"
+      >
+      <i
+        v-else
+        class="el-icon-plus avatar-uploader-icon"
+      />
     </el-upload>
 
     <div class="upload-result">
       <el-form label-width="80px">
         <el-form-item :label="$t('detect-result')">
-          <el-input v-if="!fail" v-model="result" :readonly="true"></el-input>
-          <el-input v-else :value="$t(result)" :readonly="true"></el-input>
+          <el-input
+            v-if="!fail"
+            v-model="result"
+            :readonly="true"
+          />
+          <el-input
+            v-else
+            :value="$t(result)"
+            :readonly="true"
+          />
         </el-form-item>
       </el-form>
     </div>
@@ -113,9 +139,12 @@ $detect-height: 400px;
 
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 import api from "../../api";
 export default {
+  components: {
+    // 定义组件
+  },
   data() {
     // 选项 数据
     return {
@@ -125,9 +154,6 @@ export default {
       result: "", //图片识别结果
       fail: false //标识是否识别成功
     };
-  },
-  components: {
-    // 定义组件
   },
   computed: {
     ...mapState({
@@ -196,8 +222,7 @@ export default {
     // 图片上传前校验
     beforeRead(file) {
       this.result = "";
-      let imgSize = file.size;
-      let type = file.type;
+      // let imgSize = file.size;
       let that = this;
       this.blobToDataURL(file, function(dataurl) {
         let image = new Image();
@@ -206,7 +231,7 @@ export default {
           let height = image.height;
           that.bill_width = width;
           that.bill_height = height;
-          let iswidthAllow = width > 1000;
+          // let iswidthAllow = width > 1000;
           // console.log("图片宽度:" + width);
           // if (iswidthAllow) {
           //   //超过尺寸自动压缩
@@ -259,7 +284,7 @@ export default {
             this.result = res.statusText;
           }
         })
-        .catch(error => {
+        .catch(() => {
           this.isRequesting = false;
           this.fail = true;
           this.result = "result-fail";
