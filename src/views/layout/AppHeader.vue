@@ -59,7 +59,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import logoSrc from "../../assets/nri_logo.png";
+import logoSrc from "@/assets/logo.png";
 
 export default {
   data() {

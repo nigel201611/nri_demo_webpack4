@@ -1,14 +1,14 @@
-import Login from './views/login/login.vue'
-import NotFound from './views/404.vue'
-import Home from './views/Home.vue'
+import Login from './views/login/login.vue';
+import NotFound from './views/404.vue';
+import Home from './views/Home.vue';
 
-import eslUpdate from './views/eslUpdate/eslUpdate.vue'
-import ocr from './views/ocr/ocr.vue'
-import postCodeOcr from './views/postCodeOcr/postCodeOcr.vue'
-import dectectApi from './views/dectectApi/dectectApi.vue'
-import drawImg from './views/drawImg/drawImg.vue'
-import generalocr from './views/generalocr/generalocr.vue'
-import googleOcr from './views/googleOcr/googleOcr.vue'
+import eslUpdate from './views/eslUpdate/eslUpdate.vue';
+import ocr from './views/ocr/ocr.vue';
+import postCodeOcr from './views/postCodeOcr/postCodeOcr.vue';
+import dectectApi from './views/dectectApi/dectectApi.vue';
+import drawImg from './views/drawImg/drawImg.vue';
+import generalocr from './views/generalocr/generalocr.vue';
+import googleOcr from './views/googleOcr/googleOcr.vue';
 
 // import opencamera from './views/opencamera/opencamera.vue'
 // import handwritingocr from './views/handwritingocr/handwritingocr.vue'

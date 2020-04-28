@@ -3,11 +3,11 @@
   <div class="generalocr_wrap">
     <el-row class="picture-container">
       <img
-        v-for="(item,index) in imgArr"
+        v-for="(item, index) in imgArr"
         :key="index"
         :src="item.url"
-        :class="[curentIndex==index ? 'pic-item_active' : '', 'pic-item']"
-        @click="handleClickImg(item.url,index)"
+        :class="[curentIndex == index ? 'pic-item_active' : '', 'pic-item']"
+        @click="handleClickImg(item.url, index)"
       >
     </el-row>
     <el-row class="input_form">
@@ -20,7 +20,7 @@
         :before-upload="beforeRead"
       >
         <el-button type="primary">
-          {{ $t('upload-btn-text') }}
+          {{ $t("upload-btn-text") }}
         </el-button>
       </el-upload>
       <div class="url_input">
@@ -34,7 +34,7 @@
         type="primary"
         @click="handleAnalyse"
       >
-        {{ $t('analyse-btn') }}
+        {{ $t("analyse-btn") }}
       </el-button>
     </el-row>
     <el-row class="ocr-result">
@@ -64,7 +64,7 @@
           v-loading="isRequesting"
           :data="tableData"
           height="400"
-          style="width: 100%"
+          style="width: 100%;"
           :empty-text="$t('nodata')"
         >
           <el-table-column

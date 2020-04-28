@@ -1,6 +1,6 @@
 import axios from '../axiosWrapper';
 
-let prefix = process.env.API_ROOT
+let prefix = process.env.API_ROOT;
 
 export const getPermAuditorList = () => { return axios.get(`${prefix}/account/getauditors.json`); };
 

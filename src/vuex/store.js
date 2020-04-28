@@ -1,26 +1,26 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import * as actions from './actions'
-import * as getters from './getters'
-import menuStore from './modules/menuStore'
-import accountStore from './modules/accountStore'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import * as actions from './actions';
+import * as getters from './getters';
+import menuStore from './modules/menuStore';
+import accountStore from './modules/accountStore';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 // 应用初始状态
 const state = {
     count: 10
-}
+};
 
 // 定义所需的 mutations
 const mutations = {
     INCREMENT(state) {
-        state.count++
+        state.count++;
     },
     DECREMENT(state) {
-        state.count--
+        state.count--;
     }
-}
+};
 
 // 创建 store 实例
 export default new Vuex.Store({
@@ -32,4 +32,4 @@ export default new Vuex.Store({
         menuStore,
         accountStore,
     }
-})
+});

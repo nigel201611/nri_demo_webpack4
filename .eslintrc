@@ -29,5 +29,11 @@
     "plugins": [
         // "html",
         "vue"
-    ]
+    ],
+    "rules": {
+        "semi": [
+            "error",
+            "always"
+        ]
+    }
 }

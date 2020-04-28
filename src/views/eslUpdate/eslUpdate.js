@@ -275,7 +275,7 @@ export default {
           if (increaseQtyOrigin > 0) {
             //增加库存
             if (this.isRequesting) {
-              return
+              return;
             }
             this.isRequesting = true;
             this.loading = true;
@@ -309,7 +309,7 @@ export default {
           } else if (increaseQtyOrigin < 0) {
             //减少库存
             if (this.isRequesting) {
-              return
+              return;
             }
             this.isRequesting = true;
             this.loading = true;
