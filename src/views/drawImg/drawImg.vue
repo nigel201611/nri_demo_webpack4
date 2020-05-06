@@ -16,7 +16,13 @@
       accept="image/jpg, image/jpeg, image/png"
       :on-success="handleUploadSuccess"
     >
-      <el-button class="upload_btn" size="small" type="primary">{{ $t('upload-btn-text') }}</el-button>
+      <el-button
+        class="upload_btn"
+        size="small"
+        type="primary"
+      >
+        {{ $t('upload-btn-text') }}
+      </el-button>
       <span class="tip">{{ $t('upload-btn-tip') }}</span>
     </el-upload>
 
@@ -45,22 +51,31 @@
           type="success"
           size="small"
           @click="confirmDetect"
-        >{{ $t('confirm-detect') }}</el-button>
+        >
+          {{ $t('confirm-detect') }}
+        </el-button>
         <el-button
           :disabled="!imageUrl"
           type="primary"
           size="small"
           @click="saveCustomize"
-        >{{ $t('save-current') }}</el-button>
+        >
+          {{ $t('save-current') }}
+        </el-button>
         <el-button
           :disabled="!imageUrl"
           type="primary"
           size="small"
           @click="cancelEditBtn"
-        >{{ $t('clear-area') }}</el-button>
+        >
+          {{ $t('clear-area') }}
+        </el-button>
       </el-row>
 
-      <el-row v-show="imageUrl" class="image-btn">
+      <el-row
+        v-show="imageUrl"
+        class="image-btn"
+      >
         <el-button
           :title="$t('rotate')"
           type="info"
@@ -101,18 +116,37 @@
       </el-row>
     </div>
 
-    <el-dialog :title="$t('confirm-dialog-title')" :visible.sync="restoreDialogVisible" width="30%">
+    <el-dialog
+      :title="$t('confirm-dialog-title')"
+      :visible.sync="restoreDialogVisible"
+      width="30%"
+    >
       <span>{{ $t('confirm-dialog-tip') }}</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="info" @click="handleNoTip">{{ $t('no-tip') }}</el-button>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="info"
+          @click="handleNoTip"
+        >{{ $t('no-tip') }}</el-button>
         <el-button @click="restoreDialogVisible = false">{{ $t('dialog-cancel-btn') }}</el-button>
-        <el-button type="primary" @click="handleConfirmRestore">{{ $t('dialog-confirm-btn') }}</el-button>
+        <el-button
+          type="primary"
+          @click="handleConfirmRestore"
+        >{{ $t('dialog-confirm-btn') }}</el-button>
       </span>
     </el-dialog>
 
     <!-- 可以供用户自定义区域 -->
     <div class="usercustomize_area">
-      <img ref="imgElem" class="imgElem" :height="bill_height" :width="bill_width" :src="imageUrl" />
+      <img
+        ref="imgElem"
+        class="imgElem"
+        :height="bill_height"
+        :width="bill_width"
+        :src="imageUrl"
+      >
       <div
         ref="imgEdit"
         v-loading="uploadImgLoading"
@@ -123,46 +157,121 @@
         :style="imgObj"
       />
       <!-- 展示自定义区域识别结果 -->
-      <div v-if="resDetectDataArr.length" class="result_wrap">
-        <el-card v-for="(item,index) in resDetectDataArr" :key="index" class="box-card">
-          <div slot="header" class="clearfix box-card_header">
+      <div
+        v-if="resDetectDataArr.length"
+        class="result_wrap"
+      >
+        <el-card
+          v-for="(item,index) in resDetectDataArr"
+          :key="index"
+          class="box-card"
+        >
+          <div
+            slot="header"
+            class="clearfix box-card_header"
+          >
             <span>{{ $t(resTitleArr[item.type]) }}</span>
-            <el-badge v-if="item.confidence!=0" :value="item.confidence+'%'" class="confidence">
+            <el-badge
+              v-if="item.confidence!=0"
+              :value="item.confidence+'%'"
+              class="confidence"
+            >
               <span>{{ $t('result-confidence') }}</span>
             </el-badge>
-            <el-badge v-else value="0" class="confidence">
+            <el-badge
+              v-else
+              value="0"
+              class="confidence"
+            >
               <span>{{ $t('result-confidence') }}</span>
             </el-badge>
           </div>
           <div class="text item">
-            <img :src="item.imgUrl" />
+            <img :src="item.imgUrl">
             <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
             <p
               v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'"
-            >{{ item.text }}</p>
+            >
+              {{ item.text }}
+            </p>
             <p v-else-if="item.code==0&&item.type=='nri_T_general'">
-              <el-table :data="item.text" height="300" style="width: 100%">
-                <el-table-column type="index" width="50" />
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              <el-table
+                :data="item.text"
+                height="300"
+                style="width: 100%"
+              >
+                <el-table-column
+                  type="index"
+                  width="50"
+                />
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
+                <el-table-column
+                  prop="itemconf"
+                  :label="$t('recog_confidence')"
+                  align="left"
+                />
               </el-table>
             </p>
             <p v-else-if="item.code==0&&item.type=='nri_G_general'">
-              <el-table :data="item.text" height="300" style="width: 100%">
-                <el-table-column type="index" width="50" />
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              <el-table
+                :data="item.text"
+                height="300"
+                style="width: 100%"
+              >
+                <el-table-column
+                  type="index"
+                  width="50"
+                />
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
+                <el-table-column
+                  prop="itemconf"
+                  :label="$t('recog_confidence')"
+                  align="left"
+                />
               </el-table>
             </p>
             <p v-else-if="item.code==1&&item.type=='nri_G_general'">
-              <el-table :data="item.text" height="300" style="width: 100%">
-                <el-table-column type="index" width="50" />
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              <el-table
+                :data="item.text"
+                height="300"
+                style="width: 100%"
+              >
+                <el-table-column
+                  type="index"
+                  width="50"
+                />
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
+                <el-table-column
+                  prop="itemconf"
+                  :label="$t('recog_confidence')"
+                  align="left"
+                />
               </el-table>
             </p>
-            <p v-else-if="item.code==-1" class="error">{{ $t('reuslt-error') }}</p>
-            <p v-else class="error">{{ $t('backend_error') }}</p>
+            <p
+              v-else-if="item.code==-1"
+              class="error"
+            >
+              {{ $t('reuslt-error') }}
+            </p>
+            <p
+              v-else
+              class="error"
+            >
+              {{ $t('backend_error') }}
+            </p>
           </div>
         </el-card>
       </div>
@@ -375,7 +484,6 @@ export default {
       //鼠标按下，获取初始点
       oBox.onmousedown = ev => {
         //事件延迟性，如果用户框选了区域后，再次选择识别类型下拉框，这里的this.type还是上次的，并没有及时获取到
-        // console.log(this.type);
         //那么需要提示用户选择对应类型
         if (!this.type) {
           this.$notify({
@@ -453,7 +561,6 @@ export default {
           // if (that.hasClickedTypeFunc()) {
           //   return false;
           // }
-          // console.log(that.dragInfoWidthHeight);
           // 对width和height做限制,至少大于25
           let { width, height } = this.dragInfoWidthHeight;
           if (width > 30) {
@@ -487,7 +594,6 @@ export default {
         });
         // 清除当前画出的rect_item,还有种情况是用户只是单击了下，由于促发了mouseup,mousedown，需要判断下是否只有一个孩子节点
         let oBox = this.$refs.imgEdit;
-        // console.log(oBox.childElementCount);
         // 这种清除最后孩子节点，有时候有些问题!!
         let lastChild = oBox.lastElementChild
           ? oBox.lastElementChild
@@ -829,13 +935,10 @@ export default {
             itemconf: ""
           };
           // confidence
-          console.log(block["property"]["detectedLanguages"].confidence);
-          if (
-            block["property"] &&
-            block["property"]["detectedLanguages"] &&
-            block["property"]["detectedLanguages"].confidence
-          ) {
-            obj.itemconf = block["property"]["detectedLanguages"].confidence;
+          if (block["property"] && block["property"]["detectedLanguages"]) {
+            // block["property"]["detectedLanguages"][0].confidence || 1; //没有默认给个1?
+            obj.itemconf =
+              block["property"]["detectedLanguages"][0].confidence || 0;
           }
           // 里面保存了每段或者每行的所有字符，将他们串联起来，保存到itemstring里
           let paragraphs = block.paragraphs[0];

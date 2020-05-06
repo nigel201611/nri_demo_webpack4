@@ -2,16 +2,19 @@
     "zh-CH": {
         "chinese": "中文",
         "japanese": "日本語",
-        "english": "English"
+        "english": "English",
+        "logout": "退出登录"
     },
     "en": {
         "chinese": "中文",
         "japanese": "日本語",
-        "english": "English"
+        "english": "English",
+        "logout": "Sign out"
     },
     "ja": {
         "chinese": "中文",
         "japanese": "日本語",
-        "english": "English"
+        "english": "English",
+        "logout": "ログアウト"
     }
 }

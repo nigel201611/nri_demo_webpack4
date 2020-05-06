@@ -149,17 +149,15 @@ export default {
         token: ""
       },
       formRules: {
-        account: [{ required: true, message: "请输入账号", trigger: "blur" }],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
-        token: [{ required: true, message: "vaptcha必须验证", trigger: "blur" }]
+        account: [{ required: true, message: "Please enter your account", trigger: "blur" }],
+        password: [{ required: true, message: "Please input password", trigger: "blur" }],
+        token: [{ required: true, message: "Vaptcha must be verified", trigger: "blur" }]
       },
       checked: true
     };
   },
   mounted() {
-    // console.log(this.$route.query);
     this.query = this.$route.query;
-
     //初始化vaptcha
     this.vaptchaObj = null;
     let that = this;
@@ -211,6 +209,7 @@ export default {
             .then(res => {
               this.logining = false;
               let { status, data } = res;
+              // console.log(data);
               if (status == 200) {
                 if (data.errno === 0) {
                   storeLocal.set("token", data.data.token);
@@ -218,7 +217,6 @@ export default {
                   storeLocal.set("userInfo", data.data.userInfo);
                   // console.log(JSON.stringify(this.query));
                   if (JSON.stringify(this.query) != "{}") {
-                    // console.log(this.query);
                     this.$router.push({
                       path: this.query.redirect
                     });
@@ -235,7 +233,7 @@ export default {
             .catch(() => {
               this.logining = false;
               this.$notify({
-                message: "接口请求失败,请检查网络是否正常~",
+                message: "Interface request failed, please check whether the network is normal~",
                 type: "error"
               });
             });

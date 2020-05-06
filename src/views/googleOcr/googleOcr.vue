@@ -8,7 +8,7 @@
         :src="item.url"
         :class="[curentIndex == index ? 'pic-item_active' : '', 'pic-item']"
         @click="handleClickImg(item.url, index)"
-      />
+      >
     </el-row>
     <el-row class="input_form">
       <el-upload
@@ -19,12 +19,23 @@
         :on-success="handleUploadSuccess"
         :before-upload="beforeRead"
       >
-        <el-button type="primary">{{ $t("upload-btn-text") }}</el-button>
+        <el-button type="primary">
+          {{ $t("upload-btn-text") }}
+        </el-button>
       </el-upload>
       <div class="url_input">
-        <el-input v-model="input_url" :placeholder="$t('input_url_tip')" />
+        <el-input
+          v-model="input_url"
+          :placeholder="$t('input_url_tip')"
+        />
       </div>
-      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">{{ $t("analyse-btn") }}</el-button>
+      <el-button
+        class="analyse-btn"
+        type="primary"
+        @click="handleAnalyse"
+      >
+        {{ $t("analyse-btn") }}
+      </el-button>
     </el-row>
     <el-row class="ocr-result">
       <img
@@ -33,7 +44,7 @@
         :height="img_height"
         :width="img_width"
         :src="imageUrl"
-      />
+      >
       <div
         ref="imgEdit"
         v-loading="uploadImgLoading"
@@ -43,12 +54,27 @@
         class="ocr_image"
         :style="imgObj"
       >
-        <canvas ref="myCanvas" class="ocrGeneralCanvas" />
+        <canvas
+          ref="myCanvas"
+          class="ocrGeneralCanvas"
+        />
       </div>
       <div class="result-details">
-        <el-table v-loading="isRequesting" :data="tableData" height="400" style="width: 100%">
-          <el-table-column type="index" align="left"></el-table-column>
-          <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+        <el-table
+          v-loading="isRequesting"
+          :data="tableData"
+          height="400"
+          style="width: 100%"
+        >
+          <el-table-column
+            type="index"
+            align="left"
+          />
+          <el-table-column
+            prop="itemstring"
+            :label="$t('recog_result')"
+            align="left"
+          />
         </el-table>
       </div>
     </el-row>

@@ -3,21 +3,19 @@ import { MessageBox } from 'element-ui';
 // let loadingInstance = null;
 // let prefix = process.env.API_ROOT
 import rootVueObj from '../main';
-
 // Add a request interceptor 
 axios.interceptors.request.use(function (config) {
     // if (loadingInstance) {
     //     loadingInstance.close();
     // }
-
     // loadingInstance = Loading.service({ fullscreen: true });
     // Do something before request is sent     
     config.withCredentials = true;
     config.headers = config.headers || {};
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
-    // 目前不需要登录，所以先注释
-    // let token = storeSession.get('token');
-    // config.headers['x-nri_admin-token'] = token;
+    /*需要登录*/
+    let token = storeSession.get('token');
+    config.headers['x-nri_admin-token'] = token;
     return config;
 }, function (error) {
     // loadingInstance.close();
@@ -33,12 +31,11 @@ axios.interceptors.response.use(function (response) {
     let { data } = response;
     //用户如果未登录或者登录失效，则跳转到登录页面
     if (data.errno == 401) {
-        MessageBox.confirm('登录状态失效即将跳转登录页面?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+        MessageBox.confirm('The login status is invalid, and you will jump to the login page?', 'Tips', {
+            confirmButtonText: 'confirm',
+            cancelButtonText: 'cancel',
             type: 'warning'
         }).then(() => {
-            // window.location = prefix + "/";
             return rootVueObj.$router.push({
                 path: '/login',
                 query: {
@@ -48,8 +45,7 @@ axios.interceptors.response.use(function (response) {
         }).catch(() => {
 
         });
-
-        // return;
+        return { status: 401, message: "login status is invalid" };
     } else {
         return response;
     }

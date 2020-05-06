@@ -28,15 +28,20 @@
       :span="4"
       class="language-set"
     >
-      <!-- <el-dropdown class="userinfo" trigger="hover">
+      <el-dropdown
+        class="userinfo"
+        trigger="hover"
+      >
         <span class="el-dropdown-link userinfo-inner">
-          {{userName}}
-          <i class="fa fa-user-o"></i>
+          {{ userName }}
+          <i class="fa fa-user-o" />
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+          <el-dropdown-item @click.native="logout">
+            {{ $t('logout') }}
+          </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>-->
+      </el-dropdown>
       <el-dropdown @command="handleSetLanguage">
         <span class="el-dropdown-link userinfo-inner">
           {{ $t(languageMap[locals]) }}
@@ -108,9 +113,9 @@ export default {
     },
 
     logout() {
-      this.$confirm("是否要退出?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
+      this.$confirm("Do you want to exit?", "Tips", {
+        confirmButtonText: "confirm",
+        cancelButtonText: "cancel",
         type: "warning"
       }).then(() => {
         localStorage.clear();
