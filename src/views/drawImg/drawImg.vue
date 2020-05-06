@@ -16,13 +16,7 @@
       accept="image/jpg, image/jpeg, image/png"
       :on-success="handleUploadSuccess"
     >
-      <el-button
-        class="upload_btn"
-        size="small"
-        type="primary"
-      >
-        {{ $t('upload-btn-text') }}
-      </el-button>
+      <el-button class="upload_btn" size="small" type="primary">{{ $t('upload-btn-text') }}</el-button>
       <span class="tip">{{ $t('upload-btn-tip') }}</span>
     </el-upload>
 
@@ -51,31 +45,22 @@
           type="success"
           size="small"
           @click="confirmDetect"
-        >
-          {{ $t('confirm-detect') }}
-        </el-button>
+        >{{ $t('confirm-detect') }}</el-button>
         <el-button
           :disabled="!imageUrl"
           type="primary"
           size="small"
           @click="saveCustomize"
-        >
-          {{ $t('save-current') }}
-        </el-button>
+        >{{ $t('save-current') }}</el-button>
         <el-button
           :disabled="!imageUrl"
           type="primary"
           size="small"
           @click="cancelEditBtn"
-        >
-          {{ $t('clear-area') }}
-        </el-button>
+        >{{ $t('clear-area') }}</el-button>
       </el-row>
 
-      <el-row
-        v-show="imageUrl"
-        class="image-btn"
-      >
+      <el-row v-show="imageUrl" class="image-btn">
         <el-button
           :title="$t('rotate')"
           type="info"
@@ -116,37 +101,18 @@
       </el-row>
     </div>
 
-    <el-dialog
-      :title="$t('confirm-dialog-title')"
-      :visible.sync="restoreDialogVisible"
-      width="30%"
-    >
+    <el-dialog :title="$t('confirm-dialog-title')" :visible.sync="restoreDialogVisible" width="30%">
       <span>{{ $t('confirm-dialog-tip') }}</span>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          type="info"
-          @click="handleNoTip"
-        >{{ $t('no-tip') }}</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="info" @click="handleNoTip">{{ $t('no-tip') }}</el-button>
         <el-button @click="restoreDialogVisible = false">{{ $t('dialog-cancel-btn') }}</el-button>
-        <el-button
-          type="primary"
-          @click="handleConfirmRestore"
-        >{{ $t('dialog-confirm-btn') }}</el-button>
+        <el-button type="primary" @click="handleConfirmRestore">{{ $t('dialog-confirm-btn') }}</el-button>
       </span>
     </el-dialog>
 
     <!-- 可以供用户自定义区域 -->
     <div class="usercustomize_area">
-      <img
-        ref="imgElem"
-        class="imgElem"
-        :height="bill_height"
-        :width="bill_width"
-        :src="imageUrl"
-      >
+      <img ref="imgElem" class="imgElem" :height="bill_height" :width="bill_width" :src="imageUrl" />
       <div
         ref="imgEdit"
         v-loading="uploadImgLoading"
@@ -157,76 +123,46 @@
         :style="imgObj"
       />
       <!-- 展示自定义区域识别结果 -->
-      <div
-        v-if="resDetectDataArr.length"
-        class="result_wrap"
-      >
-        <el-card
-          v-for="(item,index) in resDetectDataArr"
-          :key="index"
-          class="box-card"
-        >
-          <div
-            slot="header"
-            class="clearfix box-card_header"
-          >
+      <div v-if="resDetectDataArr.length" class="result_wrap">
+        <el-card v-for="(item,index) in resDetectDataArr" :key="index" class="box-card">
+          <div slot="header" class="clearfix box-card_header">
             <span>{{ $t(resTitleArr[item.type]) }}</span>
-            <el-badge
-              v-if="item.confidence!=0"
-              :value="item.confidence+'%'"
-              class="confidence"
-            >
+            <el-badge v-if="item.confidence!=0" :value="item.confidence+'%'" class="confidence">
               <span>{{ $t('result-confidence') }}</span>
             </el-badge>
-            <el-badge
-              v-else
-              value="0"
-              class="confidence"
-            >
+            <el-badge v-else value="0" class="confidence">
               <span>{{ $t('result-confidence') }}</span>
             </el-badge>
           </div>
           <div class="text item">
-            <img :src="item.imgUrl">
+            <img :src="item.imgUrl" />
             <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
-            <p v-if="item.code==0&&item.type!='nri_T_general'">
-              {{ item.text }}
-            </p>
+            <p
+              v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'"
+            >{{ item.text }}</p>
             <p v-else-if="item.code==0&&item.type=='nri_T_general'">
-              <el-table
-                :data="item.text"
-                height="300"
-                style="width: 100%"
-              >
-                <!-- <el-table-column prop="parag.parag_no" :label="$t('number')" align="left"></el-table-column> -->
-                <el-table-column
-                  type="index"
-                  width="50"
-                />
-                <el-table-column
-                  prop="itemstring"
-                  :label="$t('recog_result')"
-                  align="left"
-                />
-                <el-table-column
-                  prop="itemconf"
-                  :label="$t('recog_confidence')"
-                  align="left"
-                />
+              <el-table :data="item.text" height="300" style="width: 100%">
+                <el-table-column type="index" width="50" />
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
               </el-table>
             </p>
-            <p
-              v-else-if="item.code==-1"
-              class="error"
-            >
-              {{ $t('reuslt-error') }}
+            <p v-else-if="item.code==0&&item.type=='nri_G_general'">
+              <el-table :data="item.text" height="300" style="width: 100%">
+                <el-table-column type="index" width="50" />
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              </el-table>
             </p>
-            <p
-              v-else
-              class="error"
-            >
-              {{ $t('backend_error') }}
+            <p v-else-if="item.code==1&&item.type=='nri_G_general'">
+              <el-table :data="item.text" height="300" style="width: 100%">
+                <el-table-column type="index" width="50" />
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              </el-table>
             </p>
+            <p v-else-if="item.code==-1" class="error">{{ $t('reuslt-error') }}</p>
+            <p v-else class="error">{{ $t('backend_error') }}</p>
           </div>
         </el-card>
       </div>
@@ -365,12 +301,14 @@ export default {
       btnList: [
         { flag: false, text: "express-bill-dectect", type: "expressbill" },
         { flag: false, text: "postcode-dectect", type: "postcode" },
-        { flag: false, text: "T_general", type: "T_general" }
+        { flag: false, text: "T_general", type: "T_general" },
+        { flag: false, text: "G_general", type: "G_general" }
       ], //用于保存类型功能按钮
       resTitleArr: {
         nri_expressbill: "waybill-result",
         nri_postcode: "zipcode-result",
-        nri_T_general: "T_general"
+        nri_T_general: "T_general",
+        nri_G_general: "G_general"
       }, //保存标题和识别类型映射关系，
       imgObj: {
         background: `url(${this.imageUrl}) no-repeat 0 0`,
@@ -825,7 +763,6 @@ export default {
         let oDiv = this.drawRect(item.x, item.y, item.width, item.height);
         oBox.appendChild(oDiv);
       }
-
       this.restoreDialogVisible = false;
     },
 
@@ -872,6 +809,50 @@ export default {
       // 默认运单识别,或着用户之前选择的类型
       // this.type = "";
     },
+    // 处理谷歌通用印刷体识别
+    handleGoogleOcrData(resData) {
+      let responses = resData.responses || [];
+      // 确认返回的responses有数据
+      const googleItems = [];
+      if (responses.length && JSON.stringify(responses[0]) != "{}") {
+        // 默认至于单个请求体，或者一个页面的请求
+        let firstPage_response = responses[0] || {};
+        let pagesArr = firstPage_response.fullTextAnnotation.pages;
+        // pages里保存了blocks，blocks保存了识别出来的每行文字信息或者段落信息，以及对应的每行坐标
+        //从blocks取出每行文字以及对应的confidence
+        let blocksArr = pagesArr[0].blocks; //由于发送的请求只有一个，所以默认取第一个blocks
+        //从blocksArr中获取该页面每行文字信息和坐标
+        for (let i = 0; i < blocksArr.length; i++) {
+          let block = blocksArr[i];
+          let obj = {
+            itemstring: "",
+            itemconf: ""
+          };
+          // confidence
+          console.log(block["property"]["detectedLanguages"].confidence);
+          if (
+            block["property"] &&
+            block["property"]["detectedLanguages"] &&
+            block["property"]["detectedLanguages"].confidence
+          ) {
+            obj.itemconf = block["property"]["detectedLanguages"].confidence;
+          }
+          // 里面保存了每段或者每行的所有字符，将他们串联起来，保存到itemstring里
+          let paragraphs = block.paragraphs[0];
+          let words = paragraphs.words;
+          obj.itemstring = words.reduce((total, word) => {
+            let symbols = word.symbols;
+            symbols.forEach(element => {
+              total += element.text;
+            });
+            return total;
+          }, "");
+          googleItems.push(obj);
+          //使用canvas绘制识别出的文本行在原图中矩形框
+        }
+      }
+      return googleItems;
+    },
     // 确认识别
     confirmDetect() {
       //将this.editImageArr里保存的数据取出来，转换对应区域图片
@@ -894,8 +875,6 @@ export default {
       this.userDataImage = [];
       this.userCustomizeArr = [];
       //转换
-      // canvas.width = image.width;
-      // canvas.height = image.height;
       // 图片裁剪:drawImage方法的功用是对图像进行裁剪。drawImage(image,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth, destHeight)
       // 把它想成从原图中取出一个矩形区域，然后把它画到画布上目标区域里
       //  canvas.toDataURL('image/jpeg'),默认保存png，可以传入image/jpeg
@@ -914,7 +893,6 @@ export default {
         let item = imgArr[i];
         let { x, y, width, height, type } = item;
         let obj = {};
-
         let canvas = document.createElement("canvas"); //创建canvas元素
         canvas.setAttribute("width", width);
         canvas.setAttribute("height", height);
@@ -968,6 +946,7 @@ export default {
                   resObj.confidence = 0;
                 }
               } else if (item.type == "nri_T_general") {
+                //处理腾讯通用应刷题识别
                 resObj.type = item.type;
                 resObj.text = item.items;
                 resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
@@ -984,6 +963,31 @@ export default {
                 }
                 resObj.confidence = avg_confidence * 100;
               }
+              // 处理谷歌通用印刷体识别
+              if (item.type == "nri_G_general") {
+                resObj.type = item.type;
+                resObj.text = this.handleGoogleOcrData(item);
+                // 平均值
+                let avg_confidence = 0.0;
+                resObj.text.forEach(value => {
+                  avg_confidence += Number(value.itemconf);
+                  value.itemconf = Number(value.itemconf).toFixed(2);
+                });
+                if (resObj.text.length != 0) {
+                  avg_confidence = (
+                    avg_confidence / resObj.text.length
+                  ).toFixed(2);
+                }
+                resObj.confidence = avg_confidence * 100;
+                //获取针对该页面的一个总的confidence
+                if (resObj.text.length != 0) {
+                  resObj.code = 0; //有数据
+                } else if (resObj.text.length == 0) {
+                  resObj.code = 1; //无数据
+                } else {
+                  resObj.code = -1; //报错
+                }
+              }
               this.resDetectDataArr.push(resObj);
             }
 
@@ -998,7 +1002,6 @@ export default {
         })
         .catch(() => {
           this.isRequesting = false;
-          // this.result = "识别失败，请检查网络是否正常~";
           this.result = this.$t("recognition-fail");
         });
     }

@@ -12,7 +12,8 @@
         "tip-text": "提示",
         "input_url-tip": "网络图片不合法,请输入http://或者https://开头的网络图片",
         "during-recognition": "拼命识别中~",
-        "nodata": "暂无数据"
+        "nodata": "暂无数据",
+        "confidence": "置信度"
     },
     "en": {
         "analyse-btn": "Analysis",
@@ -27,7 +28,8 @@
         "tip-text": "Tips",
         "input_url-tip": "The network picture is illegal. Please enter a network picture starting with http: / / or HTTPS: / /",
         "during-recognition": "Desperately identifying~",
-        "nodata": "no data"
+        "nodata": "no data",
+        "confidence": "confidence"
     },
     "ja": {
         "analyse-btn": "分析",
@@ -42,6 +44,7 @@
         "tip-text": "ヒント",
         "input_url-tip": "ネット画像は合法的ではありません。http:/またはhttps:/先頭のネット画像を入力してください",
         "during-recognition": "一生懸命認識しています~",
-        "nodata": "データがありません"
+        "nodata": "データがありません",
+        "confidence": "信頼度"
     }
 }

@@ -8,7 +8,7 @@
         :src="item.url"
         :class="[curentIndex == index ? 'pic-item_active' : '', 'pic-item']"
         @click="handleClickImg(item.url, index)"
-      >
+      />
     </el-row>
     <el-row class="input_form">
       <el-upload
@@ -19,23 +19,12 @@
         :on-success="handleUploadSuccess"
         :before-upload="beforeRead"
       >
-        <el-button type="primary">
-          {{ $t("upload-btn-text") }}
-        </el-button>
+        <el-button type="primary">{{ $t("upload-btn-text") }}</el-button>
       </el-upload>
       <div class="url_input">
-        <el-input
-          v-model="input_url"
-          :placeholder="$t('input_url_tip')"
-        />
+        <el-input v-model="input_url" :placeholder="$t('input_url_tip')" />
       </div>
-      <el-button
-        class="analyse-btn"
-        type="primary"
-        @click="handleAnalyse"
-      >
-        {{ $t("analyse-btn") }}
-      </el-button>
+      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">{{ $t("analyse-btn") }}</el-button>
     </el-row>
     <el-row class="ocr-result">
       <img
@@ -44,7 +33,7 @@
         :height="img_height"
         :width="img_width"
         :src="imageUrl"
-      >
+      />
       <div
         ref="imgEdit"
         v-loading="uploadImgLoading"
@@ -54,29 +43,12 @@
         class="ocr_image"
         :style="imgObj"
       >
-        <canvas
-          ref="myCanvas"
-          class="ocrGeneralCanvas"
-        />
+        <canvas ref="myCanvas" class="ocrGeneralCanvas" />
       </div>
       <div class="result-details">
-        <el-table
-          v-loading="isRequesting"
-          :data="tableData"
-          height="400"
-          style="width: 100%;"
-          :empty-text="$t('nodata')"
-        >
-          <el-table-column
-            prop="parag.parag_no"
-            :label="$t('number')"
-            align="left"
-          />
-          <el-table-column
-            prop="itemstring"
-            :label="$t('recog_result')"
-            align="left"
-          />
+        <el-table v-loading="isRequesting" :data="tableData" height="400" style="width: 100%">
+          <el-table-column type="index" align="left"></el-table-column>
+          <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
         </el-table>
       </div>
     </el-row>
@@ -239,11 +211,11 @@ export default {
       if (this.input_url != "") {
         //目前对网络图片的框图有些问题，估计没有读取到正确的宽高
         this.clearCanvasContent();
-        this.tengxunGeneralOcr({ url: this.input_url }, this.imgOptions);
+        this.googleGeneralOcr({ url: this.input_url }, this.imgOptions);
       } else {
         this.getImageToBase64Data(this.imageUrl).then(params => {
           //默认第一张图,调用接口返回数据
-          this.tengxunGeneralOcr(params, this.imgOptions);
+          this.googleGeneralOcr(params, this.imgOptions);
         });
       }
     },
@@ -259,7 +231,6 @@ export default {
           source_w = imgElem.width;
           source_h = imgElem.height;
           //绘制框图
-          console.log(source_w, source_h);
           this.drawRectangle(source_w, source_h, coordpointArr);
         };
         imgElem.src = this.input_url;
@@ -299,6 +270,7 @@ export default {
       this.myCanvas.height = dHeight;
       this.myCtx.clearRect(0, 0, dWidth, dHeight);
       this.myCtx.scale(scaleX, scaleY);
+      // console.log(source_w, source_h);
       for (let i = 0; i < coordpointArr.length; i++) {
         let item = coordpointArr[i].x;
         let x1 = item[0],
@@ -321,7 +293,7 @@ export default {
       }
     },
     //接口请求方法封装
-    tengxunGeneralOcr(params, options = {}) {
+    googleGeneralOcr(params, options = {}) {
       // params = Object.assign({}, params, options);
       params.options = options;
       // console.log(params);
@@ -333,18 +305,59 @@ export default {
         .generalocr(params)
         .then(res => {
           this.isRequesting = false;
+          res;
+          this.tableData = [];
           if (res.status == 200) {
-            let resData = res.data.data;
-            let { errorcode } = resData;
-            if (errorcode === 0) {
-              this.tableData = resData.items;
-              //coordpoint 文本行对应在原图上的四点坐标
-              //使用canvas绘制识别出的文本行在原图中矩形框
-              let coordpointArr = resData.items.map(value => {
-                return value.coordpoint;
-              });
-              this.drawRectangleByCanvas(coordpointArr);
-              // console.log(coordpointArr);
+            if (res.data.errno === 0) {
+              //array
+              let resData = res.data.data || [];
+              let responses = resData.responses || [];
+              // 确认返回的responses有数据
+              if (responses.length) {
+                // 默认至于单个请求体，或者一个页面的请求
+                let firstPage_response = responses[0] || {};
+                let pagesArr = firstPage_response.fullTextAnnotation.pages;
+                // pages里保存了blocks，blocks保存了识别出来的每行文字信息或者段落信息，以及对应的每行坐标
+                //从blocks取出每行文字以及对应的confidence
+                let blocksArr = pagesArr[0].blocks; //由于发送的请求只有一个，所以默认取第一个blocks
+                //从blocksArr中获取该页面每行文字信息和坐标
+                let coordpointArr = [];
+                for (let i = 0; i < blocksArr.length; i++) {
+                  let block = blocksArr[i];
+                  let obj = {
+                    itemstring: "",
+                    itemconf: "",
+                    coordpoint: []
+                  };
+                  // confidence
+                  obj.itemconf = block["property"]
+                    ? block["property"]["detectedLanguages"].confidence
+                    : "";
+                  // 该行对应坐标
+                  obj.coordpoint = block["boundingBox"].vertices || [];
+                  // 里面保存了每段或者每行的所有字符，将他们串联起来，保存到itemstring里
+                  let paragraphs = block.paragraphs[0];
+                  let words = paragraphs.words;
+                  obj.itemstring = words.reduce((total, word) => {
+                    let symbols = word.symbols;
+                    symbols.forEach(element => {
+                      total += element.text;
+                    });
+                    return total;
+                  }, "");
+                  this.tableData.push(obj);
+                  //使用canvas绘制识别出的文本行在原图中矩形框
+                  let coordpoint = obj.coordpoint.reduce((total, item) => {
+                    let { x, y } = item;
+                    return total.concat(x, y);
+                  }, []);
+                  coordpointArr.push({ x: coordpoint });
+                }
+                this.drawRectangleByCanvas(coordpointArr);
+                //获取针对该页面的一个总的confidence
+                // let avgConfidence =
+                //   pagesArr[0].property["detectedLanguages"][0].confidence;
+              }
             }
           }
         })
