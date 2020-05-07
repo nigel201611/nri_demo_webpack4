@@ -153,6 +153,16 @@ export default {
         iconClass: "fa fa-bell-o",
         permDesc: "self-defined-area-recognition"
       },
+      {
+        id: 75,
+        permName: "self-defined-ocr",
+        parentPermId: 71,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "/customizeOcr",
+        iconClass: "fa fa-bell-o",
+        permDesc: "self-defined-ocr"
+      },
       // {
       //   id: 75,
       //   permName: "opencamera",

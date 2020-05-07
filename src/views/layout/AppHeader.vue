@@ -133,7 +133,7 @@ export default {
 
 .header {
   height: 60px;
-  line-height: 60px;
+  line-height: 50px;
   background: $color-primary;
   color: #fff;
   .langati {

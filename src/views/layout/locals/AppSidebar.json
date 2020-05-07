@@ -15,7 +15,8 @@
         "hpgeneralocr": "高精度文字识别",
         "seal_ocr": "印章识别",
         "worddetect": "快速文本检测",
-        "google-general": "G-通用"
+        "google-general": "G-通用",
+        "self-defined-ocr":"自定区域OCR"
     },
     "en": {
         "esl-update": "ESL update",
@@ -33,7 +34,8 @@
         "hpgeneralocr": "hpgeneralocr",
         "seal_ocr": "Seal OCR",
         "worddetect": "Fast text detection",
-        "google-general": "G-general"
+        "google-general": "G-general",
+        "self-defined-ocr":"Self defined OCR"
     },
     "ja": {
         "esl-update": "ESL更新",
@@ -51,6 +53,7 @@
         "hpgeneralocr": "高精度文字認識",
         "seal_ocr": "印鑑の識別",
         "worddetect": "クイックテキスト検出",
-        "google-general": "G-汎用"
+        "google-general": "G-汎用",
+        "self-defined-ocr":"自定区域OCR"
     }
 }

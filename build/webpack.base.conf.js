@@ -34,7 +34,7 @@ module.exports = {
         loader: 'eslint-loader',
         options: {
           cache: true,
-          fix: true,
+          // fix: true,
           formatter: require('eslint-friendly-formatter'),
           // failOnError Will cause the module build to fail if there are any errors, if option is set to true.
           failOnError: true,

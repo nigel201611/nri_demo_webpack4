@@ -9,6 +9,7 @@ import dectectApi from './views/dectectApi/dectectApi.vue';
 import drawImg from './views/drawImg/drawImg.vue';
 import generalocr from './views/generalocr/generalocr.vue';
 import googleOcr from './views/googleOcr/googleOcr.vue';
+import customizeOcr from './views/customizeOcr/customizeOcr.vue';
 
 // import opencamera from './views/opencamera/opencamera.vue'
 // import handwritingocr from './views/handwritingocr/handwritingocr.vue'
@@ -60,6 +61,12 @@ let routes = [{
         component: drawImg,
         name: 'drawImg',
         alias: '指定区域の画像認識'
+    },
+    {
+        path: '/customizeOcr',
+        component: customizeOcr,
+        name: 'customizeOcr',
+        alias: '自定区域OCR'
     },
     {
         path: '/generalocr',
