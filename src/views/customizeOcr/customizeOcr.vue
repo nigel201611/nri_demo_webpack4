@@ -1,3 +1,10 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: nigel
+ * @Date: 2020-05-06 18:09:34
+ * @LastEditTime: 2020-05-08 18:52:22
+ -->
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div
@@ -36,7 +43,7 @@
           :disabled="!imageUrl"
           type="primary"
           size="small"
-          @click="cancelEditBtn"
+          @click="handleClearArea"
         >{{ $t('clear-area') }}</el-button>
       </el-row>
 
@@ -154,6 +161,8 @@
     <el-dialog
       :title="$t('custom_region_edit')"
       :visible.sync="dialogCustomBlockVisible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       width="30%"
     >
       <el-form ref="customBlockForm" :model="customBlockForm" size="mini" :rules="cutomBlockRules">
@@ -168,7 +177,6 @@
             clearable
             :disabled="!imageUrl"
             class="detectionList"
-            @clear="handleClearSelect"
             @change="handleChangeSelect"
           >
             <el-option
@@ -248,6 +256,8 @@
     float: left;
     .rect_item {
       z-index: 99999;
+      // background: rgba(#409eff, $alpha: 1);
+      // border: 2px solid #409eff;
     }
     // overflow-x: auto;
   }
@@ -413,10 +423,8 @@ export default {
       deg: 0, //旋转的角度，默认从0度开始
       uploadImgLoading: false, //用于控制图片上传时有一个加载动效
       endpoint: { x: 0, y: 0 }, //鼠标移动后终点坐标
-      // userDataImage: [], //保存用户自定义区域转换后的图片数据,base64格式
-      resDetectDataArr: [], //自定义区域图片识别后返回的数据
-      restoreDialogVisible: false, //用于控制是否加载上次保存过的自定义区域数据标识
-      editImageArr: [] //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
+      resDetectDataArr: [], //自定区域识别后返回的数据
+      restoreDialogVisible: false //用于控制是否加载上次保存过的自定义区域数据标识
     };
   },
   computed: {
@@ -430,16 +438,19 @@ export default {
     }
   },
   mounted() {
-    this.userCustomizeArr = []; //用于保存用户自定义区域图片相关发送接口请求参数
-    this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
-    this.startXY = { x: 0, y: 0 }; //用于保存用户按下鼠标起点x,y注意和offsetX区别
-    this.endXY = { x: 0, y: 0 }; //用于保存用户按下鼠标终点x,y注意和offsetX区别，和startXY一起用于准确计算宽高
+    this.editImageArr = []; //保存用户自定区域坐标原点和宽高{x:0,y:0,width:100,height:100}
+    this.userCustomizeArr = []; //保存用户自定区域相关参数
+    this.userDataImage = []; //保存用户自定区域base64数据,后面用于拼接到resDetectDataArr，展示数据
+    this.TemplateData = []; //保存模板数据
+    this.curPoints = null; //当前用户自定区域数据{x,y,width,height}
+    this.startXY = { x: 0, y: 0 }; //保存用户按下鼠标起点x,y注意和offsetX区别
+    this.endXY = { x: 0, y: 0 }; //保存用户按下鼠标终点x,y注意和offsetX区别，和startXY一起用于准确计算宽高
     this.dragInfoWidthHeight = {
       width: 0,
       height: 0
     };
-    this.exceedSize = false; //用于标识上传图片是否超过限制D
-    // 从缓存读取editImageArr
+    this.exceedSize = false; //标识上传图片是否超过限制
+    // 从缓存读取editImageArr,现在做成模板匹配，用户上传图片，调用接口匹配模板，命中，则直接识别显示结果
     this.customizeImageArrInLocal = storeLocal.get("customizeImageArr") || [];
     // 提前创建好canvas元素
     this.myCanvas = document.createElement("canvas");
@@ -447,12 +458,40 @@ export default {
     this.OriginImageUrl = "";
     this.scaleMini = 1; //缩小比例
     this.scaleMax = 1; //放大比例
-    this.scaleStep = 0;
+    this.curDiv = null; //保存当前绘制的框图
+    this.editCustomBlockFlag = false; //标识是否二次修改自定区域
+    this.curId = ""; //标识当前修改的id
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
   },
   methods: {
+    /**
+     * @name: initEvent
+     * @msg: 初始化相关事件
+     * @param {}
+     * @return:
+     */
+    initEvent() {
+      let oBox = this.$refs.imgEdit;
+      //rect_item
+      oBox.onclick = ev => {
+        let { target } = ev;
+        if (target.className == "rect_item") {
+          //可以重新打开自动区域编辑模态框
+          this.curId = target.id;
+          // console.log(this.curId);
+          this.dialogCustomBlockVisible = true;
+          this.editCustomBlockFlag = true;
+        }
+      };
+    },
+    /**
+     * @name: addEditableFunc
+     * @msg: 为用户自定区域添加相关事件，初始化
+     * @param {}
+     * @return:
+     */
     addEditableFunc() {
       let oBox = this.$refs.imgEdit;
       //鼠标按下，获取初始点
@@ -472,8 +511,12 @@ export default {
           x: ev.x,
           y: ev.y
         };
+        // 初始化当前拖拽尺寸
+        this.dragInfoWidthHeight = { width: 0, height: 0 };
+        this.editCustomBlockFlag = false;
         //2.创建div
         let oDiv = document.createElement("div");
+        this.curDiv = oDiv;
         oDiv.setAttribute("class", "rect_item");
         oBox.onmousemove = e => {
           // 会不断触发
@@ -489,7 +532,6 @@ export default {
           // 鼠标移动的点处理，为啥往右下移动过程中，横坐标会变小,offsetX有问题
           let width = Math.abs(this.endXY.x - this.startXY.x);
           let height = Math.abs(this.endXY.y - this.startXY.y);
-
           //对width和height做限制至少大于25
           this.dragInfoWidthHeight = {
             width,
@@ -500,7 +542,8 @@ export default {
           oDiv.style.top = y1 + "px";
           oDiv.style.width = width + "px";
           oDiv.style.height = height + "px";
-          oDiv.style.border = "1px solid red";
+          oDiv.style.border = "2px solid #409EFF";
+          oDiv.style.background = "rgba(64,158,255,0.4)";
           oDiv.style.position = "absolute";
           this.endpoint = {
             x: x2,
@@ -510,32 +553,24 @@ export default {
           if (width <= 30) {
             oBox.removeChild(oDiv);
           }
-          // 记录用户自定义区域的原点和宽高，保存在对象中,并且添加是什么类型的识别，比如运单还是邮编，typearr=[expressbill,postcode]
-          //如果在这里面记录坐标相关信息,会反复触发多次
         };
 
         oBox.onmouseup = () => {
           let x1 = this.origin.x,
             y1 = this.origin.y;
-          // 记录用户自定义区域的原点和宽高，保存在对象中,并且添加是什么类型的识别，比如运单还是邮编，typearr=[expressbill,postcode]
-          // 目前限制每个类型识别只能自定义一个区域
-          //推送到editImageArr可以判断对应类型有没有数据，如果有，提示用户
-          //如果已经有该类型区域
-          // 注释掉先
-          // if (that.hasClickedTypeFunc()) {
-          //   return false;
-          // }
+          // 记录用户自定义区域的原点和宽高
           // 对width和height做限制,至少大于25
           let { width, height } = this.dragInfoWidthHeight;
           if (width > 30) {
-            this.editImageArr.push({
-              type: this.type,
+            let pointsInfo = {
               x: x1,
               y: y1,
               width: width,
               height: height
-            });
+            };
+            this.curPoints = pointsInfo;
             //弹出自定区域编辑
+            //用户点击下也会触发，需要处理
             this.dialogCustomBlockVisible = true;
           }
         };
@@ -546,7 +581,12 @@ export default {
         oBox.onmouseup = null;
       };
     },
-    // 限制某种识别类型只能是一个区域
+    /**
+     * @name: hasClickedTypeFunc
+     * @msg: 限制ocr引擎仅有一个自定区域,目前暂时无用
+     * @param {}
+     * @return:
+     */
     hasClickedTypeFunc() {
       let imageArr = this.editImageArr;
       let hastypeFlag = imageArr.some(item => {
@@ -571,6 +611,12 @@ export default {
         return true;
       }
     },
+    /**
+     * @name:removeEditableFunc
+     * @msg: 清理相关事件和数据
+     * @param {}
+     * @return:
+     */
     removeEditableFunc() {
       let oBox = this.$refs.imgEdit;
       oBox.innerHTML = "";
@@ -578,7 +624,12 @@ export default {
       oBox.onmouseup = null;
       oBox.onmousedown = null;
     },
-    // 图片对象转base64
+    /**
+     * @name: getBase64Image
+     * @msg: 图片对象转base64
+     * @param {img}
+     * @return:dataURL
+     */
     getBase64Image(img) {
       let canvas = document.createElement("canvas");
       canvas.width = img.width;
@@ -589,7 +640,12 @@ export default {
       let dataURL = canvas.toDataURL("image/" + ext);
       return dataURL;
     },
-    //**blob to dataURL**
+    /**
+     * @name: blobToDataURL
+     * @msg: 将二进制图片转换成base64,blob to dataURL
+     * @param {fileblob,callback}
+     * @return:FileReader
+     */
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
       filereader.onload = function(e) {
@@ -598,26 +654,35 @@ export default {
       filereader.readAsDataURL(fileblob);
       return filereader;
     },
+    /**
+     * @name: handleReset
+     * @msg: 重置相关数据
+     * @param {}
+     * @return:
+     */
     handleReset() {
       this.deg = 0;
       let oBox = this.$refs.imgEdit;
       oBox.innerHTML = "";
-      this.type = "";
-      this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
-      this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
+      this.editImageArr = []; //保存用户自定区域坐标原点和宽高以及类型{x:0,y:0,width:100,height:100}
+      this.userCustomizeArr = []; //保存用户自定区域转换处理后参数
       this.scaleMax = 1;
       this.imageUrl = this.OriginImageUrl;
       this.imgObj.background = `url(${this.imageUrl}) no-repeat 0 0`;
       this.imgObj.transform = `scale(1)`;
     },
+    /**
+     * @name: rotateCanvasDeg
+     * @msg: 通过canvas旋转图片,在转换图片toDataURL("image/jpeg");用户自定区域得到的数据才会准确
+     * @param {type}
+     * @return:
+     */
     rotateCanvasDeg() {
       let imgElem = this.$refs.imgElem;
-      //不是通过样式旋转背景,而是通过canvas旋转，然后在转换图片，后面框图得到的数据才会准确
       let width = imgElem.width;
       let height = imgElem.height;
       this.myCanvas.width = width;
       this.myCanvas.height = height;
-      // this.myCanvas.style.transform = `rotate(${this.deg}deg)`;
       this.myCtx.save();
       this.myCtx.clearRect(0, 0, width, height);
       // 中心旋转图片
@@ -631,7 +696,12 @@ export default {
       // 再将canvas转换图片
       return this.myCanvas.toDataURL("image/jpeg");
     },
-    //顺时针旋转图片
+    /**
+     * @name: handleClockwise
+     * @msg: 顺时针旋转图片
+     * @param {}
+     * @return:
+     */
     handleClockwise() {
       this.deg++;
       this.deg %= 360;
@@ -640,7 +710,12 @@ export default {
       this.base64ImageData = curImageUrl;
       this.imgObj.background = `url(${curImageUrl}) no-repeat 0 0`;
     },
-    //逆时针旋转图片
+    /**
+     * @name: handleAnticlockwise
+     * @msg: 逆时针旋转图片
+     * @param {}
+     * @return:
+     */
     handleAnticlockwise() {
       this.deg--;
       this.deg %= 360;
@@ -649,10 +724,14 @@ export default {
       this.base64ImageData = curImageUrl;
       this.imgObj.background = `url(${curImageUrl}) no-repeat 0 0`;
     },
+    /**
+     * @name: handleEnlarge
+     * @msg: 图片放大
+     * @param {}
+     * @return:
+     */
     handleEnlarge() {
-      //图片放大
       this.scaleMax += 0.01;
-      ++this.scaleStep; //用于计数用户单击多少次放大
       if (this.scaleMax >= 1.5) {
         //最大1.5倍
         this.scaleMax = 1;
@@ -665,8 +744,13 @@ export default {
       let scale = this.scaleMax;
       this.imgObj.transform = `scale(${scale})`;
     },
+    /**
+     * @name: handleShrink
+     * @msg:图片缩小
+     * @param {type}
+     * @return:
+     */
     handleShrink() {
-      //图片缩小
       this.scaleMax -= 0.01;
       // 在原来的基础上缩小
       if (this.scaleMax < 1) {
@@ -679,24 +763,30 @@ export default {
 
         return false;
       }
-
       let scale = this.scaleMax;
       this.imgObj.transform = `scale(${scale})`;
     },
-    handleClearSelect() {
-      let oBox = this.$refs.imgEdit;
-      oBox.innerHTML = "";
-      this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
-      this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
-    },
+    /**
+     * @name: handleChangeSelect
+     * @msg: 改变ocr引擎,type代表ocr engine
+     * @param {type}
+     * @return:
+     */
     handleChangeSelect(type) {
       this.type = type;
     },
+    /**
+     * @name: handleUploadSuccess
+     * @msg: 图片上传成功回调
+     * @param {res,file}
+     * @return:
+     */
     handleUploadSuccess(res, file) {
       //先删除之前添加的框图事件，以免重复添加
       this.removeEditableFunc();
       // 添加框图或者自定义图片区域相关事件
       this.addEditableFunc();
+      this.initEvent();
       // 关闭加载进度
       this.uploadImgLoading = false;
       // 通过URL.createObjectURL生成零时用图片链接
@@ -709,8 +799,6 @@ export default {
       }
 
       this.base64ImageData = "";
-      // 上传成功重置类型为空,默认运单识别
-      // this.type = "";
       this.imgObj = {
         background: `url(${this.imageUrl}) no-repeat 0 0`,
         backgroundSize: "cover",
@@ -719,7 +807,12 @@ export default {
         transform: "rotate(0)"
       };
     },
-    // 图片上传前校验
+    /**
+     * @name: beforeRead
+     * @msg: 图片上传前校验
+     * @param {file}
+     * @return:
+     */
     beforeRead(file) {
       let imgSize = file.size;
       let maxSize = 5 * 1048576;
@@ -730,7 +823,6 @@ export default {
         });
         return false;
       }
-      let type = file.type;
       this.exceedSize = false;
       let that = this;
       this.blobToDataURL(file, function(dataurl) {
@@ -742,8 +834,6 @@ export default {
           that.bill_height = height;
           //限制图片宽
           let iswidthAllow = width >= 1920;
-          // 获取图片元数据属性,暂时不需要矫正用户横着的图片
-          // that.getExif(image);
           if (iswidthAllow) {
             //如果用户上传的图片宽大于1920,那么固定显示区域宽高
             that.$notify({
@@ -757,7 +847,6 @@ export default {
             let fixedHeight = fixedWidth / ratio;
             that.bill_width = fixedWidth;
             that.bill_height = fixedHeight;
-
             // 如果图片超过限制，那么需要重新计算imageUrl
             image.width = fixedWidth;
             image.height = fixedHeight;
@@ -768,19 +857,6 @@ export default {
         };
         image.src = dataurl;
       });
-
-      // 对上传的大小和type做处理
-      if (
-        type !== "image/jpeg" &&
-        type !== "image/jpg" &&
-        type !== "image/png"
-      ) {
-        this.$notify({
-          title: this.$t("upload-type-error"),
-          message: this.$t("upload-type-error-tip")
-        });
-        return false;
-      }
       this.result = "";
       this.imageUrl = "";
       this.deg = 0;
@@ -798,13 +874,19 @@ export default {
       // 上传图片加载动态
       this.uploadImgLoading = true;
       //从本地缓存获取到上次自定义区域数据，提示给用户
+      //调用模板匹配接口!!!!
       this.customizeImageArrInLocal = storeLocal.get("customizeImageArr") || [];
       if (this.customizeImageArrInLocal.length) {
-        // 让用户自己选择是否恢复上次保存过的自定义区域
         this.restoreDialogVisible = true;
       }
       return true;
     },
+    /**
+     * @name: drawRect
+     * @msg: 绘制自定区域
+     * @param {x1,y1,width,height}
+     * @return:
+     */
     drawRect(x1, y1, width, height) {
       let oDiv = document.createElement("div");
       oDiv.setAttribute("class", "rect_item");
@@ -812,14 +894,18 @@ export default {
       oDiv.style.top = y1 + "px";
       oDiv.style.width = width + "px";
       oDiv.style.height = height + "px";
-      oDiv.style.border = "1px solid red";
+      oDiv.style.border = "2px solid #409EFF";
       oDiv.style.position = "absolute";
       return oDiv;
     },
-
+    /**
+     * @name:handleConfirmRestore
+     * @msg:确认匹配模板识别，目前是从缓存
+     * @param {type}
+     * @return:
+     */
     handleConfirmRestore() {
       // 让type默认恢复到之前选择的
-      // this.type = storeLocal.get("type") || '';
       this.editImageArr = this.customizeImageArrInLocal;
       // 根据相应数据，画出对应区域标识框
       let oBox = this.$refs.imgEdit;
@@ -830,13 +916,87 @@ export default {
       }
       this.restoreDialogVisible = false;
     },
-    /**自定区域ocr编辑确认 */
+    /**
+     * @name: uuid
+     * @msg: 生产唯一id
+     * @param {}
+     * @return:string
+     */
+    uuid() {
+      let date = new Date();
+      let y = date.getFullYear();
+      let m = date.getMonth() + 1;
+      m = m < 10 ? "0" + m : m;
+      let d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      let h = date.getHours();
+      let minute = date.getMinutes();
+      let second = date.getSeconds();
+      let str = y + m + d + h + minute + second;
+      return (
+        str +
+        Math.random()
+          .toString(36)
+          .substr(2)
+      );
+    },
+    /**
+     * @name: getImageByPointsInfo
+     * @msg: 通过(x,y,width,height)数据获取自定区域图片base64数据
+     * @param {}
+     * @return:
+     */
+    getImageByPointsInfo(points) {
+      let image = new Image();
+      if (this.deg == 0) {
+        image.src = this.imageUrl;
+      } else {
+        image.src = this.base64ImageData;
+      }
+      let { x, y, width, height } = points;
+      let canvas = document.createElement("canvas"); //创建canvas元素
+      canvas.setAttribute("width", width);
+      canvas.setAttribute("height", height);
+      let ctx = canvas.getContext("2d");
+      // 裁剪图片
+      ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+      // 将canvas转化base64
+      return canvas.toDataURL("image/jpeg");
+    },
+    /**
+     * @name: handleConfirmCustomBlockOcr
+     * @msg: 自定区域ocr编辑确认,将本次用户编辑的信息加入模板对象中保存,{id,name,ocr_engine,image,block:{x,y,width,height}}
+     * @param {formName}
+     * @return:
+     */
     handleConfirmCustomBlockOcr(formName) {
-      //将本次用户编辑的信息加入到一个对象数组中保存,{name,ocr_engine,type,image,id}
       //动态生成唯一id
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log(this.customBlockForm);
+          // 将本次用户自定区域数据加入到对象数组中记录
+          //判断是否修改，如果是，则修改对应数据，而不是push
+          if (!this.editCustomBlockFlag) {
+            let pointsInfo = this.curPoints;
+            let imageData = this.getImageByPointsInfo(pointsInfo);
+            let blockItem = {
+              id: this.uuid(),
+              name: this.customBlockForm.name,
+              ocr_engine: this.customBlockForm.OCR_engine,
+              block: pointsInfo,
+              image: imageData
+            };
+            this.curDiv.setAttribute("id", blockItem.id);
+            this.TemplateData.push(blockItem);
+            this.editImageArr.push(this.curPoints);
+          } else {
+            //找到对应需要修改的数据，修改对应name和ocr_engine
+            let id = this.curId;
+            let blockItem = this.TemplateData.find(function(item) {
+              return item.id == id;
+            });
+            blockItem.name = this.customBlockForm.name;
+            blockItem.ocr_engine = this.customBlockForm.OCR_engine;
+          }
           this.dialogCustomBlockVisible = false;
         } else {
           console.log("error submit!!");
@@ -844,9 +1004,20 @@ export default {
         }
       });
     },
-    /* 取消自定区域编辑 */
+    /**
+     * @name: handleCancelCustomBlock
+     * @msg: 取消自定区域编辑,并且需要清理本次自定区域
+     * @param {}
+     * @return:
+     */
     handleCancelCustomBlock() {
-      // 需要删掉本次框选的区域以及数据
+      //移除当前绘制的框图
+      let oBox = this.$refs.imgEdit;
+      // 判断下取消是二次修改
+      if (!this.editCustomBlockFlag) {
+        oBox.removeChild(this.curDiv);
+      }
+      this.dialogCustomBlockVisible = false;
     },
 
     handleNoTip() {
@@ -862,15 +1033,25 @@ export default {
       this.resDetectDataArr = []; //自定义区域图片识别后返回的数据
       this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
     },
-
+    /**
+     * @name: saveCustomize
+     * @msg: 保存当前用户所有自定区域为模板,上传同样格式的图片，先进行模板匹配，存在直接识别显示结果，
+     * 用户也可以对保存的模板重新编辑，查看，删除
+     * 默认保存当前模板数据到本地缓存，用户上传同样格式图片先和本地缓存对比，命中则不需要和数据库数据对比
+     * @param {}
+     * @return:
+     */
     saveCustomize() {
-      // 保存用户本次自定义区域相关数据存放在本地缓存中，演示用，具体项目，可能需要结合模板管理功能，联系用户账号
+      let templateData = this.TemplateData;
+      console.log(templateData);
+      //保存为模板数据到数据库
       if (this.editImageArr.length) {
-        storeLocal.set("customizeImageArr", this.editImageArr);
-        this.$notify({
-          title: this.$t("tip-text"),
-          message: this.$t("save-succ")
-        });
+        console.log(this.editImageArr);
+        // storeLocal.set("customizeImageArr", this.editImageArr);
+        // this.$notify({
+        //   title: this.$t("tip-text"),
+        //   message: this.$t("save-succ")
+        // });
       } else {
         this.$notify({
           title: this.$t("tip-text"),
@@ -878,21 +1059,28 @@ export default {
         });
       }
     },
-    cancelEditBtn() {
+    /**
+     * @name: handleClearArea
+     * @msg:清除用户所有自定区域
+     * @param {}
+     * @return:
+     */
+    handleClearArea() {
       this.btnList.map(item => {
         return (item.flag = false);
       });
-      // this.removeEditableFunc();
       //清除盒子下新增的子节点
       let oBox = this.$refs.imgEdit;
       oBox.innerHTML = "";
       this.editImageArr = [];
-      this.userCustomizeArr = [];
-      this.userDataImage = [];
-      // 默认运单识别,或着用户之前选择的类型
-      // this.type = "";
+      this.TemplateData = [];
     },
-    // 处理谷歌通用印刷体识别
+    /**
+     * @name: handleGoogleOcrData
+     * @msg: 处理谷歌通用印刷体识别
+     * @param {resData}
+     * @return: googleItems
+     */
     handleGoogleOcrData(resData) {
       let responses = resData.responses || [];
       // 确认返回的responses有数据
@@ -928,21 +1116,21 @@ export default {
             return total;
           }, "");
           googleItems.push(obj);
-          //使用canvas绘制识别出的文本行在原图中矩形框
         }
       }
       return googleItems;
     },
-    // 确认识别
+    /**
+     * @name: confirmDetect
+     * @msg:  确认识别
+     * @param {}
+     * @return:
+     */
     confirmDetect() {
-      //将this.editImageArr里保存的数据取出来，转换对应区域图片
       //判断editImageArr当前是否只有一个区域数据，如果只有一个，用户切换识别类型的时候需要更改对应的type
-      let imgArr = this.editImageArr;
-      if (imgArr.length == 1) {
-        //矫正当前识别类型,以免用户误解
-        imgArr[0].type = this.type;
-      }
-      // 这里有时候，用户明明已经编辑了区域，却还是提示！！！可能有些问题
+      let imgArr = this.editImageArr; //[{x,y,width,height}]
+      let templateData = this.TemplateData;
+      // 判断当前用户是否有自定区域
       if (imgArr.length == 0) {
         this.$notify({
           title: this.$t("warning-text"),
@@ -951,46 +1139,21 @@ export default {
         });
         return;
       }
-      this.resDetectDataArr = [];
-      this.userDataImage = [];
-      this.userCustomizeArr = [];
-      //转换
-      // 图片裁剪:drawImage方法的功用是对图像进行裁剪。drawImage(image,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth, destHeight)
-      // 把它想成从原图中取出一个矩形区域，然后把它画到画布上目标区域里
-      //  canvas.toDataURL('image/jpeg'),默认保存png，可以传入image/jpeg
-      //userCustomizeArr
-      let image = new Image();
-      // imageUrl保存的是上传的图片地址，如果用户旋转之后已经改变了原图
+      this.resDetectDataArr = []; //返回数据
+      this.userCustomizeArr = []; //请求参数处理
+      //图片裁剪:drawImage方法的功用是对图像进行裁剪。drawImage(image,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth, destHeight)
+      //把它想成从原图中取出一个矩形区域，然后把它画到画布上目标区域里
       //看图片有没有旋转过
-      if (this.deg == 0) {
-        image.src = this.imageUrl;
-      } else {
-        image.src = this.base64ImageData;
-      }
-
       //保存对应生成图片数据
-      for (let i = 0; i < imgArr.length; i++) {
-        let item = imgArr[i];
-        let { x, y, width, height, type } = item;
+      for (let i = 0; i < templateData.length; i++) {
+        let item = templateData[i];
+        let image = item.image;
         let obj = {};
-        let canvas = document.createElement("canvas"); //创建canvas元素
-        canvas.setAttribute("width", width);
-        canvas.setAttribute("height", height);
-        let ctx = canvas.getContext("2d");
-        ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
-        // 将canvas转化base64
-        obj.image = canvas.toDataURL("image/jpeg");
-        let dataurl = obj.image;
-        // 将canvas转换的图片，保存到数组中userDataImage，后面请求接口返回的数据，可以对应展示
-        // this.userDataImage["nri" + type] = dataurl;
-        this.userDataImage.push({ imgUrl: dataurl });
-        // 按照接口对参数的要求，不需要拓展名
-        obj.image = dataurl.substring(dataurl.indexOf(",") + 1);
+        obj.image = image.substring(image.indexOf(",") + 1);
         obj.request_id = Date.now() + "";
-        obj.appid = "nri_" + type; //管理员分配,字符串,比userDataImage里的type多了nri前缀
+        obj.appid = "nri_" + item.ocr_engine; //管理员分配,字符串,比userDataImage里的type多了nri前缀
         this.userCustomizeArr.push(obj);
       }
-      //将数据传到后台接口，处理，识别
       if (this.isRequesting) {
         return;
       }
@@ -1016,7 +1179,7 @@ export default {
                   resObj.height = item.data.height;
                 } else {
                   if (item.statusCode == 404) {
-                    //友好话用户提示，目前404这种直接提示联系开发人员
+                    //友好提示，目前404这种直接提示联系开发人员
                     resObj.code = 404;
                   } else {
                     resObj.code = -1;
@@ -1026,7 +1189,7 @@ export default {
                   resObj.confidence = 0;
                 }
               } else if (item.type == "nri_T_general") {
-                //处理腾讯通用应刷题识别
+                //处理腾讯通用印刷识别
                 resObj.type = item.type;
                 resObj.text = item.items;
                 resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
@@ -1070,12 +1233,11 @@ export default {
               }
               this.resDetectDataArr.push(resObj);
             }
-
             //合并之前保存好的base64图片数据
             let resDetectDataArrCp = this.resDetectDataArr;
             for (let i = 0; i < resDetectDataArrCp.length; i++) {
               let item = resDetectDataArrCp[i];
-              item.imgUrl = this.userDataImage[i].imgUrl;
+              item.imgUrl = templateData[i].image;
             }
             this.resDetectDataArr = resDetectDataArrCp;
           }

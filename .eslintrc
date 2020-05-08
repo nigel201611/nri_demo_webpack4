@@ -1,8 +1,8 @@
 {
     "root": true,
     "extends": [
-        "eslint:recommended",
-        "plugin:vue/recommended"
+        "plugin:vue/recommended",
+        "eslint:recommended"
     ],
     "env": {
         "browser": true,
@@ -31,12 +31,13 @@
         "vue"
     ],
     "rules": {
+        "vue/max-attributes-per-line": "off",
+        "vue/singleline-html-element-content-newline": "off",
+        "vue/html-self-closing": "off",
+        "vue/multiline-html-element-content-newline": "off",
         "semi": [
             "error",
             "always"
-        ],
-        "vue/max-attributes-per-line": "off",
-        "vue/singleline-html-element-content-newline": "off",
-        "vue/html-self-closing": "off"
+        ]
     }
 }
