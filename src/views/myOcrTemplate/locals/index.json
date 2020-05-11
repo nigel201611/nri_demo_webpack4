@@ -1,0 +1,32 @@
+{
+    "zh-CH": {
+        "temp_id": "模板ID",
+        "temp_image": "模板图片",
+        "custom_area": "自定区域",
+        "ocr_engine": "ocr 引擎",
+        "ocr_name": "区域标识",
+        "operation": "操作",
+        "edit":"编辑",
+        "delete":"删除"
+    },
+    "en": {
+        "temp_id": "Template ID",
+        "temp_image": "Template picture",
+        "custom_area": "Self determined area",
+        "ocr_engine": "OCR engine",
+        "ocr_name": "Area identification",
+        "operation": "operation",
+        "edit":"edit",
+        "delete":"delete"
+    },
+    "ja": {
+        "temp_id": "テンプレートID",
+        "temp_image": "テンプレートの画像",
+        "custom_area": "自定区域",
+        "ocr_engine": "ocrエンジン",
+        "ocr_name": "エリアの識別",
+        "operation": "操作",
+        "edit":"編集",
+        "delete":"削除"
+    }
+}

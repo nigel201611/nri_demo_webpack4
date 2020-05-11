@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-05-09 17:55:18
+ * @LastEditTime: 2020-05-11 10:50:12
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -96,7 +96,7 @@
     >
       <span>{{ $t('confirm-dialog-tip') }}</span>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" type="info" @click="handleNoTip">{{ $t('no-tip') }}</el-button>
+        <el-button size="mini" type="warning" @click="handleNoTip">{{ $t('no-tip') }}</el-button>
         <el-button size="mini" @click="tempMatchingDialog = false">{{ $t('dialog-cancel-btn') }}</el-button>
         <el-button
           size="mini"
@@ -107,13 +107,11 @@
     </el-dialog>
     <!-- 保存用户上传的原图 -->
     <img ref="imgElem" class="imgElem" :height="bill_height" :width="bill_width" :src="imageUrl" />
-
     <!-- 可以供用户自定义区域 -->
     <div v-loading="isRequesting" class="usercustomize_area">
-      <el-card class="img_background_wrap">
+      <el-card v-loading="uploadImgLoading" class="img_background_wrap">
         <div
           ref="imgEdit"
-          v-loading="uploadImgLoading"
           :element-loading-text="$t('customize-area-loading-tip')"
           element-loading-spinner="el-icon-loading"
           element-loading-background="rgba(0, 0, 0, 0.6)"
@@ -693,10 +691,10 @@ export default {
      */
     templateMatching() {
       // 优先和本地保存的模板进行匹配
-      let templateDataArr = storeLocal.get("templateData") || [];
+      let templateDataArr = storeSession.get("templateData") || [];
       if (templateDataArr.length) {
         //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
-        let templateItem = templateDataArr[0]; //这里暂时模拟匹配到第一个
+        let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
         this.matchTemplateItem = templateItem;
         // 弹出模板匹配确认提示模态框
         this.tempMatchingDialog = true;
@@ -786,8 +784,8 @@ export default {
     /**
      * @name: wrapOcrEngine
      * @msg: ocr引擎请求统一封装
-     * @param {} 
-     * @return: 
+     * @param {}
+     * @return:
      */
     wrapOcrEngine(templateData) {
       if (this.isRequesting) {
@@ -840,6 +838,7 @@ export default {
                     2
                   );
                 }
+                // console.log(avg_confidence);
                 resObj.confidence = avg_confidence * 100;
               }
               // 处理谷歌通用印刷体识别
@@ -1028,15 +1027,20 @@ export default {
     handleNoTip() {
       this.tempMatchingDialog = false;
       //清理缓存
-      storeLocal.remove("customizeImageArr");
+      storeSession.remove("templateData");
     },
-
+    /**
+     * @name: resetArr
+     * @msg: 重置所有数据
+     * @param {}
+     * @return:
+     */
     resetArr() {
       this.removeEditableFunc();
       this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
       this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
       this.resDetectDataArr = []; //自定义区域图片识别后返回的数据
-      this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
+      this.TemplateData = [];
     },
     /**
      * @name: saveCustomize
@@ -1049,6 +1053,9 @@ export default {
     saveCustomize() {
       //处理保存的数据
       //保存为模板数据到数据库
+      // 判斷當前保存模板是新增還是修改,如果temp_id存在則爲修改，否則新增
+      let oBox = this.$refs.imgEdit;
+      let temp_id = oBox.getAttribute("data-temp_id");
       if (this.editImageArr.length) {
         let blockData = this.TemplateData.map(item => {
           return {
@@ -1067,15 +1074,33 @@ export default {
         let imgbase64 = this.myCanvas.toDataURL("image/jpeg");
         // 模板数据
         let templateData = {
-          temp_id: this.uuid(),
+          temp_id: temp_id || this.uuid(),
           blockItem: blockData,
           image: imgbase64 //用户上传图片base64数据
         };
         // 本地保存一份，数据库保存一份或者更新一份
-        const templateDataArr = storeLocal.get("templateData") || [];
-        templateDataArr.push(templateData);
+        const templateDataArr = storeSession.get("templateData") || [];
+        // 寻找当前保存的模板数据中是否有和temp_id相同的，有则更新替换
+        let tempItem = null;
+        if (temp_id) {
+          tempItem = templateDataArr.find(item => {
+            return (item.temp_id = temp_id);
+          });
+        }
+        //说明找到该项,替换
+        if (tempItem) {
+          tempItem.temp_id = temp_id;
+          tempItem.blockItem = templateData.blockItem;
+          tempItem.image = templateData.image;
+        } else {
+          //没有找到，直接推入
+          // console.log('新增');
+          templateDataArr.push(templateData);
+        }
+        console.log(tempItem, templateDataArr);
+        oBox.setAttribute("data-temp_id", templateData.temp_id);
         // 如果用户当前保存太多模板数据，由于原图base64较大，有可能造成本地缓存不够，需要考虑下是否限制保存的数量
-        storeLocal.set("templateData", templateDataArr);
+        storeSession.set("templateData", templateDataArr);
         this.$notify({
           title: this.$t("tip-text"),
           message: this.$t("save-succ")

@@ -3,18 +3,21 @@
         "chinese": "中文",
         "japanese": "日本語",
         "english": "English",
-        "logout": "退出登录"
+        "logout": "退出登录",
+        "my_template": "我的模板"
     },
     "en": {
         "chinese": "中文",
         "japanese": "日本語",
         "english": "English",
-        "logout": "Sign out"
+        "logout": "Sign out",
+        "my_template": "My ocr template"
     },
     "ja": {
         "chinese": "中文",
         "japanese": "日本語",
         "english": "English",
-        "logout": "ログアウト"
+        "logout": "ログアウト",
+        "my_template": "マイテンプレート"
     }
 }

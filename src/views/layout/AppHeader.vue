@@ -1,45 +1,30 @@
+<!--
+ * @Author: nigel
+ * @Date: 2020-03-19 17:42:36
+ * @LastEditTime: 2020-05-11 10:43:15
+ -->
 <i18n src="./locals/AppHeader.json"></i18n>
 <template>
-  <el-col
-    :span="24"
-    class="header"
-  >
-    <el-col
-      :span="10"
-      class="logo"
-      :class="collapsed?'logo-collapse-width':'logo-width'"
-    >
+  <el-col :span="24" class="header">
+    <el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
       {{ collapsed?sysName:'' }}
-      <img
-        v-show="!collapsed"
-        :src="logoSrc"
-      >
+      <img v-show="!collapsed" :src="logoSrc" />
     </el-col>
     <el-col :span="10">
-      <div
-        class="tools"
-        @click.prevent="collapse"
-      >
+      <div class="tools" @click.prevent="collapse">
         <i class="fa fa-align-justify" />
       </div>
     </el-col>
 
-    <el-col
-      :span="4"
-      class="language-set"
-    >
-      <el-dropdown
-        class="userinfo"
-        trigger="hover"
-      >
+    <el-col :span="4" class="language-set">
+      <el-dropdown class="userinfo" trigger="hover">
         <span class="el-dropdown-link userinfo-inner">
           {{ userName }}
           <i class="fa fa-user-o" />
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="logout">
-            {{ $t('logout') }}
-          </el-dropdown-item>
+          <el-dropdown-item @click.native="logout">{{ $t('logout') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="goToMyTemplate">{{ $t('my_template') }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-dropdown @command="handleSetLanguage">
@@ -53,9 +38,7 @@
             v-for="(value,key) in languageMap"
             :key="key"
             :command="key"
-          >
-            {{ $t(value) }}
-          </el-dropdown-item>
+          >{{ $t(value) }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-col>
@@ -111,7 +94,12 @@ export default {
       // 语言设置到vuex中
       this.setLocals(key);
     },
-
+    /**
+     * @name: logout
+     * @msg: 用户退出当前登录
+     * @param {}
+     * @return:
+     */
     logout() {
       this.$confirm("Do you want to exit?", "Tips", {
         confirmButtonText: "confirm",
@@ -123,6 +111,17 @@ export default {
         this.$router.replace({
           name: "login"
         });
+      });
+    },
+    /**
+     * @name: goToMyTemplate
+     * @msg: 用户当前模板管理
+     * @param {}
+     * @return:
+     */
+    goToMyTemplate() {
+      this.$router.push({
+        name: "myOcrTemplate"
       });
     }
   }
