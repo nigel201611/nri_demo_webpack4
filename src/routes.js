@@ -1,7 +1,7 @@
 /*
  * @Author: nigel
  * @Date: 2020-03-19 17:42:35
- * @LastEditTime: 2020-05-11 10:38:51
+ * @LastEditTime: 2020-05-11 18:07:43
  */
 import Login from './views/login/login.vue';
 import NotFound from './views/404.vue';
@@ -13,8 +13,8 @@ import dectectApi from './views/dectectApi/dectectApi.vue';
 import drawImg from './views/drawImg/drawImg.vue';
 import generalocr from './views/generalocr/generalocr.vue';
 import googleOcr from './views/googleOcr/googleOcr.vue';
-import customizeOcr from './views/customizeOcr/customizeOcr.vue';
-import myOcrTemplate from './views/myOcrTemplate/myOcrTemplate.vue';
+// import customizeOcr from './views/customizeOcr/customizeOcr.vue';
+// import myOcrTemplate from './views/myOcrTemplate/myOcrTemplate.vue';
 
 let routes = [{
     path: '/login',
@@ -60,12 +60,12 @@ let routes = [{
         name: 'drawImg',
         alias: '指定区域の画像認識'
     },
-    {
-        path: '/customizeOcr',
-        component: customizeOcr,
-        name: 'customizeOcr',
-        alias: '自定区域OCR'
-    },
+    // {
+    //     path: '/customizeOcr',
+    //     component: customizeOcr,
+    //     name: 'customizeOcr',
+    //     alias: '自定区域OCR'
+    // },
     {
         path: '/generalocr',
         component: generalocr,
@@ -77,12 +77,13 @@ let routes = [{
         component: googleOcr,
         name: 'googleOcr',
         alias: '谷歌通用文字识别'
-    }, {
-        path: '/myOcrTemplate',
-        component: myOcrTemplate,
-        name: 'myOcrTemplate',
-        alias: '我的模板'
-    }
+    },
+    // {
+    //     path: '/myOcrTemplate',
+    //     component: myOcrTemplate,
+    //     name: 'myOcrTemplate',
+    //     alias: '我的模板'
+    // }
     ]
 },
 {

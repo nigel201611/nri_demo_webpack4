@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-05-11 10:43:15
+ * @LastEditTime: 2020-05-11 18:10:24
  -->
 <i18n src="./locals/AppHeader.json"></i18n>
 <template>
@@ -17,7 +17,7 @@
     </el-col>
 
     <el-col :span="4" class="language-set">
-      <el-dropdown class="userinfo" trigger="hover">
+      <!-- <el-dropdown class="userinfo" trigger="hover">
         <span class="el-dropdown-link userinfo-inner">
           {{ userName }}
           <i class="fa fa-user-o" />
@@ -26,7 +26,7 @@
           <el-dropdown-item @click.native="logout">{{ $t('logout') }}</el-dropdown-item>
           <el-dropdown-item @click.native="goToMyTemplate">{{ $t('my_template') }}</el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
       <el-dropdown @command="handleSetLanguage">
         <span class="el-dropdown-link userinfo-inner">
           {{ $t(languageMap[locals]) }}

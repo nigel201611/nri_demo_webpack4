@@ -1,3 +1,8 @@
+/*
+ * @Author: nigel
+ * @Date: 2020-03-19 17:42:35
+ * @LastEditTime: 2020-05-11 18:12:50
+ */
 /* eslint-disable */
 // import babelpolyfill from 'babel-polyfill';
 import Vue from 'vue';
@@ -30,10 +35,8 @@ window.storeSession = utils.storeSession;
 window.Exif = Exif;
 Vue.use(VueI18n);
 Vue.use(ElementUI);
-
 Vue.use(VueRouter);
 Vue.use(Vuex);
-
 NProgress.configure({ showSpinner: false });
 const router = new VueRouter({
   // mode: 'history',
@@ -51,36 +54,36 @@ const i18n = new VueI18n({
 router.beforeEach((to, from, next) => {
   NProgress.start();
   /*需要判断登录*/
-  let token = storeSession.get('token');
-  if (!token && to.name !== 'login') {
-    next({
-      path: '/login',
-      query: { redirect: to.fullPath }
-    });
-  } else {
-    let locale = store.state.menuStore.locals;
-    i18n.locale = locale;
-    switch (locale) {
-      case 'zh-CH': Vue.use(ElementUI, zhLocale); break;
-      case 'en': Vue.use(ElementUI, enLocale); break;
-      case 'ja': Vue.use(ElementUI, jaLocale); break;
-    }
-    if (to.path == '/login') {
-      sessionStorage.removeItem('user');
-    }
-    next();
-  }
+  // let token = storeSession.get('token');
+  // if (!token && to.name !== 'login') {
+  //   next({
+  //     path: '/login',
+  //     query: { redirect: to.fullPath }
+  //   });
+  // } else {
+  //   let locale = store.state.menuStore.locals;
+  //   i18n.locale = locale;
+  //   switch (locale) {
+  //     case 'zh-CH': Vue.use(ElementUI, zhLocale); break;
+  //     case 'en': Vue.use(ElementUI, enLocale); break;
+  //     case 'ja': Vue.use(ElementUI, jaLocale); break;
+  //   }
+  //   if (to.path == '/login') {
+  //     sessionStorage.removeItem('user');
+  //   }
+  //   next();
+  // }
 
   /**不需要登录 */
-  // let locale = store.state.menuStore.locals;
-  // i18n.locale = locale;
-  // // let map = new Map([['zh-CH', 'zhLocale'], ['en', 'enLocale'], ['ja', 'jaLocale']]);
-  // switch (locale) {
-  //   case 'zh-CH': Vue.use(ElementUI, zhLocale); break;
-  //   case 'en': Vue.use(ElementUI, enLocale); break;
-  //   case 'ja': Vue.use(ElementUI, jaLocale); break;
-  // }
-  // next();
+  let locale = store.state.menuStore.locals;
+  i18n.locale = locale;
+  // let map = new Map([['zh-CH', 'zhLocale'], ['en', 'enLocale'], ['ja', 'jaLocale']]);
+  switch (locale) {
+    case 'zh-CH': Vue.use(ElementUI, zhLocale); break;
+    case 'en': Vue.use(ElementUI, enLocale); break;
+    case 'ja': Vue.use(ElementUI, jaLocale); break;
+  }
+  next();
 });
 
 router.afterEach(() => {
