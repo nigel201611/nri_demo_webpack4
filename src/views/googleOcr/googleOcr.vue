@@ -62,6 +62,8 @@
   .url_input,
   .analyse-btn {
     display: inline-block;
+    position: relative;
+    z-index: 9999999;
   }
   .imgtype_selector {
     margin: 50px 0 30px;
@@ -93,7 +95,7 @@
     left: 50%;
     transform-origin: 50% 50%;
     opacity: 1;
-    z-index: 99999;
+    z-index: 999;
     transform: translate(-50%, -50%);
   }
   .ocr_image {
@@ -196,7 +198,10 @@ export default {
     this.myCanvas = this.$refs.myCanvas;
     this.myCtx = this.myCanvas.getContext("2d");
     //默认使用第一张图片
-    this.init(this.imgArr[0].url);
+    this.imageUrl = this.imgArr[0].url;
+    this.imgObj = {
+      backgroundImage: `url(${this.imageUrl})`
+    };
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
