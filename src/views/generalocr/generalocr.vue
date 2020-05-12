@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-04-13 13:56:58
- * @LastEditTime: 2020-05-12 11:38:10
+ * @LastEditTime: 2020-05-12 14:00:01
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>

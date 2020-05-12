@@ -462,6 +462,7 @@ export default {
     },
     handleUploadSuccess(res, file) {
       this.uploadImgLoading = false;
+      this.input_url = "";
       if (!this.exceedSize) {
         this.imageUrl = URL.createObjectURL(file.raw);
       }
