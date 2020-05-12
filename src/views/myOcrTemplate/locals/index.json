@@ -6,8 +6,13 @@
         "ocr_engine": "ocr 引擎",
         "ocr_name": "区域标识",
         "operation": "操作",
-        "edit":"编辑",
-        "delete":"删除"
+        "edit": "编辑",
+        "delete": "删除",
+        "confirm_text": "确认删除该模板, 是否继续?",
+        "Tips": "提示",
+        "determine":"确定",
+        "cancel":"取消",
+        "cancel_succ":"删除成功"
     },
     "en": {
         "temp_id": "Template ID",
@@ -16,8 +21,13 @@
         "ocr_engine": "OCR engine",
         "ocr_name": "Area identification",
         "operation": "operation",
-        "edit":"edit",
-        "delete":"delete"
+        "edit": "edit",
+        "delete": "delete",
+        "confirm_text": "Are you sure to delete this template? Do you want to continue?",
+        "Tips": "Tips",
+        "determine":"determine",
+        "cancel":"cancel",
+        "cancel_succ":"Delete succeeded"
     },
     "ja": {
         "temp_id": "テンプレートID",
@@ -26,7 +36,12 @@
         "ocr_engine": "ocrエンジン",
         "ocr_name": "エリアの識別",
         "operation": "操作",
-        "edit":"編集",
-        "delete":"削除"
+        "edit": "編集",
+        "delete": "削除",
+        "confirm_text": "テンプレートの削除を確認します。続けますか？",
+        "Tips": "ヒント",
+        "determine":"を選択します",
+        "cancel":"キャンセル",
+        "cancel_succ":"削除に成功しました"
     }
 }

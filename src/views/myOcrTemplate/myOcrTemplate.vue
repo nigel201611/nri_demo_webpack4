@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-05-11 10:31:38
- * @LastEditTime: 2020-05-11 11:21:14
+ * @LastEditTime: 2020-05-12 18:22:59
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -24,7 +24,11 @@
       <el-table-column :label="$t('operation')" align="center" width="200">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleEdit(scope.row)">{{ $t('edit') }}</el-button>
-          <el-button type="danger" size="mini">{{ $t('delete') }}</el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            @click="handleDelete(scope.$index)"
+          >{{ $t('delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -61,7 +65,6 @@ export default {
   },
   mounted() {
     this.tableData = storeSession.get("templateData") || [];
-    console.log(this.tableData);
   },
   destroyed() {},
   methods: {
@@ -72,8 +75,34 @@ export default {
      * @return:
      */
     handleEdit(row) {
-      console.log(row);
-      console.log("编辑");
+      this.$router.push({
+        name: "customizeOcr",
+        params: row
+      });
+    },
+    /**
+     * @name: handleDelete
+     * @msg: 删除模板
+     * @param {}
+     * @return:
+     */
+    handleDelete(index) {
+      this.$confirm(this.$t("confirm_text"), this.$t("Tips"), {
+        confirmButtonText: this.$t("determine"),
+        cancelButtonText: this.$t("cancel"),
+        type: "warning"
+      })
+        .then(() => {
+          this.tableData.splice(index, 1);
+          storeSession.set("templateData", this.tableData);
+          this.$message({
+            type: "success",
+            message: this.$t("cancel_succ")
+          });
+        })
+        .catch(() => {
+          console.log("cancel delete");
+        });
     }
   }
 };

@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-05-11 10:50:12
+ * @LastEditTime: 2020-05-12 17:36:54
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -468,7 +468,10 @@ export default {
     this.editCustomBlockFlag = false; //标识是否二次修改自定区域
     this.curId = ""; //标识当前修改的id
     this.blockItem = null; //标识当前根据id找到的自定区域块数据
-    this.matchBlockItem = null; //模板匹配命中其中一个模板数据
+    this.matchTemplateItem = null; //模板匹配命中其中一个模板数据
+    //查看是否是从我的模板跳过来的
+    this.myTemplateData = this.$route.params; //$route代表当前匹配到的路由记录，注意和$router区别
+    this.handleMyTemplateEdit();
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
@@ -480,6 +483,34 @@ export default {
      * @param {}
      * @return:
      */
+    handleMyTemplateEdit() {
+      if (JSON.stringify(this.myTemplateData) != "{}") {
+        let oBox = this.$refs.imgEdit;
+        oBox.setAttribute("data-temp_id", this.myTemplateData.temp_id);
+        //显示图片
+        let image = this.myTemplateData.image;
+        this.imageUrl = image;
+        let imageElem = new Image();
+        imageElem.onload = () => {
+          this.bill_width = imageElem.width;
+          this.bill_height = imageElem.height;
+          this.imgObj = {
+            background: `url(${image}) no-repeat 0 0`,
+            backgroundSize: "cover",
+            width: this.bill_width + "px",
+            height: this.bill_height + "px",
+            transform: "rotate(0)"
+          };
+
+          this.removeEditableFunc();
+          // 添加框图或者自定义图片区域相关事件
+          this.addEditableFunc();
+          this.initEvent();
+          this.requestOcrEngine(this.myTemplateData.blockItem);
+        };
+        imageElem.src = image;
+      }
+    },
     initEvent() {
       let oBox = this.$refs.imgEdit;
       //rect_item
@@ -1023,7 +1054,13 @@ export default {
       }
       this.dialogCustomBlockVisible = false;
     },
-
+    /**
+     * @name: handleNoTip
+     * @msg: 用户上传图片，会匹配模板，可以单击不再提示，下次上传就不会去匹配模板和弹确认模态框
+     * 或者不再提示，下次直接匹配模板，如果有匹配到的话，直接识别显示结果！！
+     * @param {}
+     * @return:
+     */
     handleNoTip() {
       this.tempMatchingDialog = false;
       //清理缓存
@@ -1097,7 +1134,6 @@ export default {
           // console.log('新增');
           templateDataArr.push(templateData);
         }
-        console.log(tempItem, templateDataArr);
         oBox.setAttribute("data-temp_id", templateData.temp_id);
         // 如果用户当前保存太多模板数据，由于原图base64较大，有可能造成本地缓存不够，需要考虑下是否限制保存的数量
         storeSession.set("templateData", templateDataArr);
