@@ -1,3 +1,8 @@
+<!--
+ * @Author: nigel
+ * @Date: 2020-05-12 14:33:04
+ * @LastEditTime: 2020-05-13 09:45:48
+ -->
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div class="generalocr_wrap">
@@ -8,7 +13,7 @@
         :src="item.url"
         :class="[curentIndex == index ? 'pic-item_active' : '', 'pic-item']"
         @click="handleClickImg(item.url, index)"
-      >
+      />
     </el-row>
     <el-row class="input_form">
       <el-upload
@@ -19,23 +24,12 @@
         :on-success="handleUploadSuccess"
         :before-upload="beforeRead"
       >
-        <el-button type="primary">
-          {{ $t("upload-btn-text") }}
-        </el-button>
+        <el-button type="primary">{{ $t("upload-btn-text") }}</el-button>
       </el-upload>
       <div class="url_input">
-        <el-input
-          v-model="input_url"
-          :placeholder="$t('input_url_tip')"
-        />
+        <el-input v-model="input_url" :placeholder="$t('input_url_tip')" />
       </div>
-      <el-button
-        class="analyse-btn"
-        type="primary"
-        @click="handleAnalyse"
-      >
-        {{ $t("analyse-btn") }}
-      </el-button>
+      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">{{ $t("analyse-btn") }}</el-button>
     </el-row>
     <el-row class="ocr-result">
       <img
@@ -44,7 +38,7 @@
         :height="img_height"
         :width="img_width"
         :src="imageUrl"
-      >
+      />
       <div
         ref="imgEdit"
         v-loading="uploadImgLoading"
@@ -54,27 +48,12 @@
         class="ocr_image"
         :style="imgObj"
       >
-        <canvas
-          ref="myCanvas"
-          class="ocrGeneralCanvas"
-        />
+        <canvas ref="myCanvas" class="ocrGeneralCanvas" />
       </div>
       <div class="result-details">
-        <el-table
-          v-loading="isRequesting"
-          :data="tableData"
-          height="400"
-          style="width: 100%"
-        >
-          <el-table-column
-            type="index"
-            align="left"
-          />
-          <el-table-column
-            prop="itemstring"
-            :label="$t('recog_result')"
-            align="left"
-          />
+        <el-table v-loading="isRequesting" :data="tableData" height="400" style="width: 100%">
+          <el-table-column type="index" align="left" />
+          <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
         </el-table>
       </div>
     </el-row>
@@ -88,6 +67,8 @@
   .url_input,
   .analyse-btn {
     display: inline-block;
+    position: relative;
+    z-index: 9999999;
   }
   .imgtype_selector {
     margin: 50px 0 30px;
@@ -119,7 +100,7 @@
     left: 50%;
     transform-origin: 50% 50%;
     opacity: 1;
-    z-index: 99999;
+    z-index: 999;
     transform: translate(-50%, -50%);
   }
   .ocr_image {
@@ -222,22 +203,41 @@ export default {
     this.myCanvas = this.$refs.myCanvas;
     this.myCtx = this.myCanvas.getContext("2d");
     //默认使用第一张图片
-    this.init(this.imgArr[0].url);
+    this.imageUrl = this.imgArr[0].url;
+    this.imgObj = {
+      backgroundImage: `url(${this.imageUrl})`
+    };
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
   },
   methods: {
+    /**
+     * @name:init
+     * @msg: 根据用户上传、切换不同图片、输入远程链接图片，
+     * 单击分析按钮显示识别结果，url代表用户输入的远程图片链接
+     * @param {url}
+     * @return:
+     */
     init(url) {
-      this.imageUrl = url;
-      this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
-      };
       // 判断是否有网络图片地址，有的话以网络图片优先
       if (this.input_url != "") {
         //目前对网络图片的框图有些问题，估计没有读取到正确的宽高
-        this.clearCanvasContent();
-        this.googleGeneralOcr({ url: this.input_url }, this.imgOptions);
+        let http_image_pattern = /^(http:\/\/|https:\/\/){1}.+\.(jpg|jpeg|png|bmp|pdf)$/gi;
+        if (http_image_pattern.test(this.input_url)) {
+          //目前对网络图片的框图有些问题，估计没有读取到正确的宽高
+          this.imageUrl = url;
+          this.imgObj = {
+            backgroundImage: `url(${this.imageUrl})`
+          };
+          this.clearCanvasContent();
+          this.googleGeneralOcr({ url: this.input_url }, this.imgOptions);
+        } else {
+          this.$notify({
+            title: this.$t("tip-text"),
+            message: this.$t("input_url-tip")
+          });
+        }
       } else {
         this.getImageToBase64Data(this.imageUrl).then(params => {
           //默认第一张图,调用接口返回数据
@@ -264,7 +264,6 @@ export default {
         this.drawRectangle(source_w, source_h, coordpointArr);
       }
     },
-
     drawRectangle(source_w, source_h, coordpointArr) {
       // console.log(source_w, source_h);
       // 求坐标对应比例，因为图片contain到固定盒子里，400*410
@@ -445,7 +444,11 @@ export default {
       this.input_url = "";
       this.curentIndex = index;
       this.clearCanvasContent();
-      this.init(image);
+      this.imageUrl = image;
+      this.imgObj = {
+        backgroundImage: `url(${this.imageUrl})`
+      };
+      this.init();
     },
     clearCanvasContent() {
       let imgOrigin = this.$refs.imgOrigin;
@@ -459,20 +462,11 @@ export default {
       if (this.isRequesting) {
         return;
       }
-      //驗證當前輸入input_url是否是http开头或者合法远程链接
-      let http_image_pattern = /^(http:\/\/|https:\/\/){1}.+\.(jpg|jpeg|png|bmp|pdf)$/gi;
-      // console.log(http_image_pattern.test(this.input_url));
-      if (this.input_url != "" && http_image_pattern.test(this.input_url)) {
-        this.init(this.input_url);
-      } else {
-        this.$notify({
-          title: this.$t("tip-text"),
-          message: this.$t("input_url-tip")
-        });
-      }
+      this.init(this.input_url);
     },
     handleUploadSuccess(res, file) {
       this.uploadImgLoading = false;
+      this.input_url = "";
       if (!this.exceedSize) {
         this.imageUrl = URL.createObjectURL(file.raw);
       }
@@ -482,20 +476,20 @@ export default {
         backgroundImage: `url(${this.imageUrl})`
       };
       //上传成功，将图片转换base64，调用ocr识别接口
-      this.init(this.imageUrl);
+      this.init();
     },
     // 图片上传前校验
     beforeRead(file) {
       let imgSize = file.size;
       let maxSize = 5 * 1048576;
       if (imgSize > maxSize) {
+        this.exceedSize = true;
         this.$notify({
           title: this.$t("upload-size-error"),
           message: this.$t("upload-size-tip")
         });
         return false;
       }
-      let type = file.type;
       this.exceedSize = false;
       this.blobToDataURL(file, function(dataurl) {
         let image = new Image();
@@ -506,26 +500,8 @@ export default {
         };
         image.src = dataurl;
       });
-
       this.clearCanvasContent();
-
-      // 对上传的大小和type做处理
-      if (
-        type !== "image/jpeg" &&
-        type !== "image/jpg" &&
-        type !== "image/png"
-      ) {
-        this.$notify({
-          title: this.$t("upload-type-error"),
-          message: this.$t("upload-type-error-tip")
-        });
-        return false;
-      }
       this.uploadImgLoading = true;
-    },
-
-    afterRead() {
-      // console.log(file);
     }
   }
 };

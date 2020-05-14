@@ -2,5 +2,11 @@
   "presets": [
     "@babel/preset-env"
   ],
+  "env": {
+    "development": {
+      "sourceMaps": true,
+      "retainLines": true
+    }
+  },
   "comments": false
 }

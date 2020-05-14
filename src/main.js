@@ -1,3 +1,8 @@
+/*
+ * @Author: nigel
+ * @Date: 2020-05-12 14:33:04
+ * @LastEditTime: 2020-05-13 15:56:58
+ */
 /* eslint-disable */
 // import babelpolyfill from 'babel-polyfill';
 import Vue from 'vue';
@@ -93,6 +98,5 @@ const rootVue = new Vue({
   i18n,
   render: h => h(App)
 }).$mount('#app');
-
 
 export default rootVue;
