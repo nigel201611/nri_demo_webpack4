@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-05-11 10:43:15
+ * @LastEditTime: 2020-05-19 16:03:47
  -->
 <i18n src="./locals/AppHeader.json"></i18n>
 <template>
@@ -101,9 +101,9 @@ export default {
      * @return:
      */
     logout() {
-      this.$confirm("Do you want to exit?", "Tips", {
-        confirmButtonText: "confirm",
-        cancelButtonText: "cancel",
+      this.$confirm(this.$t("exit_confirm"), this.$t("Tips"), {
+        confirmButtonText: this.$t("confirm"),
+        cancelButtonText: this.$t("cancel"),
         type: "warning"
       }).then(() => {
         localStorage.clear();

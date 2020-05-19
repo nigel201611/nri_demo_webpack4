@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-05-12 14:33:04
- * @LastEditTime: 2020-05-13 09:45:48
+ * @LastEditTime: 2020-05-19 16:28:48
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -68,7 +68,7 @@
   .analyse-btn {
     display: inline-block;
     position: relative;
-    z-index: 9999999;
+    z-index: 999;
   }
   .imgtype_selector {
     margin: 50px 0 30px;
@@ -100,7 +100,7 @@
     left: 50%;
     transform-origin: 50% 50%;
     opacity: 1;
-    z-index: 999;
+    z-index: 9;
     transform: translate(-50%, -50%);
   }
   .ocr_image {

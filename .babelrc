@@ -6,6 +6,11 @@
     "development": {
       "sourceMaps": true,
       "retainLines": true
+    },
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
     }
   },
   "comments": false

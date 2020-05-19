@@ -54,7 +54,7 @@
         >
           {{ $t('confirm-detect') }}
         </el-button>
-        <el-button
+        <!-- <el-button
           :disabled="!imageUrl"
           type="primary"
           size="small"
@@ -69,7 +69,7 @@
           @click="cancelEditBtn"
         >
           {{ $t('clear-area') }}
-        </el-button>
+        </el-button> -->
       </el-row>
 
       <el-row
@@ -886,35 +886,33 @@ export default {
       this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
     },
 
-    saveCustomize() {
-      // 保存用户本次自定义区域相关数据存放在本地缓存中，演示用，具体项目，可能需要结合模板管理功能，联系用户账号
-      if (this.editImageArr.length) {
-        storeLocal.set("customizeImageArr", this.editImageArr);
-        this.$notify({
-          title: this.$t("tip-text"),
-          message: this.$t("save-succ")
-        });
-      } else {
-        this.$notify({
-          title: this.$t("tip-text"),
-          message: this.$t("no-cur-area")
-        });
-      }
-    },
-    cancelEditBtn() {
-      this.btnList.map(item => {
-        return (item.flag = false);
-      });
-      // this.removeEditableFunc();
-      //清除盒子下新增的子节点
-      let oBox = this.$refs.imgEdit;
-      oBox.innerHTML = "";
-      this.editImageArr = [];
-      this.userCustomizeArr = [];
-      this.userDataImage = [];
-      // 默认运单识别,或着用户之前选择的类型
-      // this.type = "";
-    },
+    // saveCustomize() {
+    //   // 保存用户本次自定义区域相关数据存放在本地缓存中，演示用，具体项目，可能需要结合模板管理功能，联系用户账号
+    //   if (this.editImageArr.length) {
+    //     storeLocal.set("customizeImageArr", this.editImageArr);
+    //     this.$notify({
+    //       title: this.$t("tip-text"),
+    //       message: this.$t("save-succ")
+    //     });
+    //   } else {
+    //     this.$notify({
+    //       title: this.$t("tip-text"),
+    //       message: this.$t("no-cur-area")
+    //     });
+    //   }
+    // },
+    // cancelEditBtn() {
+    //   this.btnList.map(item => {
+    //     return (item.flag = false);
+    //   });
+    //   // this.removeEditableFunc();
+    //   //清除盒子下新增的子节点
+    //   let oBox = this.$refs.imgEdit;
+    //   oBox.innerHTML = "";
+    //   this.editImageArr = [];
+    //   this.userCustomizeArr = [];
+    //   this.userDataImage = [];
+    // },
     // 处理谷歌通用印刷体识别
     handleGoogleOcrData(resData) {
       let responses = resData.responses || [];
