@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-05-12 17:36:54
+ * @LastEditTime: 2020-05-20 16:23:54
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -456,8 +456,6 @@ export default {
       width: 0,
       height: 0
     };
-    // 从缓存读取editImageArr,现在做成模板匹配，用户上传图片，调用接口匹配模板，命中，则直接识别显示结果
-    this.customizeImageArrInLocal = storeLocal.get("customizeImageArr") || [];
     // 提前创建好canvas元素
     this.myCanvas = document.createElement("canvas");
     this.myCtx = this.myCanvas.getContext("2d");
@@ -638,22 +636,6 @@ export default {
       oBox.onmousedown = null;
     },
     /**
-     * @name: getBase64Image
-     * @msg: 图片对象转base64
-     * @param {img}
-     * @return:dataURL
-     */
-    getBase64Image(img) {
-      let canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      let ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, img.width, img.height);
-      let ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
-      let dataURL = canvas.toDataURL("image/" + ext);
-      return dataURL;
-    },
-    /**
      * @name: blobToDataURL
      * @msg: 将二进制图片转换成base64,blob to dataURL
      * @param {fileblob,callback}
@@ -711,26 +693,24 @@ export default {
         height: this.bill_height + "px",
         transform: "rotate(0)"
       };
-      //用户上传成功匹配模板
-      this.templateMatching();
     },
-    /**
-     * @name: templateMatching
-     * @msg: 模板匹配接口，匹配到直接识别显示结果,从缓存获取templateData,没有则从数据库里读取
-     * @param {type}
-     * @return:
-     */
-    templateMatching() {
-      // 优先和本地保存的模板进行匹配
-      let templateDataArr = storeSession.get("templateData") || [];
-      if (templateDataArr.length) {
-        //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
-        let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
-        this.matchTemplateItem = templateItem;
-        // 弹出模板匹配确认提示模态框
-        this.tempMatchingDialog = true;
-      }
-    },
+    // /**
+    //  * @name: templateMatching
+    //  * @msg: 模板匹配接口，匹配到直接识别显示结果,从缓存获取templateData,没有则从数据库里读取
+    //  * @param {type}
+    //  * @return:
+    //  */
+    // templateMatching() {
+    //   // 优先和本地保存的模板进行匹配
+    //   let templateDataArr = storeSession.get("templateData") || [];
+    //   if (templateDataArr.length) {
+    //     //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
+    //     let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
+    //     this.matchTemplateItem = templateItem;
+    //     // 弹出模板匹配确认提示模态框
+    //     this.tempMatchingDialog = true;
+    //   }
+    // },
     /**
      * @name: beforeRead
      * @msg: 图片上传前校验
@@ -773,13 +753,7 @@ export default {
       oBox.innerHTML = "";
       this.resetArr();
       // 上传图片加载动态
-      this.uploadImgLoading = true;
-      //从本地缓存获取到上次自定义区域数据，提示给用户
-      //调用模板匹配接口!!!!
-      this.customizeImageArrInLocal = storeLocal.get("customizeImageArr") || [];
-      if (this.customizeImageArrInLocal.length) {
-        this.tempMatchingDialog = true;
-      }
+      this.uploadImgLoading = true;     
       return true;
     },
     /**

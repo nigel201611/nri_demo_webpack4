@@ -1,3 +1,8 @@
+<!--
+ * @Author: nigel
+ * @Date: 2020-03-19 17:42:36
+ * @LastEditTime: 2020-05-20 16:42:28
+--> 
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div
@@ -16,33 +21,25 @@
       accept="image/jpg, image/jpeg, image/png"
       :on-success="handleUploadSuccess"
     >
-      <el-button
-        class="upload_btn"
-        size="small"
-        type="primary"
-      >
-        {{ $t('upload-btn-text') }}
-      </el-button>
+      <el-button class="upload_btn" size="small" type="primary">{{ $t('upload-btn-text') }}</el-button>
       <span class="tip">{{ $t('upload-btn-tip') }}</span>
     </el-upload>
 
     <div class="btn-list">
       <el-row class="choice-type">
         <el-select
-          v-model="type"
+          v-model="template_id"
           size="small"
-          clearable
           :disabled="!imageUrl"
           class="detectionList"
           :placeholder="$t('upload-placehoder')"
-          @clear="handleClearSelect"
           @change="handleChangeSelect"
         >
           <el-option
-            v-for="item in btnList"
-            :key="$t(item.text)"
-            :label="$t(item.text)"
-            :value="item.type"
+            v-for="item in templateDataArr"
+            :key="item.temp_id"
+            :label="item.temp_id"
+            :value="item.temp_id"
           />
         </el-select>
 
@@ -51,227 +48,54 @@
           type="success"
           size="small"
           @click="confirmDetect"
-        >
-          {{ $t('confirm-detect') }}
-        </el-button>
-        <!-- <el-button
-          :disabled="!imageUrl"
-          type="primary"
-          size="small"
-          @click="saveCustomize"
-        >
-          {{ $t('save-current') }}
-        </el-button>
-        <el-button
-          :disabled="!imageUrl"
-          type="primary"
-          size="small"
-          @click="cancelEditBtn"
-        >
-          {{ $t('clear-area') }}
-        </el-button> -->
-      </el-row>
-
-      <el-row
-        v-show="imageUrl"
-        class="image-btn"
-      >
-        <el-button
-          :title="$t('rotate')"
-          type="info"
-          size="small"
-          class="fa fa-rotate-right"
-          @click="handleClockwise"
-        />
-        <el-button
-          :disabled="deg==-360"
-          :title="$t('anticlock-rotate')"
-          type="info"
-          size="small"
-          class="fa fa-rotate-left"
-          @click="handleAnticlockwise"
-        />
-        <el-button
-          :title="$t('scale-pic')"
-          type="info"
-          size="small"
-          class="fa fa-search-plus"
-          @click="handleEnlarge"
-        />
-        <el-button
-          :title="$t('zooms-in')"
-          type="info"
-          size="small"
-          class="fa fa-search-minus"
-          @click="handleShrink"
-        />
-        <el-button
-          :title="$t('reset-btn')"
-          class="fa fa-hand-stop-o"
-          :disabled="!imageUrl"
-          type="primary"
-          size="small"
-          @click="handleReset"
-        />
+        >{{ $t('confirm-detect') }}</el-button>
       </el-row>
     </div>
 
-    <el-dialog
-      :title="$t('confirm-dialog-title')"
-      :visible.sync="restoreDialogVisible"
-      width="30%"
-    >
-      <span>{{ $t('confirm-dialog-tip') }}</span>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          type="info"
-          @click="handleNoTip"
-        >{{ $t('no-tip') }}</el-button>
-        <el-button @click="restoreDialogVisible = false">{{ $t('dialog-cancel-btn') }}</el-button>
-        <el-button
-          type="primary"
-          @click="handleConfirmRestore"
-        >{{ $t('dialog-confirm-btn') }}</el-button>
-      </span>
-    </el-dialog>
-
     <!-- 可以供用户自定义区域 -->
     <div class="usercustomize_area">
-      <img
-        ref="imgElem"
-        class="imgElem"
-        :height="bill_height"
-        :width="bill_width"
-        :src="imageUrl"
-      >
-      <div
-        ref="imgEdit"
-        v-loading="uploadImgLoading"
-        :element-loading-text="$t('customize-area-loading-tip')"
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(0, 0, 0, 0.6)"
-        class="img-wrap"
-        :style="imgObj"
-      />
+      <div ref="imgEdit" class="img-wrap" :style="imgObj" />
       <!-- 展示自定义区域识别结果 -->
-      <div
-        v-if="resDetectDataArr.length"
-        class="result_wrap"
-      >
-        <el-card
-          v-for="(item,index) in resDetectDataArr"
-          :key="index"
-          class="box-card"
-        >
-          <div
-            slot="header"
-            class="clearfix box-card_header"
-          >
+      <div v-if="resDetectDataArr.length" class="result_wrap">
+        <el-card v-for="(item,index) in resDetectDataArr" :key="index" class="box-card">
+          <div slot="header" class="clearfix box-card_header">
             <span>{{ $t(resTitleArr[item.type]) }}</span>
-            <el-badge
-              v-if="item.confidence!=0"
-              :value="item.confidence+'%'"
-              class="confidence"
-            >
+            <el-badge v-if="item.confidence!=0" :value="item.confidence+'%'" class="confidence">
               <span>{{ $t('result-confidence') }}</span>
             </el-badge>
-            <el-badge
-              v-else
-              value="0"
-              class="confidence"
-            >
+            <el-badge v-else value="0" class="confidence">
               <span>{{ $t('result-confidence') }}</span>
             </el-badge>
           </div>
           <div class="text item">
-            <img :src="item.imgUrl">
+            <img :src="item.imgUrl" />
             <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
             <p
               v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'"
-            >
-              {{ item.text }}
-            </p>
+            >{{ item.text }}</p>
             <p v-else-if="item.code==0&&item.type=='nri_T_general'">
-              <el-table
-                :data="item.text"
-                height="300"
-                style="width: 100%"
-              >
-                <el-table-column
-                  type="index"
-                  width="50"
-                />
-                <el-table-column
-                  prop="itemstring"
-                  :label="$t('recog_result')"
-                  align="left"
-                />
-                <el-table-column
-                  prop="itemconf"
-                  :label="$t('recog_confidence')"
-                  align="left"
-                />
+              <el-table :data="item.text" height="300" style="width: 100%">
+                <el-table-column type="index" width="50" />
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
               </el-table>
             </p>
             <p v-else-if="item.code==0&&item.type=='nri_G_general'">
-              <el-table
-                :data="item.text"
-                height="300"
-                style="width: 100%"
-              >
-                <el-table-column
-                  type="index"
-                  width="50"
-                />
-                <el-table-column
-                  prop="itemstring"
-                  :label="$t('recog_result')"
-                  align="left"
-                />
-                <el-table-column
-                  prop="itemconf"
-                  :label="$t('recog_confidence')"
-                  align="left"
-                />
+              <el-table :data="item.text" height="300" style="width: 100%">
+                <el-table-column type="index" width="50" />
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
               </el-table>
             </p>
             <p v-else-if="item.code==1&&item.type=='nri_G_general'">
-              <el-table
-                :data="item.text"
-                height="300"
-                style="width: 100%"
-              >
-                <el-table-column
-                  type="index"
-                  width="50"
-                />
-                <el-table-column
-                  prop="itemstring"
-                  :label="$t('recog_result')"
-                  align="left"
-                />
-                <el-table-column
-                  prop="itemconf"
-                  :label="$t('recog_confidence')"
-                  align="left"
-                />
+              <el-table :data="item.text" height="300" style="width: 100%">
+                <el-table-column type="index" width="50" />
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
               </el-table>
             </p>
-            <p
-              v-else-if="item.code==-1"
-              class="error"
-            >
-              {{ $t('reuslt-error') }}
-            </p>
-            <p
-              v-else
-              class="error"
-            >
-              {{ $t('backend_error') }}
-            </p>
+            <p v-else-if="item.code==-1" class="error">{{ $t('reuslt-error') }}</p>
+            <p v-else class="error">{{ $t('backend_error') }}</p>
           </div>
         </el-card>
       </div>
@@ -291,23 +115,16 @@
   .usercustomize_area {
     position: relative;
     overflow-x: auto;
-    .imgElem {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform-origin: 50% 50%;
-      opacity: 0;
-    }
   }
   .img-wrap {
     position: relative;
     margin: 0 30px 10px 0;
-    cursor: crosshair;
+    overflow: hidden;
+    // cursor: crosshair;
     float: left;
     .rect_item {
       z-index: 99999;
     }
-    // overflow-x: auto;
   }
   .btn-list {
     margin: 0 0 80px 0;
@@ -407,12 +224,7 @@ export default {
     return {
       isRequesting: false, //控制请求次数和加载状态
       imageUrl: "",
-      btnList: [
-        { flag: false, text: "express-bill-dectect", type: "expressbill" },
-        { flag: false, text: "postcode-dectect", type: "postcode" },
-        { flag: false, text: "T_general", type: "T_general" },
-        { flag: false, text: "G_general", type: "G_general" }
-      ], //用于保存类型功能按钮
+      templateDataArr: [], //模板对象数据
       resTitleArr: {
         nri_expressbill: "waybill-result",
         nri_postcode: "zipcode-result",
@@ -431,17 +243,8 @@ export default {
       bill_height: "400", //運單默認高度
       result: "", //图片识别结果
       dialogVisible: false, //控制对话框关闭
-      type: "expressbill", //标识当前识别类型
-      origin: {
-        x: 0,
-        y: 0
-      }, //鼠标刚开始按下的点
-      deg: 0, //旋转的角度，默认从0度开始
-      uploadImgLoading: false, //用于控制图片上传时有一个加载动效
-      endpoint: { x: 0, y: 0 }, //鼠标移动后终点坐标
-      // userDataImage: [], //保存用户自定义区域转换后的图片数据,base64格式
+      template_id: "", //默认显示的模板id，后面改为模板名称
       resDetectDataArr: [], //自定义区域图片识别后返回的数据
-      restoreDialogVisible: false, //用于控制是否加载上次保存过的自定义区域数据标识
       editImageArr: [] //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
     };
   },
@@ -458,153 +261,18 @@ export default {
   mounted() {
     this.userCustomizeArr = []; //用于保存用户自定义区域图片相关发送接口请求参数
     this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
-    this.startXY = { x: 0, y: 0 }; //用于保存用户按下鼠标起点x,y注意和offsetX区别
-    this.endXY = { x: 0, y: 0 }; //用于保存用户按下鼠标终点x,y注意和offsetX区别，和startXY一起用于准确计算宽高
-    this.dragInfoWidthHeight = {
-      width: 0,
-      height: 0
-    };
-    this.exceedSize = false; //用于标识上传图片是否超过限制D
-    // 从缓存读取editImageArr
-    this.customizeImageArrInLocal = storeLocal.get("customizeImageArr") || [];
     // 提前创建好canvas元素
     this.myCanvas = document.createElement("canvas");
     this.myCtx = this.myCanvas.getContext("2d");
-    this.OriginImageUrl = "";
-    this.scaleMini = 1; //缩小比例
-    this.scaleMax = 1; //放大比例
-    this.scaleStep = 0;
+    this.imageType = "image/jpeg";
+    this.matchTemplateItem = [];
+    this.templateObj = null;
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
   },
   methods: {
-    addEditableFunc() {
-      let oBox = this.$refs.imgEdit;
-      //鼠标按下，获取初始点
-      oBox.onmousedown = ev => {
-        //事件延迟性，如果用户框选了区域后，再次选择识别类型下拉框，这里的this.type还是上次的，并没有及时获取到
-        //那么需要提示用户选择对应类型
-        if (!this.type) {
-          this.$notify({
-            title: this.$t("warning-text"),
-            type: "warning",
-            message: this.$t("choice-recognition-type")
-          });
-          //把之前画出的区域删除,并且oBox不只有一个孩子节点
-          oBox.innerHTML = "";
-          return false;
-        }
-        ev = window.event || ev;
-        //1.获取按下的点
-        let x1 = ev.offsetX;
-        let y1 = ev.offsetY;
-        //记录鼠标按下的点
-        this.origin = {
-          x: x1,
-          y: y1
-        };
-        this.startXY = {
-          x: ev.x,
-          y: ev.y
-        };
-        //2.创建div
-        let oDiv = document.createElement("div");
-        oDiv.setAttribute("class", "rect_item");
-        oBox.onmousemove = e => {
-          // 会不断触发
-          e = window.event || e;
-          let x2 = e.offsetX;
-          let y2 = e.offsetY;
-          this.endXY = {
-            x: e.x,
-            y: e.y
-          };
-          let x1 = this.origin.x,
-            y1 = this.origin.y;
-          // 鼠标移动的点处理，为啥往右下移动过程中，横坐标会变小,offsetX有问题
-          let width = Math.abs(this.endXY.x - this.startXY.x);
-          let height = Math.abs(this.endXY.y - this.startXY.y);
-
-          //对width和height做限制至少大于25
-          this.dragInfoWidthHeight = {
-            width,
-            height
-          };
-          //3.设置div的样式,2,61分别矫正位置用
-          oDiv.style.left = x1 + "px";
-          oDiv.style.top = y1 + "px";
-          oDiv.style.width = width + "px";
-          oDiv.style.height = height + "px";
-          oDiv.style.border = "1px solid red";
-          oDiv.style.position = "absolute";
-          this.endpoint = {
-            x: x2,
-            y: y2
-          };
-          oBox.appendChild(oDiv);
-          if (width <= 30) {
-            oBox.removeChild(oDiv);
-          }
-          // 记录用户自定义区域的原点和宽高，保存在对象中,并且添加是什么类型的识别，比如运单还是邮编，typearr=[expressbill,postcode]
-          //如果在这里面记录坐标相关信息,会反复触发多次
-        };
-
-        oBox.onmouseup = () => {
-          let x1 = this.origin.x,
-            y1 = this.origin.y;
-          // 记录用户自定义区域的原点和宽高，保存在对象中,并且添加是什么类型的识别，比如运单还是邮编，typearr=[expressbill,postcode]
-          // 目前限制每个类型识别只能自定义一个区域
-          //推送到editImageArr可以判断对应类型有没有数据，如果有，提示用户
-          //如果已经有该类型区域
-          // 注释掉先
-          // if (that.hasClickedTypeFunc()) {
-          //   return false;
-          // }
-          // 对width和height做限制,至少大于25
-          let { width, height } = this.dragInfoWidthHeight;
-          if (width > 30) {
-            this.editImageArr.push({
-              type: this.type,
-              x: x1,
-              y: y1,
-              width: width,
-              height: height
-            });
-          }
-        };
-      };
-      //在鼠标抬起后终止onmousemove事件
-      document.onmouseup = function() {
-        oBox.onmousemove = null;
-        oBox.onmouseup = null;
-      };
-    },
     // 限制某种识别类型只能是一个区域
-    hasClickedTypeFunc() {
-      let imageArr = this.editImageArr;
-      let hastypeFlag = imageArr.some(item => {
-        return item.type == this.type;
-      });
-      if (hastypeFlag) {
-        this.$notify({
-          title: this.$t("warning-text"),
-          type: "warning",
-          message: this.$t("limit-one-cur-area-tip")
-        });
-        // 清除当前画出的rect_item,还有种情况是用户只是单击了下，由于促发了mouseup,mousedown，需要判断下是否只有一个孩子节点
-        let oBox = this.$refs.imgEdit;
-        // 这种清除最后孩子节点，有时候有些问题!!
-        let lastChild = oBox.lastElementChild
-          ? oBox.lastElementChild
-          : oBox.lastChild;
-        if (oBox.childElementCount != 1) {
-          oBox.removeChild(lastChild);
-        }
-
-        return true;
-      }
-    },
     removeEditableFunc() {
       let oBox = this.$refs.imgEdit;
       oBox.innerHTML = "";
@@ -619,11 +287,10 @@ export default {
       canvas.height = img.height;
       let ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, img.width, img.height);
-      let ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
-      let dataURL = canvas.toDataURL("image/" + ext);
+      let dataURL = canvas.toDataURL(this.imageType);
       return dataURL;
     },
-    //**blob to dataURL**
+    //**blob to dataURL**/
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
       filereader.onload = function(e) {
@@ -632,149 +299,51 @@ export default {
       filereader.readAsDataURL(fileblob);
       return filereader;
     },
-    handleReset() {
-      this.deg = 0;
-      let oBox = this.$refs.imgEdit;
-      oBox.innerHTML = "";
-      this.type = "";
-      this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
-      this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
-      this.scaleMax = 1;
-      this.imageUrl = this.OriginImageUrl;
-      this.imgObj.background = `url(${this.imageUrl}) no-repeat 0 0`;
-      this.imgObj.transform = `scale(1)`;
-    },
-    rotateCanvasDeg() {
-      let imgElem = this.$refs.imgElem;
-      //不是通过样式旋转背景,而是通过canvas旋转，然后在转换图片，后面框图得到的数据才会准确
-      let width = imgElem.width;
-      let height = imgElem.height;
-      this.myCanvas.width = width;
-      this.myCanvas.height = height;
-      // this.myCanvas.style.transform = `rotate(${this.deg}deg)`;
-      this.myCtx.save();
-      this.myCtx.clearRect(0, 0, width, height);
-      // 中心旋转图片
-      this.myCtx.translate(width / 2, height / 2);
-      // 转换弧度
-      this.myCtx.rotate((this.deg / 180) * Math.PI);
-      this.myCtx.translate(-width / 2, -height / 2);
-      // 不需要绘制到中心，本身画布就保持和图片一样大小的！！！！
-      this.myCtx.drawImage(imgElem, 0, 0, width, height);
-      this.myCtx.restore();
-      // 再将canvas转换图片
-      return this.myCanvas.toDataURL("image/jpeg");
-    },
-    //顺时针旋转图片
-    handleClockwise() {
-      this.deg++;
-      this.deg %= 360;
-      let curImageUrl = this.rotateCanvasDeg(this.deg);
-      //保存每次旋转后的图片数据，base64
-      this.base64ImageData = curImageUrl;
-      this.imgObj.background = `url(${curImageUrl}) no-repeat 0 0`;
-    },
-    //逆时针旋转图片
-    handleAnticlockwise() {
-      this.deg--;
-      this.deg %= 360;
-      let curImageUrl = this.rotateCanvasDeg(this.deg);
-      //保存每次旋转后的图片数据，base64
-      this.base64ImageData = curImageUrl;
-      this.imgObj.background = `url(${curImageUrl}) no-repeat 0 0`;
-    },
-    handleEnlarge() {
-      //图片放大
-      this.scaleMax += 0.01;
-      ++this.scaleStep; //用于计数用户单击多少次放大
-      if (this.scaleMax >= 1.5) {
-        //最大1.5倍
-        this.scaleMax = 1;
-        this.$notify({
-          title: this.$t("tip-text"),
-          message: this.$t("scale-max-tip")
-        });
-        return false;
+    /**
+     * @name: handleChangeSelect
+     * @msg: 用户选择模板
+     * @param {temp_id}
+     * @return:
+     */
+    handleChangeSelect(id) {
+      this.template_id = id;
+      const templateDataArr = JSON.parse(JSON.stringify(this.templateDataArr));
+      for (let i = 0; i < templateDataArr.length; i++) {
+        let item = templateDataArr[i];
+        if (item["temp_id"] == id) {
+          this.templateObj = item;
+        }
       }
-      let scale = this.scaleMax;
-      this.imgObj.transform = `scale(${scale})`;
+      //清理之前自定框
+      this.resetArr();
+      const blockItems = this.templateObj["blockItem"];
+      this.drawCustomArea(blockItems);
     },
-    handleShrink() {
-      //图片缩小
-      this.scaleMax -= 0.01;
-      // 在原来的基础上缩小
-      if (this.scaleMax < 1) {
-        //最大2.5倍
-        this.scaleMax = 1;
-        this.$notify({
-          title: this.$t("tip-text"),
-          message: this.$t("scale-min-tip")
-        });
-
-        return false;
-      }
-
-      let scale = this.scaleMax;
-      this.imgObj.transform = `scale(${scale})`;
-    },
-    handleClearSelect() {
+    /**
+     * @name: drawReact
+     * @msg: 根据模板里自定区域数据，绘制区域
+     * @param {blockItems}
+     * @return:
+     */
+    drawCustomArea(blockItems) {
       let oBox = this.$refs.imgEdit;
-      oBox.innerHTML = "";
-      this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
-      this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
+      for (let j = 0; j < blockItems.length; j++) {
+        // 添加新模板上自定区域
+        let block = blockItems[j].block;
+        let oDiv = this.drawRect(block.x, block.y, block.width, block.height);
+        oDiv.setAttribute("id", blockItems[j].block_id);
+        oBox.appendChild(oDiv);
+      }
     },
-    handleChangeSelect(type) {
-      this.type = type;
-    },
-    // 获取图片的元数据属性
-    // getExif(img) {
-    //   Exif.getData(img, function() {
-    //     let Orientation = Exif.getTag(this, "Orientation");
-    //     // console.log(Orientation);
-    //   });
-    // },
     handleUploadSuccess(res, file) {
       //先删除之前添加的框图事件，以免重复添加
       this.removeEditableFunc();
-      // 添加框图或者自定义图片区域相关事件
-      this.addEditableFunc();
       // 关闭加载进度
-      this.uploadImgLoading = false;
+      let that = this;
       // 通过URL.createObjectURL生成零时用图片链接
       // 在上传成功后，根据imageUrl通过canvas生成base64,方便以后真实放大旋转图片用
       // 这样在框图的时候也是框的真实图片数据
-      if (!this.exceedSize) {
-        console.log("the image not exceed size");
-        this.imageUrl = URL.createObjectURL(file.raw);
-        this.OriginImageUrl = this.imageUrl;
-      }
-
-      this.base64ImageData = "";
-      // 上传成功重置类型为空,默认运单识别
-      // this.type = "";
-      this.imgObj = {
-        background: `url(${this.imageUrl}) no-repeat 0 0`,
-        backgroundSize: "cover",
-        width: this.bill_width + "px",
-        height: this.bill_height + "px",
-        transform: "rotate(0)"
-      };
-    },
-    // 图片上传前校验
-    beforeRead(file) {
-      let imgSize = file.size;
-      let maxSize = 5 * 1048576;
-      if (imgSize > maxSize) {
-        this.$notify({
-          title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-tip")
-        });
-        return false;
-      }
-      let type = file.type;
-      this.exceedSize = false;
-      let that = this;
-      this.blobToDataURL(file, function(dataurl) {
+      this.blobToDataURL(file.raw, function(dataurl) {
         let image = new Image();
         image.onload = function() {
           let width = image.width;
@@ -783,8 +352,6 @@ export default {
           that.bill_height = height;
           //限制图片宽
           let iswidthAllow = width >= 1920;
-          // 获取图片元数据属性,暂时不需要矫正用户横着的图片
-          // that.getExif(image);
           if (iswidthAllow) {
             //如果用户上传的图片宽大于1920,那么固定显示区域宽高
             that.$notify({
@@ -803,215 +370,105 @@ export default {
             image.width = fixedWidth;
             image.height = fixedHeight;
             that.imageUrl = that.getBase64Image(image);
-            that.OriginImageUrl = that.imageUrl;
-            that.exceedSize = true;
+          } else {
+            that.imageUrl = that.getBase64Image(image);
           }
+          that.imgObj = {
+            background: `url(${that.imageUrl}) no-repeat 0 0`,
+            backgroundSize: "cover",
+            width: that.bill_width + "px",
+            height: that.bill_height + "px",
+            transform: "rotate(0)"
+          };
+          //用户上传成功匹配模板
+          that.templateMatching();
         };
         image.src = dataurl;
       });
-
-      // 对上传的大小和type做处理
-      if (
-        type !== "image/jpeg" &&
-        type !== "image/jpg" &&
-        type !== "image/png"
-      ) {
-        this.$notify({
-          title: this.$t("upload-type-error"),
-          message: this.$t("upload-type-error-tip")
-        });
-        return false;
-      }
-      this.result = "";
-      this.imageUrl = "";
-      this.deg = 0;
-      this.imgObj = {
-        background: `url(${this.imageUrl}) no-repeat 0 0`,
-        backgroundSize: "cover",
-        width: this.bill_width + "px",
-        height: this.bill_height + "px",
-        transform: "rotate(0)"
-      };
-      // 前面校验通过，显示上传图片加载动效,并将之前上传的数据清空
-      let oBox = this.$refs.imgEdit;
-      oBox.innerHTML = "";
-      this.resetArr();
-      // 上传图片加载动态
-      this.uploadImgLoading = true;
-      //从本地缓存获取到上次自定义区域数据，提示给用户
-      this.customizeImageArrInLocal = storeLocal.get("customizeImageArr") || [];
-      if (this.customizeImageArrInLocal.length) {
-        // 让用户自己选择是否恢复上次保存过的自定义区域
-        this.restoreDialogVisible = true;
-      }
-      return true;
     },
-    drawRect(x1, y1, width, height) {
-      let oDiv = document.createElement("div");
-      oDiv.setAttribute("class", "rect_item");
-      oDiv.style.left = x1 + "px";
-      oDiv.style.top = y1 + "px";
-      oDiv.style.width = width + "px";
-      oDiv.style.height = height + "px";
-      oDiv.style.border = "1px solid red";
-      oDiv.style.position = "absolute";
-      return oDiv;
-    },
-
-    handleConfirmRestore() {
-      // 让type默认恢复到之前选择的
-      // this.type = storeLocal.get("type") || '';
-      this.editImageArr = this.customizeImageArrInLocal;
-      // 根据相应数据，画出对应区域标识框
-      let oBox = this.$refs.imgEdit;
-      for (let i = 0; i < this.editImageArr.length; i++) {
-        let item = this.editImageArr[i];
-        let oDiv = this.drawRect(item.x, item.y, item.width, item.height);
-        oBox.appendChild(oDiv);
-      }
-      this.restoreDialogVisible = false;
-    },
-
-    handleNoTip() {
-      this.restoreDialogVisible = false;
-      //清理缓存
-      storeLocal.remove("customizeImageArr");
-    },
-
-    resetArr() {
-      this.removeEditableFunc();
-      this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
-      this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
-      this.resDetectDataArr = []; //自定义区域图片识别后返回的数据
-      this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
-    },
-
-    // saveCustomize() {
-    //   // 保存用户本次自定义区域相关数据存放在本地缓存中，演示用，具体项目，可能需要结合模板管理功能，联系用户账号
-    //   if (this.editImageArr.length) {
-    //     storeLocal.set("customizeImageArr", this.editImageArr);
-    //     this.$notify({
-    //       title: this.$t("tip-text"),
-    //       message: this.$t("save-succ")
-    //     });
-    //   } else {
-    //     this.$notify({
-    //       title: this.$t("tip-text"),
-    //       message: this.$t("no-cur-area")
-    //     });
-    //   }
-    // },
-    // cancelEditBtn() {
-    //   this.btnList.map(item => {
-    //     return (item.flag = false);
-    //   });
-    //   // this.removeEditableFunc();
-    //   //清除盒子下新增的子节点
-    //   let oBox = this.$refs.imgEdit;
-    //   oBox.innerHTML = "";
-    //   this.editImageArr = [];
-    //   this.userCustomizeArr = [];
-    //   this.userDataImage = [];
-    // },
-    // 处理谷歌通用印刷体识别
-    handleGoogleOcrData(resData) {
-      let responses = resData.responses || [];
-      // 确认返回的responses有数据
-      const googleItems = [];
-      if (responses.length && JSON.stringify(responses[0]) != "{}") {
-        // 默认至于单个请求体，或者一个页面的请求
-        let firstPage_response = responses[0] || {};
-        let pagesArr = firstPage_response.fullTextAnnotation.pages;
-        // pages里保存了blocks，blocks保存了识别出来的每行文字信息或者段落信息，以及对应的每行坐标
-        //从blocks取出每行文字以及对应的confidence
-        let blocksArr = pagesArr[0].blocks; //由于发送的请求只有一个，所以默认取第一个blocks
-        //从blocksArr中获取该页面每行文字信息和坐标
-        for (let i = 0; i < blocksArr.length; i++) {
-          let block = blocksArr[i];
-          let obj = {
-            itemstring: "",
-            itemconf: ""
-          };
-          // confidence
-          if (block["property"] && block["property"]["detectedLanguages"]) {
-            // block["property"]["detectedLanguages"][0].confidence || 1; //没有默认给个1?
-            obj.itemconf =
-              block["property"]["detectedLanguages"][0].confidence || 0;
-          }
-          // 里面保存了每段或者每行的所有字符，将他们串联起来，保存到itemstring里
-          let paragraphs = block.paragraphs[0];
-          let words = paragraphs.words;
-          obj.itemstring = words.reduce((total, word) => {
-            let symbols = word.symbols;
-            symbols.forEach(element => {
-              total += element.text;
-            });
-            return total;
-          }, "");
-          googleItems.push(obj);
-          //使用canvas绘制识别出的文本行在原图中矩形框
-        }
-      }
-      return googleItems;
-    },
-    // 确认识别
-    confirmDetect() {
-      //将this.editImageArr里保存的数据取出来，转换对应区域图片
-      //判断editImageArr当前是否只有一个区域数据，如果只有一个，用户切换识别类型的时候需要更改对应的type
-      let imgArr = this.editImageArr;
-      if (imgArr.length == 1) {
-        //矫正当前识别类型,以免用户误解
-        imgArr[0].type = this.type;
-      }
-      // 这里有时候，用户明明已经编辑了区域，却还是提示！！！可能有些问题
-      if (imgArr.length == 0) {
-        this.$notify({
-          title: this.$t("warning-text"),
-          type: "warning",
-          message: this.$t("at-least-one-area")
-        });
-        return;
-      }
-      this.resDetectDataArr = [];
-      this.userDataImage = [];
-      this.userCustomizeArr = [];
-      //转换
-      // 图片裁剪:drawImage方法的功用是对图像进行裁剪。drawImage(image,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth, destHeight)
-      // 把它想成从原图中取出一个矩形区域，然后把它画到画布上目标区域里
-      //  canvas.toDataURL('image/jpeg'),默认保存png，可以传入image/jpeg
-      //userCustomizeArr
-      let image = new Image();
-      // imageUrl保存的是上传的图片地址，如果用户旋转之后已经改变了原图
-      //看图片有没有旋转过
-      if (this.deg == 0) {
-        image.src = this.imageUrl;
+    /**
+     * @name: templateMatching
+     * @msg: 模板匹配接口，匹配到直接识别显示结果,从缓存获取templateData,没有则从数据库里读取
+     * @param {type}
+     * @return:
+     */
+    templateMatching() {
+      // 优先和本地保存的模板进行匹配
+      let templateDataArr = storeSession.get("templateData") || [];
+      if (templateDataArr.length) {
+        this.templateDataArr = templateDataArr;
+        this.template_id = templateDataArr[0].temp_id;
+        //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
+        let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
+        this.matchTemplateItem = templateItem;
+        let blockItems = this.matchTemplateItem.blockItem;
+        this.drawCustomArea(blockItems);
+        // 调用识别引擎识别显示结果
+        this.requestOcrEngine(blockItems);
+        // 弹出模板匹配确认提示模态框
       } else {
-        image.src = this.base64ImageData;
+        //提醒用户新增模板
+        this.$confirm(this.$t("add_template_tip"), this.$t("tip-text"), {
+          confirmButtonText: this.$t("confirm"),
+          cancelButtonText: this.$t("cancel"),
+          type: "warning"
+        })
+          .then(() => {
+            return this.$router.push({
+              name: "customizeOcr"
+            });
+          })
+          .catch(() => {});
       }
-
-      //保存对应生成图片数据
-      for (let i = 0; i < imgArr.length; i++) {
-        let item = imgArr[i];
-        let { x, y, width, height, type } = item;
-        let obj = {};
-        let canvas = document.createElement("canvas"); //创建canvas元素
-        canvas.setAttribute("width", width);
-        canvas.setAttribute("height", height);
-        let ctx = canvas.getContext("2d");
-        ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
-        // 将canvas转化base64
-        obj.image = canvas.toDataURL("image/jpeg");
-        let dataurl = obj.image;
-        // 将canvas转换的图片，保存到数组中userDataImage，后面请求接口返回的数据，可以对应展示
-        // this.userDataImage["nri" + type] = dataurl;
-        this.userDataImage.push({ imgUrl: dataurl });
-        // 按照接口对参数的要求，不需要拓展名
-        obj.image = dataurl.substring(dataurl.indexOf(",") + 1);
-        obj.request_id = Date.now() + "";
-        obj.appid = "nri_" + type; //管理员分配,字符串,比userDataImage里的type多了nri前缀
-        this.userCustomizeArr.push(obj);
+    },
+    /**
+     * @name: requestOcrEngine
+     * @msg: 根据用户自定区域调用引擎识别
+     * @param {}
+     * @return:
+     */
+    async requestOcrEngine(blockItems) {
+      // 模板数据，如果用户在后面有修改了这个模板数据，修改后保存，应该是更新对应模板数据，而不是新增。
+      // 所以需要有一个temp_id判断当前是否已经存在
+      if (blockItems.length) {
+        this.resDetectDataArr = []; //返回数据
+        this.userCustomizeArr = []; //请求参数处理
+        let templateData = [];
+        this.editImageArr = [];
+        for (let i = 0; i < blockItems.length; i++) {
+          let item = blockItems[i];
+          // 根据坐标信息转图片 {x: 279, y: 414, width: 218, height: 55}
+          let block = item.block;
+          let imageData = await this.getImageByPointsInfo(block);
+          // 判断下imageData类型
+          if (typeof imageData == "string") {
+            let blockItem = {
+              block_id: item.block_id,
+              name: item.name,
+              ocr_engine: item.ocr_engine,
+              block: item.block,
+              image: imageData //保存到数据库或者本地，不需要保存这个字段数据
+            };
+            templateData.push(blockItem);
+            this.editImageArr.push(block);
+            let obj = {};
+            obj.image = imageData.substring(imageData.indexOf(",") + 1);
+            obj.request_id = Date.now() + "";
+            obj.appid = "nri_" + item.ocr_engine; //管理员分配,字符串,比userDataImage里的type多了nri前缀
+            this.userCustomizeArr.push(obj);
+          }
+        }
+        this.TemplateData = templateData;
+        this.wrapOcrEngine(templateData);
       }
-      //将数据传到后台接口，处理，识别
+    },
+    /**
+     * @name: wrapOcrEngine
+     * @msg: ocr引擎请求统一封装
+     * @param {}
+     * @return:
+     */
+    wrapOcrEngine(templateData) {
       if (this.isRequesting) {
         return;
       }
@@ -1037,7 +494,7 @@ export default {
                   resObj.height = item.data.height;
                 } else {
                   if (item.statusCode == 404) {
-                    //友好话用户提示，目前404这种直接提示联系开发人员
+                    //友好提示，目前404这种直接提示联系开发人员
                     resObj.code = 404;
                   } else {
                     resObj.code = -1;
@@ -1047,7 +504,7 @@ export default {
                   resObj.confidence = 0;
                 }
               } else if (item.type == "nri_T_general") {
-                //处理腾讯通用应刷题识别
+                //处理腾讯通用印刷识别
                 resObj.type = item.type;
                 resObj.text = item.items;
                 resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
@@ -1091,12 +548,11 @@ export default {
               }
               this.resDetectDataArr.push(resObj);
             }
-
             //合并之前保存好的base64图片数据
             let resDetectDataArrCp = this.resDetectDataArr;
             for (let i = 0; i < resDetectDataArrCp.length; i++) {
               let item = resDetectDataArrCp[i];
-              item.imgUrl = this.userDataImage[i].imgUrl;
+              item.imgUrl = templateData[i].image;
             }
             this.resDetectDataArr = resDetectDataArrCp;
           }
@@ -1105,6 +561,117 @@ export default {
           this.isRequesting = false;
           this.result = this.$t("recognition-fail");
         });
+    },
+    /**
+     * @name: getImageByPointsInfo
+     * @msg: 通过(x,y,width,height)数据获取自定区域图片base64数据
+     * @param {}
+     * @return:
+     */
+    async getImageByPointsInfo(points) {
+      return new Promise((resolve, reject) => {
+        let image = new Image();
+        image.src = this.imageUrl;
+        image.onload = () => {
+          let { x, y, width, height } = points;
+          let canvas = document.createElement("canvas"); //创建canvas元素
+          canvas.setAttribute("width", width);
+          canvas.setAttribute("height", height);
+          let ctx = canvas.getContext("2d");
+          // 裁剪图片
+          ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+          // 将canvas转化base64
+          resolve(canvas.toDataURL(this.imageType));
+        };
+        image.onerror = () => {
+          reject(new Error("Could not load image"));
+        };
+      });
+    },
+    // 图片上传前校验
+    beforeRead(file) {
+      let imgSize = file.size;
+      let maxSize = 5 * 1048576;
+      this.imageType = file.type;
+      if (imgSize > maxSize) {
+        this.$notify({
+          title: this.$t("upload-size-error"),
+          message: this.$t("upload-size-tip")
+        });
+        return false;
+      }
+      this.result = "";
+      // 前面校验通过，显示上传图片加载动效,并将之前上传的数据清空
+      let oBox = this.$refs.imgEdit;
+      oBox.innerHTML = "";
+      this.resetArr();
+      // 上传图片加载动态
+      return true;
+    },
+    drawRect(x1, y1, width, height) {
+      let oDiv = document.createElement("div");
+      oDiv.setAttribute("class", "rect_item");
+      oDiv.style.left = x1 + "px";
+      oDiv.style.top = y1 + "px";
+      oDiv.style.width = width + "px";
+      oDiv.style.height = height + "px";
+      oDiv.style.border = "2px solid #409EFF";
+      oDiv.style.background = "rgba(64,158,255,0.4)";
+      oDiv.style.position = "absolute";
+      return oDiv;
+    },
+    resetArr() {
+      this.removeEditableFunc();
+      this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
+      this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
+      this.resDetectDataArr = []; //自定义区域图片识别后返回的数据
+      this.userDataImage = []; //用于保存用户自定义区域图片base64数据,后面用于拼接到resDetectDataArr，用于展示界面数据
+    },
+    // 处理谷歌通用印刷体识别
+    handleGoogleOcrData(resData) {
+      let responses = resData.responses || [];
+      // 确认返回的responses有数据
+      const googleItems = [];
+      if (responses.length && JSON.stringify(responses[0]) != "{}") {
+        // 默认至于单个请求体，或者一个页面的请求
+        let firstPage_response = responses[0] || {};
+        let pagesArr = firstPage_response.fullTextAnnotation.pages;
+        // pages里保存了blocks，blocks保存了识别出来的每行文字信息或者段落信息，以及对应的每行坐标
+        //从blocks取出每行文字以及对应的confidence
+        let blocksArr = pagesArr[0].blocks; //由于发送的请求只有一个，所以默认取第一个blocks
+        //从blocksArr中获取该页面每行文字信息和坐标
+        for (let i = 0; i < blocksArr.length; i++) {
+          let block = blocksArr[i];
+          let obj = {
+            itemstring: "",
+            itemconf: ""
+          };
+          // confidence
+          if (block["property"] && block["property"]["detectedLanguages"]) {
+            // block["property"]["detectedLanguages"][0].confidence || 1; //没有默认给个1?
+            obj.itemconf =
+              block["property"]["detectedLanguages"][0].confidence || 0;
+          }
+          // 里面保存了每段或者每行的所有字符，将他们串联起来，保存到itemstring里
+          let paragraphs = block.paragraphs[0];
+          let words = paragraphs.words;
+          obj.itemstring = words.reduce((total, word) => {
+            let symbols = word.symbols;
+            symbols.forEach(element => {
+              total += element.text;
+            });
+            return total;
+          }, "");
+          googleItems.push(obj);
+          //使用canvas绘制识别出的文本行在原图中矩形框
+        }
+      }
+      return googleItems;
+    },
+    // 确认识别
+    confirmDetect() {
+      //判断editImageArr当前是否只有一个区域数据，如果只有一个，用户切换识别类型的时候需要更改对应的type
+      this.requestOcrEngine(this.templateObj["blockItem"]);
     }
   }
 };

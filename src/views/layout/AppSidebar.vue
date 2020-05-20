@@ -145,13 +145,13 @@ export default {
       },
       {
         id: 74,
-        permName: "self-defined-area-recognition",
+        permName: "nri_general_ocr",
         parentPermId: 71,
         permCode: "",
         permType: "MENU",
         permUrl: "/drawImg",
         iconClass: "fa fa-bell-o",
-        permDesc: "self-defined-area-recognition"
+        permDesc: "nri_general_ocr"
       },
       {
         id: 75,

@@ -6,7 +6,7 @@
         "ocr-recognition": "OCR识别",
         "waybill-recognition": "运单识别",
         "zipcode-recognition": "邮编识别",
-        "self-defined-area-recognition": "自定区域OCR",
+        "nri_general_ocr": "NRI-通用",
         "opencamera": "调用摄像头拍照",
         "tencent-general": "T-通用",
         "printed-character-recog": "印刷体文字识别",
@@ -16,7 +16,7 @@
         "seal_ocr": "印章识别",
         "worddetect": "快速文本检测",
         "google-general": "G-通用",
-        "self-defined-ocr":"自定OCR模板"
+        "self-defined-ocr": "自定OCR模板"
     },
     "en": {
         "esl-update": "ESL update",
@@ -25,7 +25,7 @@
         "ocr-recognition": "OCR recognition",
         "waybill-recognition": "Waybill",
         "zipcode-recognition": "Zip code",
-        "self-defined-area-recognition": "Self defined OCR",
+        "nri_general_ocr": "NRI-general",
         "opencamera": "Call camera",
         "tencent-general": "T-general",
         "printed-character-recog": "Printed character",
@@ -35,7 +35,7 @@
         "seal_ocr": "Seal OCR",
         "worddetect": "Fast text detection",
         "google-general": "G-general",
-        "self-defined-ocr":"Custom OCR template"
+        "self-defined-ocr": "Custom OCR template"
     },
     "ja": {
         "esl-update": "ESL更新",
@@ -44,7 +44,7 @@
         "ocr-recognition": "OCR認識",
         "waybill-recognition": "運送状の",
         "zipcode-recognition": "郵便番号の",
-        "self-defined-area-recognition": "自定区域OCR",
+        "nri_general_ocr": "NRI-汎用",
         "opencamera": "カメラを動かす",
         "tencent-general": "T-汎用",
         "printed-character-recog": "印刷体の文字",
@@ -54,6 +54,6 @@
         "seal_ocr": "印鑑の識別",
         "worddetect": "クイックテキスト検出",
         "google-general": "G-汎用",
-        "self-defined-ocr":"自定OCRテンプレート"
+        "self-defined-ocr": "自定OCRテンプレート"
     }
 }
