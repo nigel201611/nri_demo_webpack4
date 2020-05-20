@@ -30,6 +30,7 @@
         <el-select
           v-model="template_id"
           size="small"
+          :no-data-text="$t('no_data')"
           :disabled="!imageUrl"
           class="detectionList"
           :placeholder="$t('upload-placehoder')"

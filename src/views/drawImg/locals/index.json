@@ -48,7 +48,8 @@
         "backend_error": "后台可能报错了，请联系开发者处理~",
         "add_template_tip":"您还没有自定OCR模板，是否现在去自定？",
         "confirm":"确认",
-        "cancel":"取消"
+        "cancel":"取消",
+        "no_data":"无数据"
     },
     "en": {
         "hello": "hello world!",
@@ -99,7 +100,8 @@
         "backend_error": "The background may have reported an error, please contact the developer for handling~",
         "add_template_tip":"You haven't set your own OCR template yet. Do you want to set it now?",
         "confirm":"confirm",
-        "cancel":"cancel"
+        "cancel":"cancel",
+        "no_data":"No data"
     },
     "ja": {
         "hello": "こんにちは、世界！",
@@ -150,6 +152,7 @@
         "backend_error": "バックグラウンドが間違っているかもしれません。開発者に連絡してください~",
         "add_template_tip":"OCRテンプレートはまだ決まっていませんが、今は自分で決めますか？",
         "confirm":"確認",
-        "cancel":"キャンセル"
+        "cancel":"キャンセル",
+        "no_data":"データなし"
     }
 }
