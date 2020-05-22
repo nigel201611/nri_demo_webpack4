@@ -6,7 +6,7 @@
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div class="template_wrap">
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%" :empty-text="$t('no_data')">
       <el-table-column prop="temp_id" :label="$t('temp_id')" width="220"></el-table-column>
       <el-table-column prop="image" :label="$t('temp_image')">
         <template slot-scope="scope">

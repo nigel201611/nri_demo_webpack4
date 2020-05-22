@@ -12,7 +12,8 @@
         "Tips": "提示",
         "determine":"确定",
         "cancel":"取消",
-        "cancel_succ":"删除成功"
+        "cancel_succ":"删除成功",
+        "no_data":"暂无数据"
     },
     "en": {
         "temp_id": "Template ID",
@@ -27,7 +28,8 @@
         "Tips": "Tips",
         "determine":"determine",
         "cancel":"cancel",
-        "cancel_succ":"Delete succeeded"
+        "cancel_succ":"Delete succeeded",
+        "no_data":"No data available"
     },
     "ja": {
         "temp_id": "テンプレートID",
@@ -42,6 +44,7 @@
         "Tips": "ヒント",
         "determine":"を選択します",
         "cancel":"キャンセル",
-        "cancel_succ":"削除に成功しました"
+        "cancel_succ":"削除に成功しました",
+        "no_data":"データがありません"
     }
 }

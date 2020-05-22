@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-04-13 13:56:58
- * @LastEditTime: 2020-05-19 16:27:54
+ * @LastEditTime: 2020-05-22 13:46:17
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -157,6 +157,7 @@
     width: 200px;
     height: 150px;
     position: relative;
+    z-index: 9999;
     box-sizing: border-box;
     cursor: pointer;
     &:hover {
@@ -448,11 +449,12 @@ export default {
           break;
       }
       this.imageUrl = this.imgArr[0].url;
+      this.curentIndex = 0;
       this.imgObj = {
         backgroundImage: `url(${this.imageUrl})`
       };
       this.clearCanvasContent();
-      this.init();
+      // this.init();
     },
     //处理用户单击选择图片
     handleClickImg(image, index) {
