@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-05-20 16:23:54
+ * @LastEditTime: 2020-05-25 11:42:13
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -540,81 +540,85 @@ export default {
         //事件延迟性，如果用户框选了区域后，再次选择识别类型下拉框，这里的this.type还是上次的，并没有及时获取到
         //那么需要提示用户选择对应类型
         ev = ev || window.event;
-        //1.获取按下的点
-        let x1 = ev.offsetX;
-        let y1 = ev.offsetY;
-        //记录鼠标按下的点
-        this.origin = {
-          x: x1,
-          y: y1
-        };
-        this.startXY = {
-          x: ev.x,
-          y: ev.y
-        };
-        // 初始化当前拖拽尺寸
-        this.dragInfoWidthHeight = { width: 0, height: 0 };
-        this.editCustomBlockFlag = false;
-        //2.创建div
-        let oDiv = document.createElement("div");
-        this.curDiv = oDiv;
-        oDiv.setAttribute("class", "rect_item");
-        oBox.onmousemove = e => {
-          // 会不断触发
-          e = e || window.event;
-          let x2 = e.offsetX;
-          let y2 = e.offsetY;
-          this.endXY = {
-            x: e.x,
-            y: e.y
+        let { target } = ev;
+        if (target.className == "img-wrap") {
+          //1.获取按下的点
+          let x1 = ev.offsetX;
+          let y1 = ev.offsetY;
+          //记录鼠标按下的点
+          this.origin = {
+            x: x1,
+            y: y1
           };
-          let x1 = this.origin.x,
-            y1 = this.origin.y;
-          // 鼠标移动的点处理，为啥往右下移动过程中，横坐标会变小,offsetX有问题
-          let width = Math.abs(this.endXY.x - this.startXY.x);
-          let height = Math.abs(this.endXY.y - this.startXY.y);
-          //对width和height做限制至少大于25
-          this.dragInfoWidthHeight = {
-            width,
-            height
+          // console.log(x1,y1);
+          this.startXY = {
+            x: ev.x,
+            y: ev.y
           };
-          //3.设置div的样式,2,61分别矫正位置用
-          oDiv.style.left = x1 + "px";
-          oDiv.style.top = y1 + "px";
-          oDiv.style.width = width + "px";
-          oDiv.style.height = height + "px";
-          oDiv.style.border = "2px solid #409EFF";
-          oDiv.style.background = "rgba(64,158,255,0.4)";
-          oDiv.style.position = "absolute";
-          this.endpoint = {
-            x: x2,
-            y: y2
-          };
-          oBox.appendChild(oDiv);
-          if (width <= 30) {
-            oBox.removeChild(oDiv);
-          }
-        };
-
-        oBox.onmouseup = () => {
-          let x1 = this.origin.x,
-            y1 = this.origin.y;
-          // 记录用户自定义区域的原点和宽高
-          // 对width和height做限制,至少大于25
-          let { width, height } = this.dragInfoWidthHeight;
-          if (width > 30) {
-            let pointsInfo = {
-              x: x1,
-              y: y1,
-              width: width,
-              height: height
+          // 初始化当前拖拽尺寸
+          this.dragInfoWidthHeight = { width: 0, height: 0 };
+          this.editCustomBlockFlag = false;
+          //2.创建div
+          let oDiv = document.createElement("div");
+          this.curDiv = oDiv;
+          oDiv.setAttribute("class", "rect_item");
+          oBox.onmousemove = e => {
+            // 会不断触发
+            e = e || window.event;
+            let x2 = e.offsetX;
+            let y2 = e.offsetY;
+            this.endXY = {
+              x: e.x,
+              y: e.y
             };
-            this.curPoints = pointsInfo;
-            //弹出自定区域编辑
-            //用户点击下也会触发，需要处理
-            this.dialogCustomBlockVisible = true;
-          }
-        };
+            let x1 = this.origin.x,
+              y1 = this.origin.y;
+            // 鼠标移动的点处理，为啥往右下移动过程中，横坐标会变小,offsetX有问题
+            let width = Math.abs(this.endXY.x - this.startXY.x);
+            let height = Math.abs(this.endXY.y - this.startXY.y);
+            //对width和height做限制至少大于25
+            this.dragInfoWidthHeight = {
+              width,
+              height
+            };
+            //3.设置div的样式,2,61分别矫正位置用
+            oDiv.style.left = x1 + "px";
+            oDiv.style.top = y1 + "px";
+            oDiv.style.width = width + "px";
+            oDiv.style.height = height + "px";
+            oDiv.style.border = "2px solid #409EFF";
+            oDiv.style.background = "rgba(64,158,255,0.4)";
+            oDiv.style.position = "absolute";
+            this.endpoint = {
+              x: x2,
+              y: y2
+            };
+            oBox.appendChild(oDiv);
+            if (width <= 30) {
+              oBox.removeChild(oDiv);
+            }
+          };
+
+          oBox.onmouseup = () => {
+            let x1 = this.origin.x,
+              y1 = this.origin.y;
+            // 记录用户自定义区域的原点和宽高
+            // 对width和height做限制,至少大于25
+            let { width, height } = this.dragInfoWidthHeight;
+            if (width > 30) {
+              let pointsInfo = {
+                x: x1,
+                y: y1,
+                width: width,
+                height: height
+              };
+              this.curPoints = pointsInfo;
+              //弹出自定区域编辑
+              //用户点击下也会触发，需要处理
+              this.dialogCustomBlockVisible = true;
+            }
+          };
+        }
       };
       //在鼠标抬起后终止onmousemove事件
       document.onmouseup = function() {
@@ -753,7 +757,7 @@ export default {
       oBox.innerHTML = "";
       this.resetArr();
       // 上传图片加载动态
-      this.uploadImgLoading = true;     
+      this.uploadImgLoading = true;
       return true;
     },
     /**

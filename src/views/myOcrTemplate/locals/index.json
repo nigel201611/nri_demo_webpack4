@@ -26,7 +26,7 @@
         "delete": "delete",
         "confirm_text": "Are you sure to delete this template? Do you want to continue?",
         "Tips": "Tips",
-        "determine":"determine",
+        "determine":"confirm",
         "cancel":"cancel",
         "cancel_succ":"Delete succeeded",
         "no_data":"No data available"
