@@ -10,12 +10,6 @@
       class="demo-ruleForm login-container"
     >
       <h3 class="title">NRI demo platform login</h3>
-      <!-- <el-form-item prop="accountType">
-      <el-select v-model="authInfo.accountType" placeholder="账号类型">
-        <el-option value="PHONE" label="手机" />
-        <el-option value="Account" label="账号" />
-      </el-select>
-      </el-form-item>-->
       <el-form-item prop="account">
         <el-input v-model="authInfo.account" type="text" auto-complete="off" placeholder="account" />
       </el-form-item>
@@ -27,30 +21,17 @@
           placeholder="password"
         />
       </el-form-item>
-      <!-- <el-form-item prop="code" v-else>
-      <el-input type="password" v-model="authInfo.captcha" auto-complete="off" placeholder="验证码"></el-input>
-      </el-form-item>-->
-      <!-- <el-form-item>
-      <el-button
-        type="default"
-        size="small"
-        style="float:right"
-        @click.native.prevent="getCaptcha"
-        :loading="captchaGetting"
-      >获取验证码</el-button>
-      </el-form-item>-->
       <el-form-item label prop="token">
         <!-- 点击式按钮建议宽度不低于200px,高度介于36px与46px  -->
         <!-- 嵌入式仅需设置宽度，高度根据宽度自适应，最小宽度为200px -->
-        <div id="vaptcha_container">
-          <!--vaptcha_container是用来引入Vaptcha的容器，下面代码为预加载动画，仅供参考-->
+        <!-- <div id="vaptcha_container">
           <div class="vaptcha-init-main">
             <div class="vaptcha-init-loading">
               <img src="/static/images/vaptcha-loading.gif" />
               <span class="vaptcha-text">Vaptcha starting...</span>
             </div>
           </div>
-        </div>
+        </div>-->
       </el-form-item>
       <el-form-item style="width:100%;">
         <el-button
@@ -131,8 +112,8 @@ export default {
       authInfo: {
         // accountType: "RTX",
         account: "",
-        password: "",
-        token: ""
+        password: ""
+        // token: ""
       },
       formRules: {
         account: [
@@ -144,14 +125,14 @@ export default {
         ],
         password: [
           { required: true, message: "Please input password", trigger: "blur" }
-        ],
-        token: [
-          {
-            required: true,
-            message: "Vaptcha must be verified",
-            trigger: "blur"
-          }
         ]
+        // token: [
+        //   {
+        //     required: true,
+        //     message: "Vaptcha must be verified",
+        //     trigger: "blur"
+        //   }
+        // ]
       },
       checked: true
     };
@@ -159,27 +140,27 @@ export default {
   mounted() {
     this.query = this.$route.query;
     //初始化vaptcha
-    this.vaptchaObj = null;
-    let that = this;
-    vaptcha({
-      vid: "5e5893276621d1144c91bbe7", // 验证单元id
-      type: "embed", // 显示类型 嵌入式
-      scene: 0, // 场景值 默认0
-      container: "#vaptcha_container", // 容器，可为Element 或者 selector
-      offline_server: "https://imageregdemo.nrihkerp.com", //离线模式服务端地址,本地联调填写127.0.0.1;上线要填写显示域名
-      //可选参数
-      lang: "en", // 语言 默认zh-CN,可选值zh-CN,en,zh-TW
-      https: true // 使用https 默认 true
-    }).then(function(vpObj) {
-      that.vaptchaObj = vpObj; //将VAPTCHA验证实例保存到局部变量中
-      vpObj.render(); // 调用验证实例 vpObj 的 render 方法加载验证按钮
-      //获取token的方式二：
-      vpObj.listen("pass", function() {
-        // 验证成功进行后续操作
-        that.authInfo.token = vpObj.getToken();
-        // vaptchaObj.reset(); //重置验证码
-      });
-    });
+    // this.vaptchaObj = null;
+    // let that = this;
+    // vaptcha({
+    //   vid: "5e5893276621d1144c91bbe7", // 验证单元id
+    //   type: "embed", // 显示类型 嵌入式
+    //   scene: 0, // 场景值 默认0
+    //   container: "#vaptcha_container", // 容器，可为Element 或者 selector
+    //   offline_server: "https://imageregdemo.nrihkerp.com", //离线模式服务端地址,本地联调填写127.0.0.1;上线要填写显示域名
+    //   //可选参数
+    //   lang: "en", // 语言 默认zh-CN,可选值zh-CN,en,zh-TW
+    //   https: true // 使用https 默认 true
+    // }).then(function(vpObj) {
+    //   that.vaptchaObj = vpObj; //将VAPTCHA验证实例保存到局部变量中
+    //   vpObj.render(); // 调用验证实例 vpObj 的 render 方法加载验证按钮
+    //   //获取token的方式二：
+    //   vpObj.listen("pass", function() {
+    //     // 验证成功进行后续操作
+    //     that.authInfo.token = vpObj.getToken();
+    //     // vaptchaObj.reset(); //重置验证码
+    //   });
+    // });
   },
   methods: {
     // handleReset2() {
@@ -201,8 +182,8 @@ export default {
           this.logining = true;
           let loginParams = {
             username: this.authInfo.account,
-            password: this.authInfo.password,
-            token: this.authInfo.token
+            password: this.authInfo.password
+            // token: this.authInfo.token
           };
           api.authApi
             .Login(loginParams)
@@ -212,7 +193,7 @@ export default {
               // console.log(data);
               if (status == 200) {
                 if (data.errno === 0) {
-                  storeLocal.set("token", data.data.token);
+                  // storeLocal.set("token", data.data.token);
                   storeSession.set("token", data.data.token);
                   storeLocal.set("userInfo", data.data.userInfo);
                   // console.log(JSON.stringify(this.query));
