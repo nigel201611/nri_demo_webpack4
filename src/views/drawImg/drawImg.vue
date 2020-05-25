@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-05-20 16:42:28
+ * @LastEditTime: 2020-05-25 15:39:14
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -75,21 +75,21 @@
               v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'"
             >{{ item.text }}</p>
             <p v-else-if="item.code==0&&item.type=='nri_T_general'">
-              <el-table :data="item.text" height="300" style="width: 100%">
+              <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
                 <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
                 <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
               </el-table>
             </p>
             <p v-else-if="item.code==0&&item.type=='nri_G_general'">
-              <el-table :data="item.text" height="300" style="width: 100%">
+              <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
                 <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
                 <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
               </el-table>
             </p>
             <p v-else-if="item.code==1&&item.type=='nri_G_general'">
-              <el-table :data="item.text" height="300" style="width: 100%">
+              <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
                 <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
                 <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
