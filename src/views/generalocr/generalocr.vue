@@ -101,11 +101,15 @@
   }
   .input_form {
     text-align: center;
+    min-width: 1263px;
+    box-sizing: border-box;
   }
 }
 .ocr-result {
   text-align: center;
   margin: 20px 0 0 0;
+  min-width: 1263px;
+  box-sizing: border-box;
   .imgOrigin {
     position: absolute;
     top: 0;
@@ -147,7 +151,9 @@
 }
 .picture-container {
   text-align: center;
-  margin: 30px;
+  margin: 30px 0 30px 0;
+  min-width: 1263px;
+  box-sizing: border-box;
   .pic-item_active {
     border: 4px solid #00a4ff;
     box-shadow: 0 5px 15px 0 rgba(43, 74, 130, 0.5);

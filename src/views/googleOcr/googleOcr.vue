@@ -63,6 +63,8 @@
 <style lang="scss" scoped>
 .generalocr_wrap {
   text-align: center;
+  min-width: 1263px;
+  box-sizing: border-box;
   .generalocr-uploader,
   .url_input,
   .analyse-btn {

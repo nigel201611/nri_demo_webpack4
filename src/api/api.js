@@ -7,6 +7,7 @@ import * as opencameraApi from './modules/opencameraApi.js';
 import * as authApi from './modules/authApi.js';
 import * as tengxunApi from './modules/tengxunApi.js';
 import * as googleOcrApi from './modules/googleOcrApi.js';
+import * as calibrationApi from './modules/calibrationApi.js';
 export default {
     account,
     menu,
@@ -16,5 +17,6 @@ export default {
     opencameraApi,
     authApi,
     tengxunApi,
-    googleOcrApi
+    googleOcrApi,
+    calibrationApi
 };

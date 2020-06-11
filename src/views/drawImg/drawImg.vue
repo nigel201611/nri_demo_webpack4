@@ -5,23 +5,23 @@
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
-  <div
-    v-loading="isRequesting"
-    class="ocr-wrap"
-    :element-loading-text="$t('during-recognition')"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.6)"
-  >
+  <div class="ocr-wrap">
     <el-upload
       ref="upload"
       class="upload-demo"
       action="https://imageregdemo.nrihkerp.com"
       :before-upload="beforeRead"
       :show-file-list="false"
+      :disabled="uploadImgLoading"
       accept="image/jpg, image/jpeg, image/png"
       :on-success="handleUploadSuccess"
     >
-      <el-button class="upload_btn" size="small" type="primary">{{ $t('upload-btn-text') }}</el-button>
+      <el-button
+        :loading="uploadImgLoading"
+        class="upload_btn"
+        size="small"
+        type="primary"
+      >{{ $t('upload-btn-text') }}</el-button>
       <span class="tip">{{ $t('upload-btn-tip') }}</span>
     </el-upload>
 
@@ -46,6 +46,7 @@
 
         <el-button
           :disabled="!imageUrl"
+          :loading="isRequesting"
           type="success"
           size="small"
           @click="confirmDetect"
@@ -54,7 +55,13 @@
     </div>
 
     <!-- 可以供用户自定义区域 -->
-    <div class="usercustomize_area">
+    <div
+      v-loading="calibrating"
+      :element-loading-text="$t('during-calibration')"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.6)"
+      class="usercustomize_area"
+    >
       <div ref="imgEdit" class="img-wrap" :style="imgObj" />
       <!-- 展示自定义区域识别结果 -->
       <div v-if="resDetectDataArr.length" class="result_wrap">
@@ -224,6 +231,8 @@ export default {
   data() {
     return {
       isRequesting: false, //控制请求次数和加载状态
+      calibrating: false,
+      uploadImgLoading: false, //用于控制图片上传时有一个加载动效
       imageUrl: "",
       templateDataArr: [], //模板对象数据
       resTitleArr: {
@@ -339,6 +348,7 @@ export default {
     handleUploadSuccess(res, file) {
       //先删除之前添加的框图事件，以免重复添加
       this.removeEditableFunc();
+      this.uploadImgLoading = false;
       // 关闭加载进度
       let that = this;
       // 通过URL.createObjectURL生成零时用图片链接
@@ -381,11 +391,54 @@ export default {
             height: that.bill_height + "px",
             transform: "rotate(0)"
           };
-          //用户上传成功匹配模板
-          that.templateMatching();
+          // 校准图片
+          that.calibrationImage(file);
         };
         image.src = dataurl;
       });
+    },
+    // 校准图片
+    calibrationImage(file) {
+      // 加载图片校准
+      if (this.calibrating) {
+        return;
+      }
+      let myform = new FormData();
+      myform.append("file", file.raw);
+      this.calibrating = true;
+      api.calibrationApi
+        .calibrationImage(myform)
+        .then(res => {
+          this.calibrating = false;
+          // console.log(res);
+          let { status } = res;
+          if (status == 200) {
+            let { errno } = res.data;
+            if (errno == 0) {
+              this.imageUrl = res.data.data.image;
+              this.imgObj = {
+                background: `url(${this.imageUrl}) no-repeat 0 0`,
+                backgroundSize: "cover",
+                width: this.bill_width + "px",
+                height: this.bill_height + "px",
+                transform: "rotate(0)"
+              };
+              //用户上传成功匹配模板
+              // that.templateMatching();
+            } else {
+              //校准出问题
+            }
+          } else {
+            //提示校准失败
+          }
+          //用户上传成功匹配模板
+          this.templateMatching();
+        })
+        .catch(error => {
+          this.calibrating = false;
+          console.log(error);
+          //提示用户检查网络连接是否正常
+        });
     },
     /**
      * @name: templateMatching
@@ -401,6 +454,7 @@ export default {
         this.template_id = templateDataArr[0].temp_id;
         //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
         let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
+        this.templateObj = templateItem;
         this.matchTemplateItem = templateItem;
         let blockItems = this.matchTemplateItem.blockItem;
         this.drawCustomArea(blockItems);
@@ -607,6 +661,7 @@ export default {
       oBox.innerHTML = "";
       this.resetArr();
       // 上传图片加载动态
+      this.uploadImgLoading = true;
       return true;
     },
     drawRect(x1, y1, width, height) {
@@ -672,7 +727,10 @@ export default {
     // 确认识别
     confirmDetect() {
       //判断editImageArr当前是否只有一个区域数据，如果只有一个，用户切换识别类型的时候需要更改对应的type
-      this.requestOcrEngine(this.templateObj["blockItem"]);
+      // 判断是否有模板数据，如果没有，就没必要请求了
+      if (this.templateObj && this.templateObj["blockItem"]) {
+        this.requestOcrEngine(this.templateObj["blockItem"]);
+      }
     }
   }
 };
