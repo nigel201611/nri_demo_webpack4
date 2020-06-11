@@ -2,26 +2,27 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-05-25 11:42:13
+ * @LastEditTime: 2020-06-11 15:49:49
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
-  <div
-    class="ocr-wrap"
-    :element-loading-text="$t('during-recognition')"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.6)"
-  >
+  <div class="ocr-wrap">
     <el-upload
       ref="upload"
       class="upload-demo"
       action="https://imageregdemo.nrihkerp.com"
       :before-upload="beforeRead"
+      :disabled="uploadImgLoading"
       :show-file-list="false"
       accept="image/jpg, image/jpeg, image/png"
       :on-success="handleUploadSuccess"
     >
-      <el-button class="upload_btn" size="small" type="primary">{{ $t('upload-btn-text') }}</el-button>
+      <el-button
+        :loading="uploadImgLoading"
+        class="upload_btn"
+        size="small"
+        type="primary"
+      >{{ $t('upload-btn-text') }}</el-button>
     </el-upload>
 
     <div class="btn-list">
@@ -30,6 +31,7 @@
           :disabled="!imageUrl"
           type="success"
           size="small"
+          :loading="isRequesting"
           @click="confirmDetect"
         >{{ $t('confirm-detect') }}</el-button>
         <el-button
@@ -108,8 +110,14 @@
     <!-- 保存用户上传的原图 -->
     <img ref="imgElem" class="imgElem" :height="bill_height" :width="bill_width" :src="imageUrl" />
     <!-- 可以供用户自定义区域 -->
-    <div v-loading="isRequesting" class="usercustomize_area">
-      <el-card v-loading="uploadImgLoading" class="img_background_wrap">
+    <div
+      v-loading="calibrating"
+      :element-loading-text="$t('during-calibration')"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.6)"
+      class="usercustomize_area"
+    >
+      <el-card class="img_background_wrap">
         <div
           ref="imgEdit"
           :element-loading-text="$t('customize-area-loading-tip')"
@@ -209,7 +217,8 @@
 
 <style lang="scss" scoped>
 .ocr-wrap {
-  width: 98%;
+  min-width: 1440px;
+  box-sizing: border-box;
   padding: 30px 0 0 30px;
   overflow: hidden;
   .preview_btn {
@@ -431,7 +440,8 @@ export default {
       uploadImgLoading: false, //用于控制图片上传时有一个加载动效
       endpoint: { x: 0, y: 0 }, //鼠标移动后终点坐标
       resDetectDataArr: [], //自定区域识别后返回的数据
-      tempMatchingDialog: false //用于控制是否加载上次保存过的自定义区域数据标识
+      tempMatchingDialog: false, //用于控制是否加载上次保存过的自定义区域数据标识
+      calibrating: false
     };
   },
   computed: {
@@ -470,6 +480,7 @@ export default {
     //查看是否是从我的模板跳过来的
     this.myTemplateData = this.$route.params; //$route代表当前匹配到的路由记录，注意和$router区别
     this.handleMyTemplateEdit();
+    this.calibrating = false;
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
@@ -688,6 +699,8 @@ export default {
       // 在上传成功后，根据imageUrl通过canvas生成base64,方便以后真实放大旋转图片用
       // 这样在框图的时候也是框的真实图片数据
       this.imageUrl = URL.createObjectURL(file.raw);
+      //上传成功调用校准接口校准下图片，file.raw
+      this.calibrationImage(file);
       this.OriginImageUrl = this.imageUrl;
       this.base64ImageData = "";
       this.imgObj = {
@@ -697,6 +710,47 @@ export default {
         height: this.bill_height + "px",
         transform: "rotate(0)"
       };
+    },
+    // 校准图片
+    calibrationImage(file) {
+      // 加载图片校准
+      if (this.calibrating) {
+        return;
+      }
+      let myform = new FormData();
+      myform.append("file", file.raw);
+      this.calibrating = true;
+      api.calibrationApi
+        .calibrationImage(myform)
+        .then(res => {
+          this.calibrating = false;
+          // console.log(res);
+          let { status } = res;
+          if (status == 200) {
+            let { errno } = res.data;
+            if (errno == 0) {
+              this.imageUrl = res.data.data.image;
+              this.imgObj = {
+                background: `url(${this.imageUrl}) no-repeat 0 0`,
+                backgroundSize: "cover",
+                width: this.bill_width + "px",
+                height: this.bill_height + "px",
+                transform: "rotate(0)"
+              };
+            } else {
+              //校准出问题
+            }
+          } else {
+            //提示校准失败
+          }
+
+          //提示每半个小时将当前图片成功保存本地
+        })
+        .catch(error => {
+          this.calibrating = false;
+          console.log(error);
+          //提示用户检查网络连接是否正常
+        });
     },
     // /**
     //  * @name: templateMatching

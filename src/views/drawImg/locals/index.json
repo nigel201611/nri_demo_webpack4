@@ -42,14 +42,15 @@
         "at-least-one-area": "请至少定义一种类型的区域图~",
         "recognition-fail": "识别失败，请检查网络是否正常~",
         "during-recognition": "拼命识别中~",
+        "during-calibration": "图片校准中~",
         "number": "行号",
         "recog_result": "识别结果",
         "recog_confidence": "准确度",
         "backend_error": "后台可能报错了，请联系开发者处理~",
-        "add_template_tip":"您还没有自定OCR模板，是否现在去自定？",
-        "confirm":"确认",
-        "cancel":"取消",
-        "no_data":"无数据"
+        "add_template_tip": "您还没有自定OCR模板，是否现在去自定？",
+        "confirm": "确认",
+        "cancel": "取消",
+        "no_data": "无数据"
     },
     "en": {
         "hello": "hello world!",
@@ -94,14 +95,15 @@
         "at-least-one-area": "Please define at least one type of area map~",
         "recognition-fail": "Recognition failed, please check whether the network is normal~",
         "during-recognition": "Desperately identifying~",
+        "during-calibration": "during calibration",
         "number": "line NO.",
         "recog_result": "Recognition result",
         "recog_confidence": "Accuracy",
         "backend_error": "The background may have reported an error, please contact the developer for handling~",
-        "add_template_tip":"You haven't set your own OCR template yet. Do you want to set it now?",
-        "confirm":"confirm",
-        "cancel":"cancel",
-        "no_data":"No data"
+        "add_template_tip": "You haven't set your own OCR template yet. Do you want to set it now?",
+        "confirm": "confirm",
+        "cancel": "cancel",
+        "no_data": "No data"
     },
     "ja": {
         "hello": "こんにちは、世界！",
@@ -146,13 +148,14 @@
         "at-least-one-area": "少なくとも一つのタイプの領域図を定義してください~",
         "recognition-fail": "認識に失敗しました。ネットワークが正常かどうか確認してください~",
         "during-recognition": "一生懸命認識しています~",
+        "during-calibration": "画像キャリブレーション中",
         "number": "行番号",
         "recog_result": "識別結果",
         "recog_confidence": "正確さ",
         "backend_error": "バックグラウンドが間違っているかもしれません。開発者に連絡してください~",
-        "add_template_tip":"OCRテンプレートはまだ決まっていませんが、今は自分で決めますか？",
-        "confirm":"確認",
-        "cancel":"キャンセル",
-        "no_data":"データなし"
+        "add_template_tip": "OCRテンプレートはまだ決まっていませんが、今は自分で決めますか？",
+        "confirm": "確認",
+        "cancel": "キャンセル",
+        "no_data": "データなし"
     }
 }

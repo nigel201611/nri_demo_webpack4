@@ -10,10 +10,10 @@
         "delete": "删除",
         "confirm_text": "确认删除该模板, 是否继续?",
         "Tips": "提示",
-        "determine":"确定",
-        "cancel":"取消",
-        "cancel_succ":"删除成功",
-        "no_data":"暂无数据"
+        "determine": "确定",
+        "cancel": "取消",
+        "cancel_succ": "删除成功",
+        "no_data": "暂无数据"
     },
     "en": {
         "temp_id": "Template ID",
@@ -26,10 +26,10 @@
         "delete": "delete",
         "confirm_text": "Are you sure to delete this template? Do you want to continue?",
         "Tips": "Tips",
-        "determine":"confirm",
-        "cancel":"cancel",
-        "cancel_succ":"Delete succeeded",
-        "no_data":"No data available"
+        "determine": "confirm",
+        "cancel": "cancel",
+        "cancel_succ": "Delete succeeded",
+        "no_data": "No data available"
     },
     "ja": {
         "temp_id": "テンプレートID",
@@ -42,9 +42,9 @@
         "delete": "削除",
         "confirm_text": "テンプレートの削除を確認します。続けますか？",
         "Tips": "ヒント",
-        "determine":"を選択します",
-        "cancel":"キャンセル",
-        "cancel_succ":"削除に成功しました",
-        "no_data":"データがありません"
+        "determine": "を選択します",
+        "cancel": "キャンセル",
+        "cancel_succ": "削除に成功しました",
+        "no_data": "データがありません"
     }
 }
