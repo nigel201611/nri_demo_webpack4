@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-06-11 15:49:49
+ * @LastEditTime: 2020-06-11 18:03:40
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -214,179 +214,6 @@
     </el-dialog>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.ocr-wrap {
-  min-width: 1440px;
-  box-sizing: border-box;
-  padding: 30px 0 0 30px;
-  overflow: hidden;
-  .preview_btn {
-    margin: 0 10px 0 0;
-  }
-  .imgElem {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    transform-origin: 50% 50%;
-    opacity: 0;
-  }
-  .usercustomize_area {
-    position: relative;
-    float: left;
-    clear: both;
-    .img_background_wrap {
-      width: 800px;
-      height: 80vh;
-      box-sizing: border-box;
-      overflow: auto;
-    }
-    .img_background_wrap::-webkit-scrollbar {
-      /*滚动条整体样式*/
-      width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
-      height: 8px;
-    }
-    .img_background_wrap::-webkit-scrollbar-thumb {
-      /*滚动条里面小方块*/
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.2);
-    }
-    // .img_background_wrap::-webkit-scrollbar-track {
-    //   /*滚动条里面轨道*/
-    //   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-    //   border-radius: 2px;
-    //   background: #ededed;
-    // }
-    // .img_background_wrap::-webkit-scrollbar-button {
-    //   background-color: #409EFF;
-    // }
-    // .img_background_wrap::-webkit-scrollbar-corner {
-    //   background: transparent;
-    // }
-  }
-  .img-wrap {
-    position: relative;
-    margin: 0 30px 10px 0;
-    cursor: crosshair;
-    float: left;
-    .rect_item {
-      z-index: 99999;
-      // background: rgba(#409eff, $alpha: 1);
-      // border: 2px solid #409eff;
-    }
-    // overflow-x: auto;
-  }
-  .upload-demo {
-    float: left;
-  }
-  .btn-list {
-    // margin: 0 0 80px 0;
-    // padding: 0 0 80px 0;
-    float: left;
-    .choice-type {
-      margin: 0 0 10px 0;
-    }
-    .detectionList {
-      width: 180px;
-      margin: 0 10px 0 0;
-    }
-    .image-btn {
-      position: absolute;
-      right: 20px;
-      bottom: 10px;
-      z-index: 999;
-    }
-  }
-  .upload_btn {
-    margin: 0 10px 10px 0;
-    position: relative;
-  }
-  .tip {
-    color: #c0c4cc;
-    text-align: left;
-  }
-  .preview_image {
-    width: 100%;
-    height: 100%;
-    background: rgba($color: #000000, $alpha: 0.6);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 999;
-    img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-  .close_preview {
-    position: absolute;
-    top: 10px;
-    right: 30px;
-    font-size: 40px;
-    z-index: 9999;
-    cursor: pointer;
-    color: #409eff;
-  }
-  // 结果展示
-  .result_wrap {
-    float: left;
-    border: 1px solid #ebeef5;
-    background-color: #fff;
-    padding: 30px;
-    box-sizing: border-box;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    width: 600px;
-    height: 80vh;
-    overflow: auto;
-    margin: 0 0 0 10px;
-    // margin: 0 0 0 30px;
-  }
-  .result_wrap::-webkit-scrollbar {
-    /*滚动条整体样式*/
-    width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
-    height: 8px;
-  }
-  .result_wrap::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.2);
-  }
-  .text {
-    font-size: 14px;
-  }
-
-  .item {
-    margin-bottom: 18px;
-    .error {
-      color: #e6a23c;
-      width: 300px;
-      white-space: normal;
-    }
-  }
-
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both;
-  }
-
-  .box-card_header {
-    font-size: 16px;
-    // overflow: hidden;
-  }
-  .box-card_header .confidence {
-    float: right;
-    margin: 0 40px 0 0;
-  }
-}
-</style>
 
 <script>
 import { mapState } from "vuex";
@@ -1384,3 +1211,177 @@ export default {
   }
 };
 </script>
+
+
+<style lang="scss" scoped>
+.ocr-wrap {
+  min-width: 1440px;
+  box-sizing: border-box;
+  padding: 30px 0 0 30px;
+  overflow: hidden;
+  .preview_btn {
+    margin: 0 10px 0 0;
+  }
+  .imgElem {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transform-origin: 50% 50%;
+    opacity: 0;
+  }
+  .usercustomize_area {
+    position: relative;
+    float: left;
+    clear: both;
+    .img_background_wrap {
+      width: 800px;
+      height: 80vh;
+      box-sizing: border-box;
+      overflow: auto;
+    }
+    .img_background_wrap::-webkit-scrollbar {
+      /*滚动条整体样式*/
+      width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
+      height: 8px;
+    }
+    .img_background_wrap::-webkit-scrollbar-thumb {
+      /*滚动条里面小方块*/
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    // .img_background_wrap::-webkit-scrollbar-track {
+    //   /*滚动条里面轨道*/
+    //   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+    //   border-radius: 2px;
+    //   background: #ededed;
+    // }
+    // .img_background_wrap::-webkit-scrollbar-button {
+    //   background-color: #409EFF;
+    // }
+    // .img_background_wrap::-webkit-scrollbar-corner {
+    //   background: transparent;
+    // }
+  }
+  .img-wrap {
+    position: relative;
+    margin: 0 30px 10px 0;
+    cursor: crosshair;
+    float: left;
+    .rect_item {
+      z-index: 99999;
+      // background: rgba(#409eff, $alpha: 1);
+      // border: 2px solid #409eff;
+    }
+    // overflow-x: auto;
+  }
+  .upload-demo {
+    float: left;
+  }
+  .btn-list {
+    // margin: 0 0 80px 0;
+    // padding: 0 0 80px 0;
+    float: left;
+    .choice-type {
+      margin: 0 0 10px 0;
+    }
+    .detectionList {
+      width: 180px;
+      margin: 0 10px 0 0;
+    }
+    .image-btn {
+      position: absolute;
+      right: 20px;
+      bottom: 10px;
+      z-index: 999;
+    }
+  }
+  .upload_btn {
+    margin: 0 10px 10px 0;
+    position: relative;
+  }
+  .tip {
+    color: #c0c4cc;
+    text-align: left;
+  }
+  .preview_image {
+    width: 100%;
+    height: 100%;
+    background: rgba($color: #000000, $alpha: 0.6);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .close_preview {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    font-size: 40px;
+    z-index: 9999;
+    cursor: pointer;
+    color: #409eff;
+  }
+  // 结果展示
+  .result_wrap {
+    float: left;
+    border: 1px solid #ebeef5;
+    background-color: #fff;
+    padding: 30px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    width: 600px;
+    height: 80vh;
+    overflow: auto;
+    margin: 0 0 0 10px;
+    // margin: 0 0 0 30px;
+  }
+  .result_wrap::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 8px;
+  }
+  .result_wrap::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+    .error {
+      color: #e6a23c;
+      width: 300px;
+      white-space: normal;
+    }
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both;
+  }
+
+  .box-card_header {
+    font-size: 16px;
+    // overflow: hidden;
+  }
+  .box-card_header .confidence {
+    float: right;
+    margin: 0 40px 0 0;
+  }
+}
+</style>
