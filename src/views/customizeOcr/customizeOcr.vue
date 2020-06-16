@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-06-11 18:03:40
+ * @LastEditTime: 2020-06-16 14:39:57
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -491,6 +491,17 @@ export default {
       filereader.readAsDataURL(fileblob);
       return filereader;
     },
+    dataURLtoFile(dataurl, filename) {
+      let arr = dataurl.split(","),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    },
     /**
      * @name: handleReset
      * @msg: 重置相关数据
@@ -544,58 +555,80 @@ export default {
       if (this.calibrating) {
         return;
       }
-      let myform = new FormData();
-      myform.append("file", file.raw);
-      this.calibrating = true;
-      api.calibrationApi
-        .calibrationImage(myform)
-        .then(res => {
-          this.calibrating = false;
-          // console.log(res);
-          let { status } = res;
-          if (status == 200) {
-            let { errno } = res.data;
-            if (errno == 0) {
-              this.imageUrl = res.data.data.image;
-              this.imgObj = {
-                background: `url(${this.imageUrl}) no-repeat 0 0`,
-                backgroundSize: "cover",
-                width: this.bill_width + "px",
-                height: this.bill_height + "px",
-                transform: "rotate(0)"
-              };
-            } else {
-              //校准出问题
-            }
-          } else {
-            //提示校准失败
+      let imgElem = new Image();
+      let myCanvas = this.myCanvas;
+      let myCtx = this.myCtx;
+      imgElem.src = this.imageUrl;
+      imgElem.onload = () => {
+        let imgWidth = imgElem.width, //上传图片的宽
+          imgHeight = imgElem.height, //上传图片的高
+          maxWidth = 1024, //图片最大宽
+          maxHeight = 1024, //图片最大高
+          targetWidth = imgWidth, //最后图片的宽
+          targetHeight = imgHeight; //最后图片的高
+        // console.log(imgWidth, imgHeight);
+        // 如果图片的宽或者高大于图片的最大宽高
+        if (imgWidth > maxWidth || imgHeight > maxHeight) {
+          // 宽大于高
+          if (imgWidth / imgHeight > maxWidth / maxHeight) {
+            targetWidth = maxWidth;
+            targetHeight = Math.round(maxWidth * (imgWidth / imgHeight));
           }
-
-          //提示每半个小时将当前图片成功保存本地
-        })
-        .catch(error => {
-          this.calibrating = false;
-          console.log(error);
-          //提示用户检查网络连接是否正常
-        });
+          // 宽小于高
+          else {
+            targetHeight = maxHeight;
+            targetWidth = Math.round(maxHeight * (imgHeight / imgWidth));
+          }
+        }
+        myCanvas.width = targetWidth; //canvas的宽=图片的宽
+        myCanvas.height = targetHeight; //canvas的高=图片的高
+        myCtx.clearRect(0, 0, targetWidth, targetHeight); //清理canvas
+        myCtx.drawImage(imgElem, 0, 0, targetWidth, targetHeight); //canvas绘图
+        // console.log(targetWidth, targetHeight);
+        myCanvas.toBlob(
+          blob => {
+            // let fileBlob = new File(blob, file.raw.name, {
+            //   type: file.raw.type
+            // });
+            let myform = new FormData();
+            myform.append("file", blob);
+            this.calibrating = true;
+            api.calibrationApi
+              .calibrationImage(myform)
+              .then(res => {
+                this.calibrating = false;
+                // console.log(res);
+                let { status } = res;
+                if (status == 200) {
+                  let { errno } = res.data;
+                  if (errno == 0) {
+                    this.imageUrl = res.data.data.image;
+                    this.imgObj = {
+                      background: `url(${this.imageUrl}) no-repeat 0 0`,
+                      backgroundSize: "cover",
+                      width: this.bill_width + "px",
+                      height: this.bill_height + "px",
+                      transform: "rotate(0)"
+                    };
+                  } else {
+                    //校准出问题
+                  }
+                } else {
+                  //提示校准失败
+                }
+                //提示每半个小时将当前图片成功保存本地
+              })
+              .catch(error => {
+                this.calibrating = false;
+                console.log(error);
+                //提示用户检查网络连接是否正常
+              });
+          },
+          file.raw.type,
+          1
+        ); //canvas导出成为base64
+      };
     },
-    // /**
-    //  * @name: templateMatching
-    //  * @msg: 模板匹配接口，匹配到直接识别显示结果,从缓存获取templateData,没有则从数据库里读取
-    //  * @param {type}
-    //  * @return:
-    //  */
-    // templateMatching() {
-    //   // 优先和本地保存的模板进行匹配
-    //   let templateDataArr = storeSession.get("templateData") || [];
-    //   if (templateDataArr.length) {
-    //     //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
-    //     let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
-    //     this.matchTemplateItem = templateItem;
-    //     // 弹出模板匹配确认提示模态框
-    //     this.tempMatchingDialog = true;
-    //   }
-    // },
     /**
      * @name: beforeRead
      * @msg: 图片上传前校验
@@ -1211,7 +1244,6 @@ export default {
   }
 };
 </script>
-
 
 <style lang="scss" scoped>
 .ocr-wrap {
