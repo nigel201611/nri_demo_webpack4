@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-06-16 14:39:57
+ * @LastEditTime: 2020-06-16 17:48:36
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -582,6 +582,8 @@ export default {
         }
         myCanvas.width = targetWidth; //canvas的宽=图片的宽
         myCanvas.height = targetHeight; //canvas的高=图片的高
+        this.bill_width = targetWidth;
+        this.bill_height = targetHeight;
         myCtx.clearRect(0, 0, targetWidth, targetHeight); //清理canvas
         myCtx.drawImage(imgElem, 0, 0, targetWidth, targetHeight); //canvas绘图
         // console.log(targetWidth, targetHeight);
@@ -603,13 +605,21 @@ export default {
                   let { errno } = res.data;
                   if (errno == 0) {
                     this.imageUrl = res.data.data.image;
-                    this.imgObj = {
-                      background: `url(${this.imageUrl}) no-repeat 0 0`,
-                      backgroundSize: "cover",
-                      width: this.bill_width + "px",
-                      height: this.bill_height + "px",
-                      transform: "rotate(0)"
-                    };
+                    //校准后的图片可能需要重新计算宽高
+                    let calibratedImg = new Image();
+                    calibratedImg.src= this.imageUrl;
+                    calibratedImg.addEventListener("load", () => {
+                      let { width, height } = calibratedImg;
+                      this.bill_width = width;
+                      this.bill_height = height;
+                      this.imgObj = {
+                        background: `url(${this.imageUrl}) no-repeat 0 0`,
+                        backgroundSize: "cover",
+                        width: width + "px",
+                        height: height + "px",
+                        transform: "rotate(0)"
+                      };
+                    });
                   } else {
                     //校准出问题
                   }

@@ -16,7 +16,9 @@
         "seal_ocr": "印章识别",
         "worddetect": "快速文本检测",
         "google-general": "G-通用",
-        "self-defined-ocr": "自定OCR模板"
+        "self-defined-ocr": "自定OCR模板",
+        "Human_body_recognition": "人体识别",
+        "gesture_recognition": "手势识别"
     },
     "en": {
         "esl-update": "ESL update",
@@ -35,7 +37,9 @@
         "seal_ocr": "Seal OCR",
         "worddetect": "Fast text detection",
         "google-general": "G-general",
-        "self-defined-ocr": "Custom OCR template"
+        "self-defined-ocr": "Custom OCR template",
+        "Human_body_recognition": "Human body recog",
+        "gesture_recognition": "Gesture recognition"
     },
     "ja": {
         "esl-update": "ESL更新",
@@ -54,6 +58,8 @@
         "seal_ocr": "印鑑の識別",
         "worddetect": "クイックテキスト検出",
         "google-general": "G-汎用",
-        "self-defined-ocr": "自定OCRテンプレート"
+        "self-defined-ocr": "自定OCRテンプレート",
+        "Human_body_recognition": "人体の識別",
+        "gesture_recognition": "ジェスチャー認識"
     }
 }

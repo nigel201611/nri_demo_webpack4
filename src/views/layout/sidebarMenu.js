@@ -118,6 +118,26 @@ export const menudata = [
         permUrl: "/googleOcr",
         iconClass: "",
         permDesc: "printed-character-recog"
+    },
+    {
+        id: 1,
+        permName: "Human_body_recognition",
+        parentPermId: 0,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "",
+        iconClass: "iconfont icon-google",
+        permDesc: "Human_body_recognition"
+    },
+    {
+        id: 2,
+        permName: "gesture_recognition",
+        parentPermId: 1,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "/gesture",
+        iconClass: "iconfont icon-google",
+        permDesc: "gesture_recognition"
     }
     // {
     //   id: 78,
