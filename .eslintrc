@@ -24,7 +24,8 @@
         "storeLocal": "readonly",
         "storeSession": "readonly",
         "Exif": "readonly",
-        "vaptcha": "readonly"
+        "vaptcha": "readonly",
+        "io": "readonly"
     },
     "plugins": [
         // "html",

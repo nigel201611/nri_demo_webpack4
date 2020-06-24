@@ -126,7 +126,7 @@ export const menudata = [
         permCode: "",
         permType: "MENU",
         permUrl: "",
-        iconClass: "iconfont icon-google",
+        iconClass: "iconfont icon-humanbody",
         permDesc: "Human_body_recognition"
     },
     {
@@ -136,7 +136,7 @@ export const menudata = [
         permCode: "",
         permType: "MENU",
         permUrl: "/gesture",
-        iconClass: "iconfont icon-google",
+        iconClass: "iconfont icon-humanbody",
         permDesc: "gesture_recognition"
     }
     // {

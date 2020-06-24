@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2020-06-23 15:59:33
+ * @LastEditTime: 2020-06-24 15:45:54
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -93,11 +93,7 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.prev();
-    });
-
-    // this.$refs.product_carousel.setActiveItem(2);
+    this.callGestrue();
   },
   destroyed() {},
   methods: {
@@ -109,6 +105,16 @@ export default {
     },
     handleChangeCarousel(value) {
       this.curIndex = value;
+    },
+    callGestrue() {
+      // api.gestureApi.gestrueDetection({}).then(res => {
+      //   console.log(res);
+      // });
+
+      let socket = io("http://127.0.0.1:8094");  //里面地址到时根据服务器地址改变
+      socket.on("opend", function(data) {
+        console.log("opend:", data);
+      });
     }
   }
 };
