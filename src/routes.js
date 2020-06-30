@@ -1,102 +1,36 @@
 /*
  * @Author: nigel
  * @Date: 2020-03-19 17:42:35
- * @LastEditTime: 2020-06-23 10:13:59
+ * @LastEditTime: 2020-06-30 18:11:09
  */
-import Login from './views/login/login.vue';
 import NotFound from './views/404.vue';
 import Home from './views/Home.vue';
-import eslUpdate from './views/eslUpdate/eslUpdate.vue';
-import ocr from './views/ocr/ocr.vue';
-import postCodeOcr from './views/postCodeOcr/postCodeOcr.vue';
-import dectectApi from './views/dectectApi/dectectApi.vue';
-import drawImg from './views/drawImg/drawImg.vue';
-import generalocr from './views/generalocr/generalocr.vue';
-import googleOcr from './views/googleOcr/googleOcr.vue';
-import customizeOcr from './views/customizeOcr/customizeOcr.vue';
-import myOcrTemplate from './views/myOcrTemplate/myOcrTemplate.vue';
 import gesture from './views/gesture/gesture.vue';
-let routes = [{
-    path: '/login',
-    component: Login,
-    name: 'login',
-},
-{
-    path: '/404',
-    component: NotFound,
-    name: '',
-},
-{
-    path: '/',
-    component: Home,
-    name: 'Home',
-    children: [{
-        path: '/eslUpdate',
-        component: eslUpdate,
-        name: 'eslUpdate',
-        alias: 'esl更新'
+let routes = [
+    {
+        path: '/404',
+        component: NotFound,
+        name: '',
     },
     {
-        path: '/ocr',
-        component: ocr,
-        name: 'ocr',
-        alias: '运单识别'
+        path: '/',
+        component: Home,
+        name: 'Home',
+        children: [
+            {
+                path: '/gesture',
+                component: gesture,
+                name: 'gesture',
+                alias: '手势识别'
+            }
+        ]
     },
     {
-        path: '/dectectApi',
-        component: dectectApi,
-        name: 'dectectApi',
-        alias: '智能识别API'
-    },
-    {
-        path: '/postCodeOcr',
-        component: postCodeOcr,
-        name: 'postCodeOcr',
-        alias: '邮编识别'
-    },
-    {
-        path: '/drawImg',
-        component: drawImg,
-        name: 'drawImg',
-        alias: '指定区域の画像認識'
-    },
-    {
-        path: '/customizeOcr',
-        component: customizeOcr,
-        name: 'customizeOcr',
-        alias: '自定区域OCR'
-    },
-    {
-        path: '/generalocr',
-        component: generalocr,
-        name: 'generalocr',
-        alias: '通用印刷体文字识别'
-    },
-    {
-        path: '/gesture',
-        component: gesture,
-        name: 'gesture',
-        alias: '手势识别'
-    },
-    {
-        path: '/googleOcr',
-        component: googleOcr,
-        name: 'googleOcr',
-        alias: '谷歌通用文字识别'
-    }, {
-        path: '/myOcrTemplate',
-        component: myOcrTemplate,
-        name: 'myOcrTemplate',
-        alias: '我的模板'
+        path: '*',
+        redirect: {
+            path: '/404'
+        }
     }
-    ]
-},
-{
-    path: '*',
-    redirect: {
-        path: '/404'
-    }
-}
 ];
 
 export default routes;
