@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2020-06-30 17:29:58
+ * @LastEditTime: 2020-07-01 10:56:56
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -63,7 +63,7 @@
     .product_detail {
       width: 100%;
       height: 100%;
-      background: rgba($color: #222222, $alpha: 0.5);
+      background: rgba($color: #222222, $alpha: 0.4);
       position: absolute;
       top: 50%;
       left: 50%;
@@ -72,7 +72,8 @@
       color: #ffffff;
       font-family: Helvetica Neue For Number, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
       img {
-        width: 40%;
+        // width: 40%;
+        width: 180px;
       }
       p {
         margin: 0;
