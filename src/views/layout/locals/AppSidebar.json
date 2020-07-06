@@ -18,7 +18,8 @@
         "google-general": "G-通用",
         "self-defined-ocr": "自定OCR模板",
         "Human_body_recognition": "人体识别",
-        "gesture_recognition": "手势识别"
+        "gesture_recognition": "手势识别",
+        "eyeBall_recognition": "眼球识别分区"
     },
     "en": {
         "esl-update": "ESL update",
@@ -39,7 +40,8 @@
         "google-general": "G-general",
         "self-defined-ocr": "Custom OCR template",
         "Human_body_recognition": "Human body recog",
-        "gesture_recognition": "Gesture recognition"
+        "gesture_recognition": "Gesture recognition",
+        "eyeBall_recognition": "eyeBall recognition"
     },
     "ja": {
         "esl-update": "ESL更新",
@@ -60,6 +62,7 @@
         "google-general": "G-汎用",
         "self-defined-ocr": "自定OCRテンプレート",
         "Human_body_recognition": "人体の識別",
-        "gesture_recognition": "ジェスチャー認識"
+        "gesture_recognition": "ジェスチャー認識",
+        "eyeBall_recognition": "eyeBall recognition"
     }
 }

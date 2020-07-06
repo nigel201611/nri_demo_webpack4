@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2020-07-03 11:09:34
+ * @LastEditTime: 2020-07-03 11:14:48
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -29,24 +29,6 @@
         </div>
       </el-carousel-item>
     </el-carousel>
-
-    <div class="gesture_icon">
-      <i :class="[iconfontClass, gestureLeft,curGesture=='left'?'active':'']">
-        <span>Prev</span>
-      </i>
-      <i :class="[iconfontClass, gestureCancel, curGesture=='stop'?'active':'']">
-        <span>Cancel</span>
-      </i>
-      <i :class="[iconfontClass, gestureHome, curGesture=='punch'?'active':'']">
-        <span>Home</span>
-      </i>
-      <i :class="[iconfontClass, gestureConfirm, curGesture=='thumbs_up'?'active':'']">
-        <span>Confirm</span>
-      </i>
-      <i :class="[iconfontClass, gestureRight, curGesture=='right'?'active':'']">
-        <span>Next</span>
-      </i>
-    </div>
   </div>
 </template>
 
@@ -169,7 +151,7 @@ export default {
       gestureRight: "icon-gesture_right",
       gestureCancel: "icon-gesture_cancel",
       gestureHome: "icon-gesture_home",
-      gestureConfirm: "icon-gesture_confirm confirm",
+      gestureConfirm: "icon-gesture_confirm",
       isRequesting: false, //控制请求次数和加载状态
       imgArr: imgArrOrigin, //产品信息
       curIndex: 0, //当前走马灯索引
