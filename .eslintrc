@@ -25,7 +25,8 @@
         "storeSession": "readonly",
         "Exif": "readonly",
         "vaptcha": "readonly",
-        "io": "readonly"
+        "io": "readonly",
+        "gsap": "readonly"
     },
     "plugins": [
         // "html",

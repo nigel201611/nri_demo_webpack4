@@ -63,6 +63,6 @@
         "self-defined-ocr": "自定OCRテンプレート",
         "Human_body_recognition": "人体の識別",
         "gesture_recognition": "ジェスチャー認識",
-        "eyeBall_recognition": "eyeBall recognition"
+        "eyeBall_recognition": "眼球識別パーティション"
     }
 }
