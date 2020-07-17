@@ -7,19 +7,9 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.6)"
   >
-    <div
-      v-if="canPreview"
-      class="preview_image"
-    >
-      <img
-        :height="bill_height"
-        :width="bill_width"
-        :src="imageUrl"
-      >
-      <i
-        class="el-icon-circle-close close_preview"
-        @click="handlepreview"
-      />
+    <div v-if="canPreview" class="preview_image">
+      <img :height="bill_height" :width="bill_width" :src="imageUrl" />
+      <i class="el-icon-circle-close close_preview" @click="handlepreview" />
     </div>
 
     <p class="tip">
@@ -30,9 +20,7 @@
         icon="el-icon-zoom-in"
         circle
         @click="handlepreview"
-      >
-        {{ $t('preview') }}
-      </el-button>
+      >{{ $t('preview') }}</el-button>
       {{ $t('upload-tip') }}
     </p>
     <el-upload
@@ -46,97 +34,61 @@
       :show-file-list="false"
       :on-success="handleUploadSuccess"
     >
-      <img
-        v-if="imageUrl"
-        :height="bill_height"
-        :width="bill_width"
-        :src="imageUrl"
-        class="avatar"
-      >
-      <!-- <p class="avatar_image" v-if="imageUrl"></p> -->
-      <i
-        v-else
-        class="el-icon-plus avatar-uploader-icon"
-      />
+      <img v-if="imageUrl" :height="bill_height" :width="bill_width" :src="imageUrl" class="avatar" />
+      <i v-else class="el-icon-plus avatar-uploader-icon" />
     </el-upload>
-    <div class="upload-result">
-      <el-alert
-        v-if="confidence!==''"
-        :title="$t('confidence-rate')"
-        type="success"
-        effect="dark"
+    <div class="result-details">
+      <el-table
+        v-loading="isRequesting"
+        align="left"
+        :data="tableData"
+        height="436"
+        style="width: 400px"
+        :empty-text="$t('no_data')"
       >
-        {{ confidence }}
-      </el-alert>
-      <el-form label-width="0">
-        <el-form-item label>
-          <el-input
-            v-if="!fail"
-            v-model="result"
-            type="textarea"
-            autosize
-            :readonly="true"
-            :placeholder="$t('detect-result')"
-          />
-          <el-input
-            v-else
-            type="textarea"
-            :value="$t('result-fail')"
-            autosize
-            :readonly="true"
-          />
-        </el-form-item>
-      </el-form>
+        <el-table-column type="index" />
+        <el-table-column prop="itemstring" :label="$t('recog_result')" />
+      </el-table>
     </div>
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .el-button [class*="fa-"] + span {
   margin-left: 5px;
 }
-$upload-width: 720px;
-$upload-height: 540px;
+$upload-width: 400px;
+$upload-height: 410px;
 .avatar-uploader {
   text-align: center;
   margin: 30px auto 40px;
-  width: $upload-width;
-  height: $upload-height;
-}
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: $upload-width;
-  height: $upload-height;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
   width: $upload-width;
   height: $upload-height;
-  line-height: $upload-height;
-  text-align: center;
+  font-size: 36px;
+  color: #8c939d;
+  cursor: pointer;
+  border: 1px dashed #d9d9d9;
+  float: left;
 }
+.result-details {
+  float: left;
+}
+
 .avatar {
   display: inline-block;
-  // position: relative;
-  // top: 50%;
 }
-.avatar-uploader .el-upload:hover {
+.avatar-uploader:hover {
   border-color: #409eff;
 }
-</style>
-<style lang="scss" scoped>
 .ocr-wrap {
-  width: 720px;
+  // width: 100%;
+  // min-width: 800px;
+  overflow: hidden;
   padding: 30px;
+  box-sizing: border-box;
   .preview_btn {
     margin: 0 10px 0 0;
   }
@@ -175,8 +127,6 @@ $upload-height: 540px;
 <script>
 import { mapState } from "vuex";
 import api from "../../api";
-// import uuidv4 from "uuid/v4";
-// import base64js from "base64-js";
 export default {
   components: {},
   data() {
@@ -184,11 +134,12 @@ export default {
       isRequesting: false, //控制请求次数和加载状态
       imageUrl: "",
       confidence: "", //識別準確率
-      bill_width: "680", //上次運單默認寬度
-      bill_height: "400", //上次運單默認高度
+      bill_width: "400", //上次運單默認寬度
+      bill_height: "410", //上次運單默認高度
       canPreview: false, //是否可以预览图片
       result: "", //图片识别结果
-      fail: false //标识是否识别成功
+      fail: false, //标识是否识别成功
+      tableData: [] //识别的数据
     };
   },
   computed: {
@@ -262,7 +213,7 @@ export default {
           let height = image.height;
           that.bill_width = width;
           that.bill_height = height;
-          let iswidthAllow = width >= 720;
+          let iswidthAllow = width >= 400;
           // console.log("图片宽度:" + width);
           if (iswidthAllow) {
             // that.$notify({
@@ -272,7 +223,7 @@ export default {
             // return false;
             //超过尺寸自动压缩
             let ratio = width / height;
-            let fixedWidth = 720;
+            let fixedWidth = 400;
             let fixedHeight = fixedWidth / ratio;
             that.bill_width = fixedWidth;
             that.bill_height = fixedHeight;
@@ -315,9 +266,10 @@ export default {
       if (this.isRequesting) {
         return;
       }
+      let nowTime = Date.now() + "";
       let requestObj = {
-        request_id: Date.now() + "",
-        appid: "nri-express-bill", //管理员分配,字符串
+        session_id: nowTime,
+        app_id: nowTime, //管理员分配,字符串
         image: ""
       };
 
@@ -330,17 +282,16 @@ export default {
         that.isRequesting = true;
         dectionApiPromise(requestObj)
           .then(res => {
-            //测试dev server
-            // let responesedata = res.data;
             //云服务器
-            let responesedata = res.data.data;
             that.isRequesting = false;
             that.fail = false;
-            if (responesedata.code == 0) {
-              that.result = responesedata.data.text;
-              that.confidence = responesedata.data.confidence;
-            } else {
-              that.result = responesedata.message;
+            let { status, data } = res;
+            if (status == 200) {
+              if (data.errno == 0) {
+                // that.result = data.items && data.items.map;
+                that.tableData = data.data && data.data.items;
+                // that.confidence = responesedata.data.confidence;
+              }
             }
           })
           .catch(() => {

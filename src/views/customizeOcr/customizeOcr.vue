@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-06-16 17:48:36
+ * @LastEditTime: 2020-07-17 17:43:16
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -607,7 +607,7 @@ export default {
                     this.imageUrl = res.data.data.image;
                     //校准后的图片可能需要重新计算宽高
                     let calibratedImg = new Image();
-                    calibratedImg.src= this.imageUrl;
+                    calibratedImg.src = this.imageUrl;
                     calibratedImg.addEventListener("load", () => {
                       let { width, height } = calibratedImg;
                       this.bill_width = width;
@@ -850,8 +850,10 @@ export default {
           this.editImageArr.push(block);
           let obj = {};
           obj.image = imageData.substring(imageData.indexOf(",") + 1);
-          obj.request_id = Date.now() + "";
-          obj.appid = "nri_" + item.ocr_engine; //管理员分配,字符串,比userDataImage里的type多了nri前缀
+          let nowTime = Date.now() + "";
+          obj.request_id = nowTime;
+          obj.type = "nri_" + item.ocr_engine;
+          obj.app_id = nowTime; //管理员分配,字符串,比userDataImage里的type多了nri前缀
           this.userCustomizeArr.push(obj);
         }
         this.TemplateData = templateData;
@@ -1134,13 +1136,15 @@ export default {
       this.userCustomizeArr = []; //请求参数处理
       //图片裁剪:drawImage方法的功用是对图像进行裁剪。drawImage(image,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth, destHeight)
       //把它想成从原图中取出一个矩形区域，然后把它画到画布上目标区域里
+      let nowTime = Date.now() + "";
       for (let i = 0; i < templateData.length; i++) {
         let item = templateData[i];
         let image = item.image;
         let obj = {};
         obj.image = image.substring(image.indexOf(",") + 1);
-        obj.request_id = Date.now() + "";
-        obj.appid = "nri_" + item.ocr_engine; //管理员分配,字符串,比userDataImage里的type多了nri前缀
+        obj.session_id = nowTime;
+        obj.type = "nri_" + item.ocr_engine;
+        obj.app_id = nowTime; //管理员分配,字符串,比userDataImage里的type多了nri前缀
         this.userCustomizeArr.push(obj);
       }
       this.wrapOcrEngine(templateData);

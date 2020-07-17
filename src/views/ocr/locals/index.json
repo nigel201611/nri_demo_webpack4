@@ -8,7 +8,9 @@
         "upload-size-error": "图片大小错误",
         "upload-size-error-tip": "图片大小已经超过5M,请压缩下图片重新上传~",
         "upload-type-error-tip": "图片宽度不能超过1920像素,请重新上传符合要求图片~",
-        "result-fail": "识别失败，请检查网络是否正常~"
+        "result-fail": "识别失败，请检查网络是否正常~",
+        "recog_result": "识别结果",
+        "no_data": "暂无数据"
     },
     "en": {
         "loading-text": "Desperately loading~",
@@ -19,7 +21,9 @@
         "upload-size-error": "Picture size error",
         "upload-size-error-tip": "The image size has exceeded 5mb, please compress the image and upload again~",
         "upload-type-error-tip": "The picture width cannot exceed 1920 pixels. Please upload the picture again~",
-        "result-fail": "Recognition failed, please check whether the network is normal~"
+        "result-fail": "Recognition failed, please check whether the network is normal~",
+        "recog_result": "Recognition result",
+        "no_data": "No data available"
     },
     "ja": {
         "loading-text": "ロード中~",
@@ -30,6 +34,8 @@
         "upload-size-error": "画像サイズエラー",
         "upload-size-error-tip": "画像のサイズが5 Mを超えました。画像を圧縮してアップロードしてください~",
         "upload-type-error-tip": "画像の幅は1920ピクセルを超えてはいけません。要求に合った画像を再度アップロードしてください~",
-        "result-fail": "認識に失敗しました。ネットワークが正常かどうか確認してください~"
+        "result-fail": "認識に失敗しました。ネットワークが正常かどうか確認してください~",
+        "recog_result": "識別結果",
+        "no_data": "データがありません"
     }
 }
