@@ -1,7 +1,7 @@
 /*
  * @Author: nigel
  * @Date: 2020-05-12 14:33:04
- * @LastEditTime: 2020-06-30 18:06:53
+ * @LastEditTime: 2020-07-17 10:20:50
  */
 /* eslint-disable */
 import babelpolyfill from 'babel-polyfill';
@@ -13,6 +13,7 @@ import enLocale from 'element-ui/lib/locale/lang/en';
 import jaLocale from 'element-ui/lib/locale/lang/ja';
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN';
 import Exif from "exif-js";
+import 'animate.css';
 
 // import 'element-ui/lib/theme-default/index.css'
 import 'element-ui/lib/theme-chalk/index.css';
