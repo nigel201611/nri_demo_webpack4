@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-06-11 15:51:02
+ * @LastEditTime: 2020-07-20 15:39:16
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -78,9 +78,14 @@
           <div class="text item">
             <img :src="item.imgUrl" />
             <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
-            <p
-              v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'"
-            >{{ item.text }}</p>
+            <p v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'">
+              <!-- {{ item.text }} -->
+              <el-table :data="item.text" style="width: 100%">
+                <el-table-column type="index" width="50" />
+                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              </el-table>
+            </p>
             <p v-else-if="item.code==0&&item.type=='nri_T_general'">
               <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
@@ -110,119 +115,6 @@
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.ocr-wrap {
-  width: 98%;
-  padding: 30px 0 0 30px;
-  overflow: hidden;
-  .preview_btn {
-    margin: 0 10px 0 0;
-  }
-
-  .usercustomize_area {
-    position: relative;
-    overflow-x: auto;
-  }
-  .img-wrap {
-    position: relative;
-    margin: 0 30px 10px 0;
-    overflow: hidden;
-    // cursor: crosshair;
-    float: left;
-    .rect_item {
-      z-index: 99999;
-    }
-  }
-  .btn-list {
-    margin: 0 0 80px 0;
-    padding: 0 0 80px 0;
-    border-bottom: 1px dashed #d9d9d9;
-    position: relative;
-    .choice-type {
-      margin: 0 0 10px 0;
-    }
-    .detectionList {
-      width: 180px;
-      margin: 0 10px 0 0;
-    }
-    .image-btn {
-      position: absolute;
-      right: 20px;
-      bottom: 10px;
-      z-index: 999;
-    }
-  }
-  .upload_btn {
-    margin: 0 10px 10px 0;
-    position: relative;
-  }
-  .tip {
-    color: #c0c4cc;
-    text-align: left;
-  }
-  .preview_image {
-    width: 100%;
-    height: 100%;
-    background: rgba($color: #000000, $alpha: 0.6);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 999;
-    img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-  .close_preview {
-    position: absolute;
-    top: 10px;
-    right: 30px;
-    font-size: 40px;
-    z-index: 9999;
-    cursor: pointer;
-    color: #409eff;
-  }
-  // 结果展示
-  .result_wrap {
-    float: left;
-    // margin: 0 0 0 30px;
-  }
-  .text {
-    font-size: 14px;
-  }
-
-  .item {
-    margin-bottom: 18px;
-    .error {
-      color: #e6a23c;
-      width: 300px;
-      white-space: normal;
-    }
-  }
-
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both;
-  }
-
-  .box-card_header {
-    font-size: 16px;
-    // overflow: hidden;
-  }
-  .box-card_header .confidence {
-    float: right;
-    margin: 0 40px 0 0;
-  }
-}
-</style>
 
 <script>
 import { mapState } from "vuex";
@@ -345,57 +237,58 @@ export default {
         oBox.appendChild(oDiv);
       }
     },
-    handleUploadSuccess(res, file) {
-      //先删除之前添加的框图事件，以免重复添加
-      this.removeEditableFunc();
-      this.uploadImgLoading = false;
-      // 关闭加载进度
+    // 图片上传前校验
+    beforeRead(file) {
+      let imgSize = file.size;
+      let maxSize = 5 * 1048576;
+      this.imageType = file.type;
+      if (imgSize > maxSize) {
+        this.$notify({
+          title: this.$t("upload-size-error"),
+          message: this.$t("upload-size-tip")
+        });
+        return false;
+      }
       let that = this;
-      // 通过URL.createObjectURL生成零时用图片链接
-      // 在上传成功后，根据imageUrl通过canvas生成base64,方便以后真实放大旋转图片用
-      // 这样在框图的时候也是框的真实图片数据
-      this.blobToDataURL(file.raw, function(dataurl) {
+      this.result = "";
+      this.imageUrl = "";
+      // 前面校验通过，显示上传图片加载动效,并将之前上传的数据清空
+      this.blobToDataURL(file, function(dataurl) {
         let image = new Image();
         image.onload = function() {
           let width = image.width;
           let height = image.height;
           that.bill_width = width;
           that.bill_height = height;
-          //限制图片宽
-          let iswidthAllow = width >= 1920;
-          if (iswidthAllow) {
-            //如果用户上传的图片宽大于1920,那么固定显示区域宽高
-            that.$notify({
-              title: that.$t("upload-type-error"),
-              message: that.$t("upload-width-error-tip")
-            });
-
-            //计算比例,如果用户上传图片宽度超过1920,按固定比例显示用户上传图片
-            let ratio = width / height;
-            let fixedWidth = 1920;
-            let fixedHeight = fixedWidth / ratio;
-            that.bill_width = fixedWidth;
-            that.bill_height = fixedHeight;
-
-            // 如果图片超过限制，那么需要重新计算imageUrl
-            image.width = fixedWidth;
-            image.height = fixedHeight;
-            that.imageUrl = that.getBase64Image(image);
-          } else {
-            that.imageUrl = that.getBase64Image(image);
-          }
-          that.imgObj = {
-            background: `url(${that.imageUrl}) no-repeat 0 0`,
-            backgroundSize: "cover",
-            width: that.bill_width + "px",
-            height: that.bill_height + "px",
-            transform: "rotate(0)"
-          };
-          // 校准图片
-          that.calibrationImage(file);
         };
         image.src = dataurl;
       });
+
+      // 前面校验通过，显示上传图片加载动效,并将之前上传的数据清空
+      let oBox = this.$refs.imgEdit;
+      oBox.innerHTML = "";
+      this.resetArr();
+      // 上传图片加载动态
+      this.uploadImgLoading = true;
+      return true;
+    },
+    handleUploadSuccess(res, file) {
+      //先删除之前添加的框图事件，以免重复添加
+      this.removeEditableFunc();
+      this.uploadImgLoading = false;
+      // 关闭加载进度
+      this.imageUrl = URL.createObjectURL(file.raw);
+      //上传成功调用校准接口校准下图片，file.raw
+      this.calibrationImage(file);
+      this.OriginImageUrl = this.imageUrl;
+      this.base64ImageData = "";
+      this.imgObj = {
+        background: `url(${this.imageUrl}) no-repeat 0 0`,
+        backgroundSize: "cover",
+        width: this.bill_width + "px",
+        height: this.bill_height + "px",
+        transform: "rotate(0)"
+      };
     },
     // 校准图片
     calibrationImage(file) {
@@ -403,43 +296,88 @@ export default {
       if (this.calibrating) {
         return;
       }
-      let myform = new FormData();
-      myform.append("file", file.raw);
-      this.calibrating = true;
-      api.calibrationApi
-        .calibrationImage(myform)
-        .then(res => {
-          this.calibrating = false;
-          // console.log(res);
-          let { status } = res;
-          if (status == 200) {
-            let { errno } = res.data;
-            if (errno == 0) {
-              this.imageUrl = res.data.data.image;
-              this.imgObj = {
-                background: `url(${this.imageUrl}) no-repeat 0 0`,
-                backgroundSize: "cover",
-                width: this.bill_width + "px",
-                height: this.bill_height + "px",
-                transform: "rotate(0)"
-              };
-              //用户上传成功匹配模板
-              // that.templateMatching();
-            } else {
-              //校准出问题
-            }
-          } else {
-            //提示校准失败
+      let imgElem = new Image();
+      let myCanvas = this.myCanvas;
+      let myCtx = this.myCtx;
+      imgElem.src = this.imageUrl;
+      imgElem.onload = () => {
+        let imgWidth = imgElem.width, //上传图片的宽
+          imgHeight = imgElem.height, //上传图片的高
+          maxWidth = 1024, //图片最大宽
+          maxHeight = 1024, //图片最大高
+          targetWidth = imgWidth, //最后图片的宽
+          targetHeight = imgHeight; //最后图片的高
+        // 如果图片的宽或者高大于图片的最大宽高
+        if (imgWidth > maxWidth || imgHeight > maxHeight) {
+          // 宽大于高
+          if (imgWidth / imgHeight > maxWidth / maxHeight) {
+            targetWidth = maxWidth;
+            targetHeight = Math.round(maxWidth * (imgWidth / imgHeight));
           }
-          //用户上传成功匹配模板
-          this.templateMatching();
-        })
-        .catch(error => {
-          this.calibrating = false;
-          console.log(error);
-          //提示用户检查网络连接是否正常
-        });
+          // 宽小于高
+          else {
+            targetHeight = maxHeight;
+            targetWidth = Math.round(maxHeight * (imgHeight / imgWidth));
+          }
+        }
+        myCanvas.width = targetWidth; //canvas的宽=图片的宽
+        myCanvas.height = targetHeight; //canvas的高=图片的高
+        this.bill_width = targetWidth;
+        this.bill_height = targetHeight;
+        myCtx.clearRect(0, 0, targetWidth, targetHeight); //清理canvas
+        myCtx.drawImage(imgElem, 0, 0, targetWidth, targetHeight); //canvas绘图
+        myCanvas.toBlob(
+          blob => {
+            let myform = new FormData();
+            myform.append("file", blob);
+            this.calibrating = true;
+            api.calibrationApi
+              .calibrationImage(myform)
+              .then(res => {
+                this.calibrating = false;
+                let { status } = res;
+                if (status == 200) {
+                  let { errno } = res.data;
+                  if (errno == 0) {
+                    this.imageUrl = res.data.data.image;
+                    //校准后的图片可能需要重新计算宽高
+                    let calibratedImg = new Image();
+                    calibratedImg.src = this.imageUrl;
+                    calibratedImg.addEventListener("load", () => {
+                      let { width, height } = calibratedImg;
+                      this.bill_width = width;
+                      this.bill_height = height;
+                      this.imgObj = {
+                        background: `url(${this.imageUrl}) no-repeat 0 0`,
+                        backgroundSize: "cover",
+                        width: width + "px",
+                        height: height + "px",
+                        transform: "rotate(0)"
+                      };
+                      this.templateMatching();
+                    });
+                  } else {
+                    //校准出问题
+                  }
+                } else {
+                  //提示校准失败
+                }
+                //用户上传成功匹配模板
+                this.templateMatching();
+                //提示每半个小时将当前图片成功保存本地
+              })
+              .catch(error => {
+                this.calibrating = false;
+                console.log(error);
+                //提示用户检查网络连接是否正常
+              });
+          },
+          file.raw.type,
+          1
+        ); //canvas导出成为base64
+      };
     },
+    // 校准图片
     /**
      * @name: templateMatching
      * @msg: 模板匹配接口，匹配到直接识别显示结果,从缓存获取templateData,没有则从数据库里读取
@@ -508,8 +446,15 @@ export default {
             this.editImageArr.push(block);
             let obj = {};
             obj.image = imageData.substring(imageData.indexOf(",") + 1);
-            obj.request_id = Date.now() + "";
-            obj.appid = "nri_" + item.ocr_engine; //管理员分配,字符串,比userDataImage里的type多了nri前缀
+            let nowTime = Date.now() + "";
+            obj.session_id = nowTime;
+            if (item.ocr_engine == "postcode") {
+              obj.options = {
+                "options.scene": "postcode"
+              };
+            }
+            obj.type = "nri_" + item.ocr_engine;
+            obj.app_id = nowTime; //管理员分配,字符串,比userDataImage里的type多了nri前缀
             this.userCustomizeArr.push(obj);
           }
         }
@@ -540,24 +485,21 @@ export default {
               let resObj = {};
               if (item.type != "nri_T_general") {
                 //针对腾讯优图通用返回不一样数据结构处理
-                if (item.code == 0) {
-                  resObj.code = item.code;
-                  resObj.type = item.type;
-                  resObj.text = item.data.text;
-                  resObj.confidence = item.data.confidence;
-                  resObj.width = item.data.width;
-                  resObj.height = item.data.height;
-                } else {
-                  if (item.statusCode == 404) {
-                    //友好提示，目前404这种直接提示联系开发人员
-                    resObj.code = 404;
-                  } else {
-                    resObj.code = -1;
-                  }
-                  resObj.type = item.type; //返回来的type,和appid一致,添加了nri前缀
-                  resObj.text = item.message; //没有识别成功,text赋值为messge
-                  resObj.confidence = 0;
+                resObj.type = item.type;
+                resObj.text = item.items;
+                resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
+                //计算平均准确度
+                let avg_confidence = 0.0;
+                if (item.items && item.items.length != 0) {
+                  item.items.forEach(value => {
+                    avg_confidence += Number(value.itemconf);
+                    value.itemconf = Number(value.itemconf).toFixed(2);
+                  });
+                  avg_confidence = (avg_confidence / item.items.length).toFixed(
+                    2
+                  );
                 }
+                resObj.confidence = avg_confidence;
               } else if (item.type == "nri_T_general") {
                 //处理腾讯通用印刷识别
                 resObj.type = item.type;
@@ -643,27 +585,6 @@ export default {
         };
       });
     },
-    // 图片上传前校验
-    beforeRead(file) {
-      let imgSize = file.size;
-      let maxSize = 5 * 1048576;
-      this.imageType = file.type;
-      if (imgSize > maxSize) {
-        this.$notify({
-          title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-tip")
-        });
-        return false;
-      }
-      this.result = "";
-      // 前面校验通过，显示上传图片加载动效,并将之前上传的数据清空
-      let oBox = this.$refs.imgEdit;
-      oBox.innerHTML = "";
-      this.resetArr();
-      // 上传图片加载动态
-      this.uploadImgLoading = true;
-      return true;
-    },
     drawRect(x1, y1, width, height) {
       let oDiv = document.createElement("div");
       oDiv.setAttribute("class", "rect_item");
@@ -735,3 +656,117 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.ocr-wrap {
+  width: 98%;
+  padding: 30px 0 0 30px;
+  overflow: hidden;
+  .preview_btn {
+    margin: 0 10px 0 0;
+  }
+
+  .usercustomize_area {
+    position: relative;
+    overflow-x: auto;
+  }
+  .img-wrap {
+    position: relative;
+    margin: 0 30px 10px 0;
+    overflow: hidden;
+    // cursor: crosshair;
+    float: left;
+    .rect_item {
+      z-index: 99999;
+    }
+  }
+  .btn-list {
+    margin: 0 0 80px 0;
+    padding: 0 0 80px 0;
+    border-bottom: 1px dashed #d9d9d9;
+    position: relative;
+    .choice-type {
+      margin: 0 0 10px 0;
+    }
+    .detectionList {
+      width: 180px;
+      margin: 0 10px 0 0;
+    }
+    .image-btn {
+      position: absolute;
+      right: 20px;
+      bottom: 10px;
+      z-index: 999;
+    }
+  }
+  .upload_btn {
+    margin: 0 10px 10px 0;
+    position: relative;
+  }
+  .tip {
+    color: #c0c4cc;
+    text-align: left;
+  }
+  .preview_image {
+    width: 100%;
+    height: 100%;
+    background: rgba($color: #000000, $alpha: 0.6);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .close_preview {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    font-size: 40px;
+    z-index: 9999;
+    cursor: pointer;
+    color: #409eff;
+  }
+  // 结果展示
+  .result_wrap {
+    float: left;
+    width: 600px;
+    // margin: 0 0 0 30px;
+  }
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+    .error {
+      color: #e6a23c;
+      width: 300px;
+      white-space: normal;
+    }
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both;
+  }
+
+  .box-card_header {
+    font-size: 16px;
+    // overflow: hidden;
+  }
+  .box-card_header .confidence {
+    float: right;
+    margin: 0 40px 0 0;
+  }
+}
+</style>

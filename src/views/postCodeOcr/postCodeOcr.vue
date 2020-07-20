@@ -34,7 +34,8 @@
       :show-file-list="false"
       :on-success="handleUploadSuccess"
     >
-      <img v-if="imageUrl" :height="bill_height" :width="bill_width" :src="imageUrl" class="avatar" />
+      <!-- <img v-if="imageUrl" :height="bill_height" :width="bill_width" :src="imageUrl" class="avatar" /> -->
+      <div v-if="imageUrl" class="avatar" :style="imgObj"></div>
       <i v-else class="el-icon-plus avatar-uploader-icon" />
     </el-upload>
     <div class="result-details">
@@ -48,90 +49,11 @@
       >
         <el-table-column type="index" />
         <el-table-column prop="itemstring" :label="$t('recog_result')" />
+        <el-table-column prop="itemconf" :label="$t('recog_confidence')" />
       </el-table>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.el-button [class*="fa-"] + span {
-  margin-left: 5px;
-}
-$upload-width: 400px;
-$upload-height: 410px;
-.avatar-uploader {
-  text-align: center;
-  margin: 30px auto 40px;
-  width: $upload-width;
-  height: $upload-height;
-  font-size: 36px;
-  color: #8c939d;
-  cursor: pointer;
-  border: 1px dashed #d9d9d9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  float: left;
-}
-.result-details {
-  float: left;
-}
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: $upload-width;
-  height: $upload-height;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.avatar {
-  display: inline-block;
-}
-.avatar-uploader:hover {
-  border-color: #409eff;
-}
-.postCodeOcr-wrap {
-  // width: 100%;
-  // min-width: 800px;
-  overflow: hidden;
-  padding: 30px;
-  .preview_btn {
-    margin: 0 10px 0 0;
-  }
-  .tip {
-    color: #c0c4cc;
-    text-align: left;
-  }
-  .preview_image {
-    width: 100%;
-    height: 100%;
-    background: rgba($color: #000000, $alpha: 0.6);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 999;
-    img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-  .close_preview {
-    position: absolute;
-    top: 10px;
-    right: 30px;
-    font-size: 40px;
-    z-index: 9999;
-    cursor: pointer;
-    color: #409eff;
-  }
-}
-</style>
 
 <script>
 import { mapState } from "vuex";
@@ -145,6 +67,9 @@ export default {
       confidence: "", //識別準確率
       bill_width: "400", //上次運單默認寬度
       bill_height: "410", //上次運單默認高度
+      imgObj: {
+        backgroundImage: `url(${this.imageUrl})`
+      },
       canPreview: false, //是否可以预览图片
       result: "", //图片识别结果
       fail: false, //标识是否识别成功
@@ -216,37 +141,17 @@ export default {
         return false;
       }
       let that = this;
-      this.exceedSize = false;
       this.blobToDataURL(file, function(dataurl) {
         let image = new Image();
         image.onload = function() {
-          let width = image.width;
-          let height = image.height;
-          that.bill_width = width;
-          that.bill_height = height;
-          let iswidthAllow = width > 400;
-          // $upload-width: 720px;
-          // $upload-height: 400px;
-          //图片宽度超过720按比例显示
-          if (iswidthAllow) {
-            // that.$notify({
-            //   title: that.$t("upload-type-error"),
-            //   message: that.$t("upload-type-error-tip")
-            // });
-
-            let ratio = width / height;
-            let fixedWidth = 400;
-            let fixedHeight = fixedWidth / ratio;
-            that.bill_width = fixedWidth;
-            that.bill_height = fixedHeight;
-
-            // 如果图片超过限制，那么需要重新计算imageUrl
-            image.width = fixedWidth;
-            image.height = fixedHeight;
-            that.imageUrl = that.getBase64Image(image);
-            that.exceedSize = true;
-            // return false;
-          }
+          let imgWidth = image.width;
+          let imgHeight = image.height;
+          that.bill_width = imgWidth;
+          that.bill_height = imgHeight;
+          that.imageUrl = that.getBase64Image(image);
+          that.imgObj = {
+            backgroundImage: `url(${that.imageUrl})`
+          };
         };
         image.src = dataurl;
       });
@@ -259,7 +164,6 @@ export default {
       if (!this.exceedSize) {
         this.imageUrl = URL.createObjectURL(file.file);
       }
-      // this.imageUrl = URL.createObjectURL(file.file);
       if (this.isRequesting) {
         return;
       }
@@ -300,3 +204,89 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.el-button [class*="fa-"] + span {
+  margin-left: 5px;
+}
+$upload-width: 400px;
+$upload-height: 410px;
+.avatar-uploader {
+  text-align: center;
+  margin: 30px auto 40px;
+  width: $upload-width;
+  height: $upload-height;
+  font-size: 36px;
+  color: #8c939d;
+  cursor: pointer;
+  border: 1px dashed #d9d9d9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  float: left;
+}
+.result-details {
+  float: left;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: $upload-width;
+  height: $upload-height;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.avatar {
+  display: inline-block;
+  width: 400px;
+  height: 410px;
+  box-sizing: border-box;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.avatar-uploader:hover {
+  border-color: #409eff;
+}
+.postCodeOcr-wrap {
+  // width: 100%;
+  // min-width: 800px;
+  overflow: hidden;
+  padding: 30px;
+  .preview_btn {
+    margin: 0 10px 0 0;
+  }
+  .tip {
+    color: #c0c4cc;
+    text-align: left;
+  }
+  .preview_image {
+    width: 100%;
+    height: 100%;
+    background: rgba($color: #000000, $alpha: 0.6);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .close_preview {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    font-size: 40px;
+    z-index: 9999;
+    cursor: pointer;
+    color: #409eff;
+  }
+}
+</style>

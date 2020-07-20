@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-07-17 17:43:16
+ * @LastEditTime: 2020-07-20 14:07:25
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -143,9 +143,14 @@
         <div class="text item">
           <img :src="item.imgUrl" />
           <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
-          <p
-            v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'"
-          >{{ item.text }}</p>
+          <p v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'">
+            <!-- {{ item.text }} -->
+            <el-table :data="item.text" style="width: 100%">
+              <el-table-column type="index" width="50" />
+              <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+              <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+            </el-table>
+          </p>
           <p v-else-if="item.code==0&&item.type=='nri_T_general'">
             <el-table :data="item.text" style="width: 100%">
               <el-table-column type="index" width="50" />
@@ -227,9 +232,9 @@ export default {
         OCR_engine: "expressbill" //当前ocr引擎类型,默认运单
       }, //自定块编辑表单
       cutomBlockRules: {
-        name: [{ required: true, message: "请输入区域名称", trigger: "blur" }],
+        name: [{ required: true, message: "Please enter a custom area name", trigger: "blur" }],
         OCR_engine: [
-          { required: true, message: "请选择OCR引擎", trigger: "change" }
+          { required: true, message: "Please select OCR engine", trigger: "change" }
         ]
       },
       isRequesting: false, //控制请求次数和加载状态
@@ -737,24 +742,23 @@ export default {
               let resObj = {};
               if (item.type != "nri_T_general") {
                 //针对腾讯优图通用返回不一样数据结构处理
-                if (item.code == 0) {
-                  resObj.code = item.code;
-                  resObj.type = item.type;
-                  resObj.text = item.data.text;
-                  resObj.confidence = item.data.confidence;
-                  resObj.width = item.data.width;
-                  resObj.height = item.data.height;
-                } else {
-                  if (item.statusCode == 404) {
-                    //友好提示，目前404这种直接提示联系开发人员
-                    resObj.code = 404;
-                  } else {
-                    resObj.code = -1;
-                  }
-                  resObj.type = item.type; //返回来的type,和appid一致,添加了nri前缀
-                  resObj.text = item.message; //没有识别成功,text赋值为messge
-                  resObj.confidence = 0;
+                // console.log(item);
+                resObj.type = item.type;
+                resObj.text = item.items;
+                resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
+                //计算平均准确度
+                let avg_confidence = 0.0;
+                if (item.items && item.items.length != 0) {
+                  item.items.forEach(value => {
+                    avg_confidence += Number(value.itemconf);
+                    value.itemconf = Number(value.itemconf).toFixed(2);
+                  });
+                  avg_confidence = (avg_confidence / item.items.length).toFixed(
+                    2
+                  );
                 }
+                // console.log(avg_confidence);
+                resObj.confidence = avg_confidence;
               } else if (item.type == "nri_T_general") {
                 //处理腾讯通用印刷识别
                 resObj.type = item.type;
@@ -852,6 +856,11 @@ export default {
           obj.image = imageData.substring(imageData.indexOf(",") + 1);
           let nowTime = Date.now() + "";
           obj.request_id = nowTime;
+          if (item.ocr_engine == "postcode") {
+            obj.options = {
+              "options.scene": "postcode"
+            };
+          }
           obj.type = "nri_" + item.ocr_engine;
           obj.app_id = nowTime; //管理员分配,字符串,比userDataImage里的type多了nri前缀
           this.userCustomizeArr.push(obj);
@@ -1143,6 +1152,11 @@ export default {
         let obj = {};
         obj.image = image.substring(image.indexOf(",") + 1);
         obj.session_id = nowTime;
+        if (item.ocr_engine == "postcode") {
+          obj.options = {
+            "options.scene": "postcode"
+          };
+        }
         obj.type = "nri_" + item.ocr_engine;
         obj.app_id = nowTime; //管理员分配,字符串,比userDataImage里的type多了nri前缀
         this.userCustomizeArr.push(obj);

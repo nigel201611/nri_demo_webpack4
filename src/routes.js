@@ -1,7 +1,7 @@
 /*
  * @Author: nigel
  * @Date: 2020-03-19 17:42:35
- * @LastEditTime: 2020-06-23 10:13:59
+ * @LastEditTime: 2020-07-20 16:13:39
  */
 import Login from './views/login/login.vue';
 import NotFound from './views/404.vue';
@@ -15,7 +15,7 @@ import generalocr from './views/generalocr/generalocr.vue';
 import googleOcr from './views/googleOcr/googleOcr.vue';
 import customizeOcr from './views/customizeOcr/customizeOcr.vue';
 import myOcrTemplate from './views/myOcrTemplate/myOcrTemplate.vue';
-import gesture from './views/gesture/gesture.vue';
+// import gesture from './views/gesture/gesture.vue';
 let routes = [{
     path: '/login',
     component: Login,
@@ -72,12 +72,12 @@ let routes = [{
         name: 'generalocr',
         alias: '通用印刷体文字识别'
     },
-    {
-        path: '/gesture',
-        component: gesture,
-        name: 'gesture',
-        alias: '手势识别'
-    },
+    // {
+    //     path: '/gesture',
+    //     component: gesture,
+    //     name: 'gesture',
+    //     alias: '手势识别'
+    // },
     {
         path: '/googleOcr',
         component: googleOcr,

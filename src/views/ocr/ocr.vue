@@ -34,7 +34,7 @@
       :show-file-list="false"
       :on-success="handleUploadSuccess"
     >
-      <img v-if="imageUrl" :height="bill_height" :width="bill_width" :src="imageUrl" class="avatar" />
+      <div v-if="imageUrl" class="avatar" :style="imgObj"></div>
       <i v-else class="el-icon-plus avatar-uploader-icon" />
     </el-upload>
     <div class="result-details">
@@ -48,81 +48,11 @@
       >
         <el-table-column type="index" />
         <el-table-column prop="itemstring" :label="$t('recog_result')" />
+        <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
       </el-table>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.el-button [class*="fa-"] + span {
-  margin-left: 5px;
-}
-$upload-width: 400px;
-$upload-height: 410px;
-.avatar-uploader {
-  text-align: center;
-  margin: 30px auto 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: $upload-width;
-  height: $upload-height;
-  font-size: 36px;
-  color: #8c939d;
-  cursor: pointer;
-  border: 1px dashed #d9d9d9;
-  float: left;
-}
-.result-details {
-  float: left;
-}
-
-.avatar {
-  display: inline-block;
-}
-.avatar-uploader:hover {
-  border-color: #409eff;
-}
-.ocr-wrap {
-  // width: 100%;
-  // min-width: 800px;
-  overflow: hidden;
-  padding: 30px;
-  box-sizing: border-box;
-  .preview_btn {
-    margin: 0 10px 0 0;
-  }
-  .tip {
-    color: #c0c4cc;
-    text-align: left;
-  }
-  .preview_image {
-    width: 100%;
-    height: 100%;
-    background: rgba($color: #000000, $alpha: 0.6);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 999;
-    img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-  .close_preview {
-    position: absolute;
-    top: 10px;
-    right: 30px;
-    font-size: 40px;
-    z-index: 9999;
-    cursor: pointer;
-    color: #409eff;
-  }
-}
-</style>
 
 <script>
 import { mapState } from "vuex";
@@ -136,6 +66,9 @@ export default {
       confidence: "", //識別準確率
       bill_width: "400", //上次運單默認寬度
       bill_height: "410", //上次運單默認高度
+      imgObj: {
+        backgroundImage: `url(${this.imageUrl})`
+      },
       canPreview: false, //是否可以预览图片
       result: "", //图片识别结果
       fail: false, //标识是否识别成功
@@ -204,55 +137,24 @@ export default {
         });
         return false;
       }
-      let type = file.type;
       let that = this;
       this.blobToDataURL(file, function(dataurl) {
         let image = new Image();
         image.onload = function() {
-          let width = image.width;
-          let height = image.height;
-          that.bill_width = width;
-          that.bill_height = height;
-          let iswidthAllow = width >= 400;
-          // console.log("图片宽度:" + width);
-          if (iswidthAllow) {
-            // that.$notify({
-            //   title: that.$t("upload-type-error"),
-            //   message: this.$t("upload-type-error-tip")
-            // });
-            // return false;
-            //超过尺寸自动压缩
-            let ratio = width / height;
-            let fixedWidth = 400;
-            let fixedHeight = fixedWidth / ratio;
-            that.bill_width = fixedWidth;
-            that.bill_height = fixedHeight;
-
-            // 如果图片超过限制，那么需要重新计算imageUrl
-            image.width = fixedWidth;
-            image.height = fixedHeight;
-            that.imageUrl = that.getBase64Image(image);
-            that.exceedSize = true;
-          }
+          let imgWidth = image.width;
+          let imgHeight = image.height;
+          that.bill_width = imgWidth;
+          that.bill_height = imgHeight;
+          that.imageUrl = that.getBase64Image(image);
+          that.imgObj = {
+            backgroundImage: `url(${that.imageUrl})`
+          };
         };
         image.src = dataurl;
       });
 
       // 对上传的大小和type做处理
-      // console.log(type);
-      if (
-        type !== "image/jpeg" &&
-        type !== "image/jpg" &&
-        type !== "image/png"
-      ) {
-        this.$notify({
-          title: this.$t("upload-type-error"),
-          message: this.$t("upload-type-tip")
-        });
-        return false;
-      }
       this.result = "";
-      // this.imageUrl = "";
       return true;
     },
 
@@ -270,7 +172,8 @@ export default {
       let requestObj = {
         session_id: nowTime,
         app_id: nowTime, //管理员分配,字符串
-        image: ""
+        image: "",
+        options: { "options.scene": "all" }
       };
 
       let that = this;
@@ -304,3 +207,80 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.el-button [class*="fa-"] + span {
+  margin-left: 5px;
+}
+$upload-width: 400px;
+$upload-height: 410px;
+.avatar-uploader {
+  text-align: center;
+  margin: 30px auto 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: $upload-width;
+  height: $upload-height;
+  font-size: 36px;
+  color: #8c939d;
+  cursor: pointer;
+  border: 1px dashed #d9d9d9;
+  float: left;
+}
+.result-details {
+  float: left;
+}
+
+.avatar {
+  display: inline-block;
+  width: 400px;
+  height: 410px;
+  box-sizing: border-box;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.avatar-uploader:hover {
+  border-color: #409eff;
+}
+.ocr-wrap {
+  // width: 100%;
+  // min-width: 800px;
+  overflow: hidden;
+  padding: 30px;
+  box-sizing: border-box;
+  .preview_btn {
+    margin: 0 10px 0 0;
+  }
+  .tip {
+    color: #c0c4cc;
+    text-align: left;
+  }
+  .preview_image {
+    width: 100%;
+    height: 100%;
+    background: rgba($color: #000000, $alpha: 0.6);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .close_preview {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    font-size: 40px;
+    z-index: 9999;
+    cursor: pointer;
+    color: #409eff;
+  }
+}
+</style>

@@ -10,7 +10,8 @@
         "upload-type-error-tip": "图片宽度不能超过1920像素,请重新上传符合要求图片~",
         "result-fail": "识别失败，请检查网络是否正常~",
         "no_data": "暂无数据",
-        "recog_result": "识别结果"
+        "recog_result": "识别结果",
+        "recog_confidence": "准确度"
     },
     "en": {
         "loading-text": "Desperately loading~",
@@ -23,7 +24,8 @@
         "upload-type-error-tip": "The picture width cannot exceed 1920 pixels. Please upload the picture again~",
         "result-fail": "Recognition failed, please check whether the network is normal~",
         "no_data": "No data available",
-        "recog_result": "Recognition result"
+        "recog_result": "Recognition result",
+        "recog_confidence": "Accuracy"
     },
     "ja": {
         "loading-text": "ロード中~",
@@ -36,6 +38,7 @@
         "upload-type-error-tip": "画像の幅は1920ピクセルを超えてはいけません。要求に合った画像を再度アップロードしてください~",
         "result-fail": "認識に失敗しました。ネットワークが正常かどうか確認してください~",
         "no_data": "データがありません",
-        "recog_result": "識別結果"
+        "recog_result": "識別結果",
+        "recog_confidence": "正確さ"
     }
 }

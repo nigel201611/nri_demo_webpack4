@@ -119,74 +119,24 @@ export const menudata = [
         iconClass: "",
         permDesc: "printed-character-recog"
     },
-    {
-        id: 1,
-        permName: "Human_body_recognition",
-        parentPermId: 0,
-        permCode: "",
-        permType: "MENU",
-        permUrl: "",
-        iconClass: "iconfont icon-humanbody",
-        permDesc: "Human_body_recognition"
-    },
-    {
-        id: 2,
-        permName: "gesture_recognition",
-        parentPermId: 1,
-        permCode: "",
-        permType: "MENU",
-        permUrl: "/gesture",
-        iconClass: "iconfont icon-humanbody",
-        permDesc: "gesture_recognition"
-    }
     // {
-    //   id: 78,
-    //   permName: "handwriting_recog",
-    //   parentPermId: 76,
-    //   permCode: "",
-    //   permType: "MENU",
-    //   permUrl: "/handwritingocr",
-    //   iconClass: "iconfont icon-Penguin",
-    //   permDesc: "handwriting_recog"
+    //     id: 1,
+    //     permName: "Human_body_recognition",
+    //     parentPermId: 0,
+    //     permCode: "",
+    //     permType: "MENU",
+    //     permUrl: "",
+    //     iconClass: "iconfont icon-humanbody",
+    //     permDesc: "Human_body_recognition"
     // },
     // {
-    //   id: 79,
-    //   permName: "ehocr_general",
-    //   parentPermId: 76,
-    //   permCode: "",
-    //   permType: "MENU",
-    //   permUrl: "/ehocr",
-    //   iconClass: "iconfont icon-Penguin",
-    //   permDesc: "ehocr_general"
-    // },
-    // {
-    //   id: 79,
-    //   permName: "hpgeneralocr",
-    //   parentPermId: 76,
-    //   permCode: "",
-    //   permType: "MENU",
-    //   permUrl: "/hpgeneralocr",
-    //   iconClass: "iconfont icon-Penguin",
-    //   permDesc: "hpgeneralocr"
-    // },
-    // {
-    //   id: 80,
-    //   permName: "seal_ocr",
-    //   parentPermId: 76,
-    //   permCode: "",
-    //   permType: "MENU",
-    //   permUrl: "/seal_ocr",
-    //   iconClass: "iconfont icon-Penguin",
-    //   permDesc: "seal_ocr"
-    // },
-    // {
-    //   id: 81,
-    //   permName: "worddetect",
-    //   parentPermId: 76,
-    //   permCode: "",
-    //   permType: "MENU",
-    //   permUrl: "/worddetect",
-    //   iconClass: "iconfont icon-Penguin",
-    //   permDesc: "worddetect"
+    //     id: 2,
+    //     permName: "gesture_recognition",
+    //     parentPermId: 1,
+    //     permCode: "",
+    //     permType: "MENU",
+    //     permUrl: "/gesture",
+    //     iconClass: "iconfont icon-humanbody",
+    //     permDesc: "gesture_recognition"
     // }
 ];

@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-04-13 13:56:58
- * @LastEditTime: 2020-05-22 13:46:17
+ * @LastEditTime: 2020-07-20 17:36:02
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -79,111 +79,6 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
-.generalocr_wrap {
-  text-align: center;
-  .generalocr-uploader,
-  .url_input,
-  .analyse-btn {
-    display: inline-block;
-    position: relative;
-    z-index: 999;
-  }
-  .imgtype_selector {
-    margin: 50px 0 30px;
-  }
-  .analyse-btn {
-    width: 140px;
-  }
-  .url_input {
-    width: 840px;
-    margin: 0 0 0 20px;
-  }
-  .input_form {
-    text-align: center;
-    min-width: 1263px;
-    box-sizing: border-box;
-  }
-}
-.ocr-result {
-  text-align: center;
-  margin: 20px 0 0 0;
-  min-width: 1263px;
-  box-sizing: border-box;
-  .imgOrigin {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform-origin: 50% 50%;
-    opacity: 0;
-  }
-  .ocrGeneralCanvas {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform-origin: 50% 50%;
-    opacity: 1;
-    z-index: 9;
-    transform: translate(-50%, -50%);
-  }
-  .ocr_image {
-    width: 400px;
-    height: 410px;
-    margin-right: 20px;
-    box-shadow: 0 5px 15px 0 rgba(47, 99, 150, 0.1);
-    border: 1px solid rgba(#34b6fc, 0.1);
-    box-sizing: border-box;
-    display: inline-block;
-    background-position: center center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    position: relative;
-  }
-  .result-details {
-    display: inline-block;
-    width: 780px;
-    background: #fff;
-    height: 400px;
-    box-shadow: 0 5px 15px 0 rgba(47, 99, 150, 0.1);
-    border: 1px solid rgba(#34b6fc, 0.1);
-    box-sizing: border-box;
-  }
-}
-.picture-container {
-  text-align: center;
-  margin: 30px 0 30px 0;
-  min-width: 1263px;
-  box-sizing: border-box;
-  .pic-item_active {
-    border: 4px solid #00a4ff;
-    box-shadow: 0 5px 15px 0 rgba(43, 74, 130, 0.5);
-  }
-  .pic-item {
-    display: inline-block;
-    width: 200px;
-    height: 150px;
-    position: relative;
-    z-index: 9999;
-    box-sizing: border-box;
-    cursor: pointer;
-    &:hover {
-      border: 4px solid #00a4ff;
-      box-shadow: 0 5px 15px 0 rgba(43, 74, 130, 0.5);
-    }
-  }
-}
-.upload-btn {
-  text-align: center;
-  font-family: PingFangSC-Regular, helvetica neue, hiragino sans gb,
-    microsoft yahei, tahoma, microsoft yahei ui, simsun, sans-serif;
-  .internet-img {
-    display: inline-block;
-    margin-left: 19px;
-    vertical-align: top;
-    width: 1200px;
-  }
-}
-</style>
 <script>
 const imgArrOrigin = [
   { url: "/static/images/ocr_common01.jpg" },
@@ -537,3 +432,109 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.generalocr_wrap {
+  text-align: center;
+  .generalocr-uploader,
+  .url_input,
+  .analyse-btn {
+    display: inline-block;
+    position: relative;
+    z-index: 999;
+  }
+  .imgtype_selector {
+    margin: 50px 0 30px;
+  }
+  .analyse-btn {
+    width: 140px;
+  }
+  .url_input {
+    width: 840px;
+    margin: 0 0 0 20px;
+  }
+  .input_form {
+    text-align: center;
+    min-width: 1263px;
+    box-sizing: border-box;
+  }
+}
+.ocr-result {
+  text-align: center;
+  margin: 20px 0 0 0;
+  min-width: 1263px;
+  box-sizing: border-box;
+  .imgOrigin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 50% 50%;
+    opacity: 0;
+  }
+  .ocrGeneralCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: 50% 50%;
+    opacity: 1;
+    z-index: 9;
+    transform: translate(-50%, -50%);
+  }
+  .ocr_image {
+    width: 400px;
+    height: 410px;
+    margin-right: 20px;
+    box-shadow: 0 5px 15px 0 rgba(47, 99, 150, 0.1);
+    border: 1px solid rgba(#34b6fc, 0.1);
+    box-sizing: border-box;
+    display: inline-block;
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: relative;
+  }
+  .result-details {
+    display: inline-block;
+    width: 780px;
+    background: #fff;
+    height: 400px;
+    box-shadow: 0 5px 15px 0 rgba(47, 99, 150, 0.1);
+    border: 1px solid rgba(#34b6fc, 0.1);
+    box-sizing: border-box;
+  }
+}
+.picture-container {
+  text-align: center;
+  margin: 30px 0 30px 0;
+  min-width: 1263px;
+  box-sizing: border-box;
+  .pic-item_active {
+    border: 4px solid #00a4ff;
+    box-shadow: 0 5px 15px 0 rgba(43, 74, 130, 0.5);
+  }
+  .pic-item {
+    display: inline-block;
+    width: 200px;
+    height: 150px;
+    position: relative;
+    z-index: 9999;
+    box-sizing: border-box;
+    cursor: pointer;
+    &:hover {
+      border: 4px solid #00a4ff;
+      box-shadow: 0 5px 15px 0 rgba(43, 74, 130, 0.5);
+    }
+  }
+}
+.upload-btn {
+  text-align: center;
+  font-family: PingFangSC-Regular, helvetica neue, hiragino sans gb,
+    microsoft yahei, tahoma, microsoft yahei ui, simsun, sans-serif;
+  .internet-img {
+    display: inline-block;
+    margin-left: 19px;
+    vertical-align: top;
+    width: 1200px;
+  }
+}
+</style>
