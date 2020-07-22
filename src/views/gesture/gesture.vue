@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2020-07-03 11:09:34
+ * @LastEditTime: 2020-07-22 14:26:09
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -50,76 +50,6 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
-.carousel-wrap {
-  padding: 50px 100px 0 100px;
-  .carousel_item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    img {
-      width: 100%;
-    }
-    .product_detail {
-      width: 100%;
-      height: 100%;
-      background: rgba($color: #222222, $alpha: 0.4);
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      color: #ffffff;
-      font-family: Helvetica Neue For Number, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
-      img {
-        // width: 40%;
-        width: 180px;
-      }
-      p {
-        margin: 0;
-      }
-      .header {
-        font-size: 18px;
-        font-weight: 600;
-        line-height: 48px;
-      }
-      .footer {
-        line-height: 30px;
-      }
-    }
-  }
-}
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
-}
-.gesture_icon {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  .iconfont {
-    margin: 20px 40px 0 0;
-    font-size: 68px;
-    display: inline-block;
-    color: #99a9bf;
-    span {
-      font-size: 20px;
-    }
-  }
-  .active {
-    color: rgb(32, 160, 255);
-    transform: scale(1.5);
-  }
-  .confirm {
-    font-size: 98px;
-    position: relative;
-    top: -16px;
-  }
-}
-</style>
 <script>
 const imgArrOrigin = [
   {
@@ -174,6 +104,7 @@ export default {
       imgArr: imgArrOrigin, //产品信息
       curIndex: 0, //当前走马灯索引
       curGesture: "", //默认就是拳头
+      prevGesture: "no", //记录上一次接收到的手势，默认no
       isConfirm: false //控制显示产品信息，用户确认手势显示产品信息
     };
   },
@@ -211,6 +142,13 @@ export default {
         if (data.code == "0") {
           let gesture = data.result;
           this.curGesture = gesture;
+          //本次接收到的和上次接收到的一致，那么不做任何动作
+          //如果期间收到了no，说明用户有换手势
+          if (this.prevGesture == gesture) {
+            return;
+          }
+          //如果不同，记录下当前手势到preGestrue,为下次做准备
+          this.prevGesture = gesture;
           switch (gesture) {
             case "stop":
               //取消手势，隐藏产品显示信息
@@ -246,3 +184,76 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.carousel-wrap {
+  padding: 50px 100px 0 100px;
+  .carousel_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 100%;
+    }
+    .product_detail {
+      width: 100%;
+      height: 100%;
+      background: rgba($color: #222222, $alpha: 0.4);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #ffffff;
+      font-family: Helvetica Neue For Number, -apple-system, BlinkMacSystemFont,
+        Segoe UI, Roboto, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
+        Helvetica Neue, Helvetica, Arial, sans-serif;
+      img {
+        // width: 40%;
+        width: 180px;
+      }
+      p {
+        margin: 0;
+      }
+      .header {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 48px;
+      }
+      .footer {
+        line-height: 30px;
+      }
+    }
+  }
+}
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
+.gesture_icon {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .iconfont {
+    margin: 20px 40px 0 0;
+    font-size: 68px;
+    display: inline-block;
+    color: #99a9bf;
+    span {
+      font-size: 20px;
+    }
+  }
+  .active {
+    color: rgb(32, 160, 255);
+    transform: scale(1.5);
+  }
+  .confirm {
+    font-size: 98px;
+    position: relative;
+    top: -16px;
+  }
+}
+</style>
