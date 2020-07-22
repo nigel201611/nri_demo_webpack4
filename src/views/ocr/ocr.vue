@@ -39,7 +39,6 @@
     </el-upload>
     <div class="result-details">
       <el-table
-        v-loading="isRequesting"
         align="left"
         :data="tableData"
         height="436"
