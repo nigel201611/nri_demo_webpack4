@@ -45,7 +45,7 @@
         style="width: 400px"
         :empty-text="$t('no_data')"
       >
-        <el-table-column type="index" />
+        <el-table-column prop="rowName" :label="$t('recog_code')" />
         <el-table-column prop="itemstring" :label="$t('recog_result')" />
         <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
       </el-table>
@@ -66,23 +66,23 @@ export default {
       bill_width: "400", //上次運單默認寬度
       bill_height: "410", //上次運單默認高度
       imgObj: {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       },
       canPreview: false, //是否可以预览图片
       result: "", //图片识别结果
       fail: false, //标识是否识别成功
-      tableData: [] //识别的数据
+      tableData: [], //识别的数据
     };
   },
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
     this.exceedSize = false; //用于标识上传图片是否超过限制D
@@ -106,7 +106,7 @@ export default {
     //**blob to dataURL**
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
-      filereader.onload = function(e) {
+      filereader.onload = function (e) {
         callback(e.target.result);
       };
       filereader.readAsDataURL(fileblob);
@@ -132,21 +132,21 @@ export default {
       if (imgSize > maxSize) {
         this.$notify({
           title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-error-tip")
+          message: this.$t("upload-size-error-tip"),
         });
         return false;
       }
       let that = this;
-      this.blobToDataURL(file, function(dataurl) {
+      this.blobToDataURL(file, function (dataurl) {
         let image = new Image();
-        image.onload = function() {
+        image.onload = function () {
           let imgWidth = image.width;
           let imgHeight = image.height;
           that.bill_width = imgWidth;
           that.bill_height = imgHeight;
           that.imageUrl = that.getBase64Image(image);
           that.imgObj = {
-            backgroundImage: `url(${that.imageUrl})`
+            backgroundImage: `url(${that.imageUrl})`,
           };
         };
         image.src = dataurl;
@@ -169,21 +169,21 @@ export default {
       }
       let nowTime = Date.now() + "";
       let requestObj = {
-        session_id: nowTime,
-        app_id: nowTime, //管理员分配,字符串
+        request_id: nowTime,
+        appid: nowTime, //管理员分配,字符串
         image: "",
-        options: { "options.scene": "all" }
+        options: { scene: "all" },
       };
 
       let that = this;
-      this.blobToDataURL(file.file, function(dataurl) {
+      this.blobToDataURL(file.file, function (dataurl) {
         dataurl = dataurl.substring(dataurl.indexOf(",") + 1);
         requestObj.image = dataurl;
         let detectionName = "expressBillDetection";
         let dectionApiPromise = api.smokeIdentificationApi[detectionName];
         that.isRequesting = true;
         dectionApiPromise(requestObj)
-          .then(res => {
+          .then((res) => {
             //云服务器
             that.isRequesting = false;
             that.fail = false;
@@ -191,7 +191,54 @@ export default {
             if (status == 200) {
               if (data.errno == 0) {
                 // that.result = data.items && data.items.map;
-                that.tableData = data.data && data.data.items;
+                if (data.data && data.data.code == 0) {
+                  let ocrResponse = data.data.data;
+                  if (
+                    !ocrResponse.address &&
+                    !ocrResponse.name &&
+                    !ocrResponse.postcode
+                  ) {
+                    that.tableData = [
+                      {
+                        rowName: "",
+                        itemstring: "empty data",
+                        itemconf: 0,
+                      },
+                    ];
+                  } else {
+                    that.tableData = [
+                      {
+                        rowName: "address",
+                        itemstring:
+                          ocrResponse.address && ocrResponse.address["text"],
+                        itemconf:
+                          ocrResponse.address && ocrResponse.address["score"],
+                      },
+                      {
+                        rowName: "name",
+                        itemstring:
+                          ocrResponse.name && ocrResponse.name["text"],
+                        itemconf: ocrResponse.name && ocrResponse.name["score"],
+                      },
+                      {
+                        rowName: "postcode",
+                        itemstring:
+                          ocrResponse.postcode && ocrResponse.postcode["text"],
+                        itemconf:
+                          ocrResponse.postcode && ocrResponse.postcode["score"],
+                      },
+                    ];
+                  }
+                } else {
+                  that.tableData = [
+                    {
+                      rowName: "error code",
+                      itemstring: "something error ",
+                      itemconf: 0,
+                    },
+                  ];
+                }
+
                 // that.confidence = responesedata.data.confidence;
               }
             }
@@ -202,8 +249,8 @@ export default {
             that.result = "result-fail";
           });
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
