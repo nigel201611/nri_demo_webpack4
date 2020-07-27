@@ -1,7 +1,7 @@
 /*
  * @Author: nigel
  * @Date: 2020-05-12 14:33:04
- * @LastEditTime: 2020-07-17 10:20:50
+ * @LastEditTime: 2020-07-24 09:51:33
  */
 /* eslint-disable */
 import babelpolyfill from 'babel-polyfill';
@@ -20,7 +20,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 // import './assets/theme/theme-green/index.css'
 import VueRouter from 'vue-router';
 import store from './vuex/store';
-import Vuex from 'vuex';
+// import Vuex from 'vuex';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import routes from './routes';
@@ -38,7 +38,7 @@ Vue.use(VueI18n);
 Vue.use(ElementUI);
 
 Vue.use(VueRouter);
-Vue.use(Vuex);
+// Vue.use(Vuex);
 
 NProgress.configure({ showSpinner: false });
 const router = new VueRouter({

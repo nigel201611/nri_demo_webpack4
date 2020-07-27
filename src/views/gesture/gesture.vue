@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2020-07-22 14:26:09
+ * @LastEditTime: 2020-07-23 16:16:30
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -56,40 +56,41 @@ const imgArrOrigin = [
     url: "/static/images/ocr_common01.jpg",
     price: "121.12",
     name: "商品1",
-    stock: "120"
+    stock: "120",
   },
   {
     url: "/static/images/ocr_common02.jpg",
     price: "121.12",
     name: "商品2",
-    stock: "120"
+    stock: "120",
   },
   {
     url: "/static/images/ocr_common07.jpg",
     price: "121.12",
     name: "商品3",
-    stock: "120"
+    stock: "120",
   },
   {
     url: "/static/images/ocr_common08.jpg",
     price: "121.12",
     name: "商品4",
-    stock: "120"
+    stock: "120",
   },
   {
     url: "/static/images/ocr_common05.jpg",
     price: "121.12",
     name: "商品5",
-    stock: "120"
+    stock: "120",
   },
   {
     url: "/static/images/ocr_common06.jpg",
     price: "121.12",
     name: "商品6",
-    stock: "120"
-  }
+    stock: "120",
+  },
 ];
 import { mapState } from "vuex";
+// import _ from "lodash";
 // import api from "../../api";
 export default {
   data() {
@@ -105,18 +106,18 @@ export default {
       curIndex: 0, //当前走马灯索引
       curGesture: "", //默认就是拳头
       prevGesture: "no", //记录上一次接收到的手势，默认no
-      isConfirm: false //控制显示产品信息，用户确认手势显示产品信息
+      isConfirm: false, //控制显示产品信息，用户确认手势显示产品信息
     };
   },
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
     this.callGestrue();
@@ -132,56 +133,103 @@ export default {
     handleChangeCarousel(value) {
       this.curIndex = value;
     },
+    /**
+     * @desc 函数节流
+     * @param func 函数
+     * @param wait 延迟执行毫秒数
+     * @param type 1 表时间戳版，2 表定时器版
+     */
+    throttle(func, wait, type) {
+      let previous = 0;
+      let timeout;
+      // if (type === 1) {
+      //   let previous = 0;
+      // } else if (type === 2) {
+      //   let timeout;
+      // }
+      return function () {
+        let context = this;
+        let args = arguments;
+        if (type === 1) {
+          let now = Date.now();
+          if (now - previous > wait) {
+            func.apply(context, args);
+            previous = now;
+          }
+        } else if (type === 2) {
+          if (!timeout) {
+            timeout = setTimeout(() => {
+              timeout = null;
+              func.apply(context, args);
+            }, wait);
+          }
+        }
+      };
+    },
+    handleBannerSwift(gesture) {
+      //如果不同，记录下当前手势到preGestrue,为下次做准备
+      this.prevGesture = gesture;
+      switch (gesture) {
+        case "stop":
+          //取消手势，隐藏产品显示信息
+          // console.log("cancel");
+          this.isConfirm = false;
+          break;
+        case "punch":
+          //取消手势
+          // console.log("return home or init to the first product");
+          this.$refs.product_carousel.setActiveItem(0);
+          break;
+        case "left":
+          //取消手势
+          // console.log("prev product");
+          this.prev();
+          break;
+        case "right":
+          // console.log("next product");
+          this.next();
+          break;
+        case "thumbs_up":
+          //取消手势
+          // console.log("confirm");
+          this.isConfirm = true;
+          //显示产品的名称，库存，二维码
+          break;
+      }
+    },
     callGestrue() {
-      let socket = io("http://127.0.0.1:80");
-      socket.on("opend", function(data) {
+      let socket = io("http://127.0.0.1:8094");
+      socket.on("opend", function (data) {
         console.log("opend:", data);
       });
-      socket.on("pythonMessageFromNode", data => {
+      socket.on("pythonMessageFromNode", (data) => {
         this.isConfirm = false;
         if (data.code == "0") {
+          //对于相同的手势实现节流，保证1s切换一次（1s内有三个向左手势和一个向右手势，那么只触发向左一次和向右一次）
+          //如果本次手势和上次手势不一样，那么不走节流，直接触发
           let gesture = data.result;
           this.curGesture = gesture;
+          console.log(
+            this.prevGesture,
+            this.curGesture,
+            this.prevGesture == gesture
+          );
           //本次接收到的和上次接收到的一致，那么不做任何动作
           //如果期间收到了no，说明用户有换手势
-          if (this.prevGesture == gesture) {
-            return;
-          }
-          //如果不同，记录下当前手势到preGestrue,为下次做准备
-          this.prevGesture = gesture;
-          switch (gesture) {
-            case "stop":
-              //取消手势，隐藏产品显示信息
-              console.log("cancel");
-              this.isConfirm = false;
-              break;
-            case "punch":
-              //取消手势
-              console.log("return home or init to the first product");
-              this.$refs.product_carousel.setActiveItem(0);
-              break;
-            case "left":
-              //取消手势
-              console.log("prev product");
-              this.prev();
-              break;
-            case "right":
-              console.log("next product");
-              this.next();
-              break;
-            case "thumbs_up":
-              //取消手势
-              console.log("confirm");
-              this.isConfirm = true;
-              //显示产品的名称，库存，二维码
-              break;
+          if (this.prevGesture == this.curGesture) {
+            //相同走节流,目前设置时间600ms
+            // _.debounce(this.handleBannerSwift(gesture), 600);
+            this.throttle(this.handleBannerSwift(gesture), 2000, 2);
+          } else {
+            //不相同，马上触发一次
+            this.handleBannerSwift(gesture);
           }
         } else {
           console.log(data);
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
