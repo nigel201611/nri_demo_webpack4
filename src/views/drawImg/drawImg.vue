@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-07-20 15:39:16
+ * @LastEditTime: 2020-07-29 14:35:20
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -131,14 +131,14 @@ export default {
         nri_expressbill: "waybill-result",
         nri_postcode: "zipcode-result",
         nri_T_general: "T_general",
-        nri_G_general: "G_general"
+        nri_G_general: "G_general",
       }, //保存标题和识别类型映射关系，
       imgObj: {
         background: `url(${this.imageUrl}) no-repeat 0 0`,
         backgroundSize: "cover",
         width: this.bill_width + "px",
         height: this.bill_height + "px",
-        transform: "rotate(0)"
+        transform: "rotate(0)",
       },
       confidence: "", //識別準確率
       bill_width: "680", //運單默認寬度
@@ -147,18 +147,18 @@ export default {
       dialogVisible: false, //控制对话框关闭
       template_id: "", //默认显示的模板id，后面改为模板名称
       resDetectDataArr: [], //自定义区域图片识别后返回的数据
-      editImageArr: [] //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
+      editImageArr: [], //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
     };
   },
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
     this.userCustomizeArr = []; //用于保存用户自定义区域图片相关发送接口请求参数
@@ -195,7 +195,7 @@ export default {
     //**blob to dataURL**/
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
-      filereader.onload = function(e) {
+      filereader.onload = function (e) {
         callback(e.target.result);
       };
       filereader.readAsDataURL(fileblob);
@@ -245,7 +245,7 @@ export default {
       if (imgSize > maxSize) {
         this.$notify({
           title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-tip")
+          message: this.$t("upload-size-tip"),
         });
         return false;
       }
@@ -253,9 +253,9 @@ export default {
       this.result = "";
       this.imageUrl = "";
       // 前面校验通过，显示上传图片加载动效,并将之前上传的数据清空
-      this.blobToDataURL(file, function(dataurl) {
+      this.blobToDataURL(file, function (dataurl) {
         let image = new Image();
-        image.onload = function() {
+        image.onload = function () {
           let width = image.width;
           let height = image.height;
           that.bill_width = width;
@@ -287,7 +287,7 @@ export default {
         backgroundSize: "cover",
         width: this.bill_width + "px",
         height: this.bill_height + "px",
-        transform: "rotate(0)"
+        transform: "rotate(0)",
       };
     },
     // 校准图片
@@ -326,58 +326,77 @@ export default {
         this.bill_height = targetHeight;
         myCtx.clearRect(0, 0, targetWidth, targetHeight); //清理canvas
         myCtx.drawImage(imgElem, 0, 0, targetWidth, targetHeight); //canvas绘图
-        myCanvas.toBlob(
-          blob => {
-            let myform = new FormData();
-            myform.append("file", blob);
-            this.calibrating = true;
-            api.calibrationApi
-              .calibrationImage(myform)
-              .then(res => {
-                this.calibrating = false;
-                let { status } = res;
-                if (status == 200) {
-                  let { errno } = res.data;
-                  if (errno == 0) {
-                    this.imageUrl = res.data.data.image;
-                    //校准后的图片可能需要重新计算宽高
-                    let calibratedImg = new Image();
-                    calibratedImg.src = this.imageUrl;
-                    calibratedImg.addEventListener("load", () => {
-                      let { width, height } = calibratedImg;
-                      this.bill_width = width;
-                      this.bill_height = height;
-                      this.imgObj = {
-                        background: `url(${this.imageUrl}) no-repeat 0 0`,
-                        backgroundSize: "cover",
-                        width: width + "px",
-                        height: height + "px",
-                        transform: "rotate(0)"
-                      };
-                      this.templateMatching();
-                    });
-                  } else {
-                    //校准出问题
-                  }
-                } else {
-                  //提示校准失败
-                }
-                //用户上传成功匹配模板
-                this.templateMatching();
-                //提示每半个小时将当前图片成功保存本地
-              })
-              .catch(error => {
-                this.calibrating = false;
-                console.log(error);
-                //提示用户检查网络连接是否正常
-              });
-          },
-          file.raw.type,
-          1
-        ); //canvas导出成为base64
+        // 去掉dll校准，添加此处代码，否则注释掉
+        this.imageUrl = myCanvas.toDataURL(file.raw.type);
+        this.imgObj = {
+          background: `url(${this.imageUrl}) no-repeat 0 0`,
+          backgroundSize: "cover",
+          width: targetWidth + "px",
+          height: targetHeight + "px",
+          transform: "rotate(0)",
+        };
+        this.templateMatching();
+        // 调用dll校准
+        // this.callCalibrateDll(myCanvas,file);
       };
     },
-    // 校准图片
+    /**
+     * @name: callCalibrateDll
+     * @msg: 调用校准dll
+     * @param {type}
+     * @return:
+     */
+    callCalibrateDll(myCanvas, file) {
+      myCanvas.toBlob(
+        (blob) => {
+          let myform = new FormData();
+          myform.append("file", blob);
+          this.calibrating = true;
+          api.calibrationApi
+            .calibrationImage(myform)
+            .then((res) => {
+              this.calibrating = false;
+              let { status } = res;
+              if (status == 200) {
+                let { errno } = res.data;
+                if (errno == 0) {
+                  this.imageUrl = res.data.data.image;
+                  //校准后的图片可能需要重新计算宽高
+                  let calibratedImg = new Image();
+                  calibratedImg.src = this.imageUrl;
+                  calibratedImg.addEventListener("load", () => {
+                    let { width, height } = calibratedImg;
+                    this.bill_width = width;
+                    this.bill_height = height;
+                    this.imgObj = {
+                      background: `url(${this.imageUrl}) no-repeat 0 0`,
+                      backgroundSize: "cover",
+                      width: width + "px",
+                      height: height + "px",
+                      transform: "rotate(0)",
+                    };
+                    // this.templateMatching();
+                  });
+                } else {
+                  //校准出问题
+                }
+              } else {
+                //提示校准失败
+              }
+              //用户上传成功匹配模板
+              this.templateMatching();
+              //提示每半个小时将当前图片成功保存本地
+            })
+            .catch((error) => {
+              this.calibrating = false;
+              console.log(error);
+              //提示用户检查网络连接是否正常
+            });
+        },
+        file.raw.type,
+        1
+      ); //canvas导出成为base64
+    },
     /**
      * @name: templateMatching
      * @msg: 模板匹配接口，匹配到直接识别显示结果,从缓存获取templateData,没有则从数据库里读取
@@ -404,11 +423,11 @@ export default {
         this.$confirm(this.$t("add_template_tip"), this.$t("tip-text"), {
           confirmButtonText: this.$t("confirm"),
           cancelButtonText: this.$t("cancel"),
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             return this.$router.push({
-              name: "customizeOcr"
+              name: "customizeOcr",
             });
           })
           .catch(() => {});
@@ -440,7 +459,7 @@ export default {
               name: item.name,
               ocr_engine: item.ocr_engine,
               block: item.block,
-              image: imageData //保存到数据库或者本地，不需要保存这个字段数据
+              image: imageData, //保存到数据库或者本地，不需要保存这个字段数据
             };
             templateData.push(blockItem);
             this.editImageArr.push(block);
@@ -450,7 +469,7 @@ export default {
             obj.session_id = nowTime;
             if (item.ocr_engine == "postcode") {
               obj.options = {
-                "options.scene": "postcode"
+                "options.scene": "postcode",
               };
             }
             obj.type = "nri_" + item.ocr_engine;
@@ -475,7 +494,7 @@ export default {
       this.isRequesting = true;
       api.smokeIdentificationApi
         .userCustomizeImgDetection(this.userCustomizeArr)
-        .then(res => {
+        .then((res) => {
           this.isRequesting = false;
           if (res.status == 200) {
             let resDataArr = res.data.data;
@@ -491,7 +510,7 @@ export default {
                 //计算平均准确度
                 let avg_confidence = 0.0;
                 if (item.items && item.items.length != 0) {
-                  item.items.forEach(value => {
+                  item.items.forEach((value) => {
                     avg_confidence += Number(value.itemconf);
                     value.itemconf = Number(value.itemconf).toFixed(2);
                   });
@@ -507,7 +526,7 @@ export default {
                 resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
                 //计算平均准确度
                 let avg_confidence = 0.0;
-                item.items.forEach(value => {
+                item.items.forEach((value) => {
                   avg_confidence += Number(value.itemconf);
                   value.itemconf = Number(value.itemconf).toFixed(2);
                 });
@@ -524,7 +543,7 @@ export default {
                 resObj.text = this.handleGoogleOcrData(item);
                 // 平均值
                 let avg_confidence = 0.0;
-                resObj.text.forEach(value => {
+                resObj.text.forEach((value) => {
                   avg_confidence += Number(value.itemconf);
                   value.itemconf = Number(value.itemconf).toFixed(2);
                 });
@@ -621,7 +640,7 @@ export default {
           let block = blocksArr[i];
           let obj = {
             itemstring: "",
-            itemconf: ""
+            itemconf: "",
           };
           // confidence
           if (block["property"] && block["property"]["detectedLanguages"]) {
@@ -634,7 +653,7 @@ export default {
           let words = paragraphs.words;
           obj.itemstring = words.reduce((total, word) => {
             let symbols = word.symbols;
-            symbols.forEach(element => {
+            symbols.forEach((element) => {
               total += element.text;
             });
             return total;
@@ -652,15 +671,15 @@ export default {
       if (this.templateObj && this.templateObj["blockItem"]) {
         this.requestOcrEngine(this.templateObj["blockItem"]);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .ocr-wrap {
-  width: 98%;
-  padding: 30px 0 0 30px;
+  padding: 30px 0 0 0;
+  min-width: 1600px;
   overflow: hidden;
   .preview_btn {
     margin: 0 10px 0 0;
@@ -681,8 +700,8 @@ export default {
     }
   }
   .btn-list {
-    margin: 0 0 80px 0;
-    padding: 0 0 80px 0;
+    // margin: 0 0 80px 0;
+    padding: 0 0 40px 0;
     border-bottom: 1px dashed #d9d9d9;
     position: relative;
     .choice-type {
@@ -735,7 +754,7 @@ export default {
   // 结果展示
   .result_wrap {
     float: left;
-    width: 600px;
+    width: 500px;
     // margin: 0 0 0 30px;
   }
   .text {

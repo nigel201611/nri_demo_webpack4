@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-07-20 14:07:25
+ * @LastEditTime: 2020-07-29 14:19:04
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -229,13 +229,23 @@ export default {
       dialogCustomBlockVisible: false, //控制自定区域编辑弹出框
       customBlockForm: {
         name: "", //自定区域名称
-        OCR_engine: "expressbill" //当前ocr引擎类型,默认运单
+        OCR_engine: "expressbill", //当前ocr引擎类型,默认运单
       }, //自定块编辑表单
       cutomBlockRules: {
-        name: [{ required: true, message: "Please enter a custom area name", trigger: "blur" }],
+        name: [
+          {
+            required: true,
+            message: "Please enter a custom area name",
+            trigger: "blur",
+          },
+        ],
         OCR_engine: [
-          { required: true, message: "Please select OCR engine", trigger: "change" }
-        ]
+          {
+            required: true,
+            message: "Please select OCR engine",
+            trigger: "change",
+          },
+        ],
       },
       isRequesting: false, //控制请求次数和加载状态
       imageUrl: "",
@@ -243,20 +253,20 @@ export default {
         { flag: false, text: "express-bill-dectect", type: "expressbill" },
         { flag: false, text: "postcode-dectect", type: "postcode" },
         { flag: false, text: "T_general", type: "T_general" },
-        { flag: false, text: "G_general", type: "G_general" }
+        { flag: false, text: "G_general", type: "G_general" },
       ], //用于保存类型功能按钮
       resTitleArr: {
         nri_expressbill: "waybill-result",
         nri_postcode: "zipcode-result",
         nri_T_general: "T_general",
-        nri_G_general: "G_general"
+        nri_G_general: "G_general",
       }, //保存标题和识别类型映射关系，
       imgObj: {
         background: `url(${this.imageUrl}) no-repeat 0 0`,
         backgroundSize: "cover",
         width: this.bill_width + "px",
         height: this.bill_height + "px",
-        transform: "rotate(0)"
+        transform: "rotate(0)",
       },
       confidence: "", //識別準確率
       bill_width: "680", //運單默認寬度
@@ -266,25 +276,25 @@ export default {
       type: "expressbill", //标识当前识别类型
       origin: {
         x: 0,
-        y: 0
+        y: 0,
       }, //鼠标刚开始按下的点
       deg: 0, //旋转的角度，默认从0度开始
       uploadImgLoading: false, //用于控制图片上传时有一个加载动效
       endpoint: { x: 0, y: 0 }, //鼠标移动后终点坐标
       resDetectDataArr: [], //自定区域识别后返回的数据
       tempMatchingDialog: false, //用于控制是否加载上次保存过的自定义区域数据标识
-      calibrating: false
+      calibrating: false,
     };
   },
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
     this.editImageArr = []; //保存用户自定区域坐标原点和宽高{x:0,y:0,width:100,height:100}
@@ -296,7 +306,7 @@ export default {
     this.endXY = { x: 0, y: 0 }; //保存用户按下鼠标终点x,y注意和offsetX区别，和startXY一起用于准确计算宽高
     this.dragInfoWidthHeight = {
       width: 0,
-      height: 0
+      height: 0,
     };
     // 提前创建好canvas元素
     this.myCanvas = document.createElement("canvas");
@@ -340,7 +350,7 @@ export default {
             backgroundSize: "cover",
             width: this.bill_width + "px",
             height: this.bill_height + "px",
-            transform: "rotate(0)"
+            transform: "rotate(0)",
           };
 
           this.removeEditableFunc();
@@ -355,12 +365,12 @@ export default {
     initEvent() {
       let oBox = this.$refs.imgEdit;
       //rect_item
-      oBox.onclick = ev => {
+      oBox.onclick = (ev) => {
         let { target } = ev;
         if (target.className == "rect_item") {
           //可以重新打开自动区域编辑模态框
           this.curId = target.id;
-          this.blockItem = this.TemplateData.find(function(item) {
+          this.blockItem = this.TemplateData.find(function (item) {
             return item.block_id == target.id;
           });
           this.customBlockForm.name = this.blockItem.name;
@@ -379,7 +389,7 @@ export default {
     addEditableFunc() {
       let oBox = this.$refs.imgEdit;
       //鼠标按下，获取初始点
-      oBox.onmousedown = ev => {
+      oBox.onmousedown = (ev) => {
         //事件延迟性，如果用户框选了区域后，再次选择识别类型下拉框，这里的this.type还是上次的，并没有及时获取到
         //那么需要提示用户选择对应类型
         ev = ev || window.event;
@@ -391,12 +401,12 @@ export default {
           //记录鼠标按下的点
           this.origin = {
             x: x1,
-            y: y1
+            y: y1,
           };
           // console.log(x1,y1);
           this.startXY = {
             x: ev.x,
-            y: ev.y
+            y: ev.y,
           };
           // 初始化当前拖拽尺寸
           this.dragInfoWidthHeight = { width: 0, height: 0 };
@@ -405,14 +415,14 @@ export default {
           let oDiv = document.createElement("div");
           this.curDiv = oDiv;
           oDiv.setAttribute("class", "rect_item");
-          oBox.onmousemove = e => {
+          oBox.onmousemove = (e) => {
             // 会不断触发
             e = e || window.event;
             let x2 = e.offsetX;
             let y2 = e.offsetY;
             this.endXY = {
               x: e.x,
-              y: e.y
+              y: e.y,
             };
             let x1 = this.origin.x,
               y1 = this.origin.y;
@@ -422,7 +432,7 @@ export default {
             //对width和height做限制至少大于25
             this.dragInfoWidthHeight = {
               width,
-              height
+              height,
             };
             //3.设置div的样式,2,61分别矫正位置用
             oDiv.style.left = x1 + "px";
@@ -434,7 +444,7 @@ export default {
             oDiv.style.position = "absolute";
             this.endpoint = {
               x: x2,
-              y: y2
+              y: y2,
             };
             oBox.appendChild(oDiv);
             if (width <= 30) {
@@ -453,7 +463,7 @@ export default {
                 x: x1,
                 y: y1,
                 width: width,
-                height: height
+                height: height,
               };
               this.curPoints = pointsInfo;
               //弹出自定区域编辑
@@ -464,7 +474,7 @@ export default {
         }
       };
       //在鼠标抬起后终止onmousemove事件
-      document.onmouseup = function() {
+      document.onmouseup = function () {
         oBox.onmousemove = null;
         oBox.onmouseup = null;
       };
@@ -490,7 +500,7 @@ export default {
      */
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
-      filereader.onload = function(e) {
+      filereader.onload = function (e) {
         callback(e.target.result);
       };
       filereader.readAsDataURL(fileblob);
@@ -551,7 +561,7 @@ export default {
         backgroundSize: "cover",
         width: this.bill_width + "px",
         height: this.bill_height + "px",
-        transform: "rotate(0)"
+        transform: "rotate(0)",
       };
     },
     // 校准图片
@@ -591,58 +601,73 @@ export default {
         this.bill_height = targetHeight;
         myCtx.clearRect(0, 0, targetWidth, targetHeight); //清理canvas
         myCtx.drawImage(imgElem, 0, 0, targetWidth, targetHeight); //canvas绘图
-        // console.log(targetWidth, targetHeight);
-        myCanvas.toBlob(
-          blob => {
-            // let fileBlob = new File(blob, file.raw.name, {
-            //   type: file.raw.type
-            // });
-            let myform = new FormData();
-            myform.append("file", blob);
-            this.calibrating = true;
-            api.calibrationApi
-              .calibrationImage(myform)
-              .then(res => {
-                this.calibrating = false;
-                // console.log(res);
-                let { status } = res;
-                if (status == 200) {
-                  let { errno } = res.data;
-                  if (errno == 0) {
-                    this.imageUrl = res.data.data.image;
-                    //校准后的图片可能需要重新计算宽高
-                    let calibratedImg = new Image();
-                    calibratedImg.src = this.imageUrl;
-                    calibratedImg.addEventListener("load", () => {
-                      let { width, height } = calibratedImg;
-                      this.bill_width = width;
-                      this.bill_height = height;
-                      this.imgObj = {
-                        background: `url(${this.imageUrl}) no-repeat 0 0`,
-                        backgroundSize: "cover",
-                        width: width + "px",
-                        height: height + "px",
-                        transform: "rotate(0)"
-                      };
-                    });
-                  } else {
-                    //校准出问题
-                  }
-                } else {
-                  //提示校准失败
-                }
-                //提示每半个小时将当前图片成功保存本地
-              })
-              .catch(error => {
-                this.calibrating = false;
-                console.log(error);
-                //提示用户检查网络连接是否正常
-              });
-          },
-          file.raw.type,
-          1
-        ); //canvas导出成为base64
+        // 去掉dll校准，添加此处代码，否则注释掉
+        this.imageUrl = myCanvas.toDataURL(file.raw.type);
+        this.imgObj = {
+          background: `url(${this.imageUrl}) no-repeat 0 0`,
+          backgroundSize: "cover",
+          width: targetWidth + "px",
+          height: targetHeight + "px",
+          transform: "rotate(0)",
+        };
+        // 调用dll校准
+        // this.callCalibrateDll(myCanvas,file);
       };
+    },
+
+    /**
+     * @name: callCalibrateDll
+     * @msg: 调用校准dll
+     * @param {type}
+     * @return:
+     */
+    callCalibrateDll(myCanvas, file) {
+      myCanvas.toBlob(
+        (blob) => {
+          let myform = new FormData();
+          myform.append("file", blob);
+          this.calibrating = true;
+          api.calibrationApi
+            .calibrationImage(myform)
+            .then((res) => {
+              this.calibrating = false;
+              let { status } = res;
+              if (status == 200) {
+                let { errno } = res.data;
+                if (errno == 0) {
+                  this.imageUrl = res.data.data.image;
+                  //校准后的图片可能需要重新计算宽高
+                  let calibratedImg = new Image();
+                  calibratedImg.src = this.imageUrl;
+                  calibratedImg.addEventListener("load", () => {
+                    let { width, height } = calibratedImg;
+                    this.bill_width = width;
+                    this.bill_height = height;
+                    this.imgObj = {
+                      background: `url(${this.imageUrl}) no-repeat 0 0`,
+                      backgroundSize: "cover",
+                      width: width + "px",
+                      height: height + "px",
+                      transform: "rotate(0)",
+                    };
+                  });
+                } else {
+                  //校准出问题
+                }
+              } else {
+                //提示校准失败
+              }
+              //提示每半个小时将当前图片成功保存本地
+            })
+            .catch((error) => {
+              this.calibrating = false;
+              console.log(error);
+              //提示用户检查网络连接是否正常
+            });
+        },
+        file.raw.type,
+        1
+      ); //canvas导出成为base64
     },
     /**
      * @name: beforeRead
@@ -656,14 +681,14 @@ export default {
       if (imgSize > maxSize) {
         this.$notify({
           title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-tip")
+          message: this.$t("upload-size-tip"),
         });
         return false;
       }
       let that = this;
-      this.blobToDataURL(file, function(dataurl) {
+      this.blobToDataURL(file, function (dataurl) {
         let image = new Image();
-        image.onload = function() {
+        image.onload = function () {
           let width = image.width;
           let height = image.height;
           that.bill_width = width;
@@ -679,7 +704,7 @@ export default {
         backgroundSize: "cover",
         width: this.bill_width + "px",
         height: this.bill_height + "px",
-        transform: "rotate(0)"
+        transform: "rotate(0)",
       };
       // 前面校验通过，显示上传图片加载动效,并将之前上传的数据清空
       let oBox = this.$refs.imgEdit;
@@ -732,7 +757,7 @@ export default {
       this.isRequesting = true;
       api.smokeIdentificationApi
         .userCustomizeImgDetection(this.userCustomizeArr)
-        .then(res => {
+        .then((res) => {
           this.isRequesting = false;
           if (res.status == 200) {
             let resDataArr = res.data.data;
@@ -749,7 +774,7 @@ export default {
                 //计算平均准确度
                 let avg_confidence = 0.0;
                 if (item.items && item.items.length != 0) {
-                  item.items.forEach(value => {
+                  item.items.forEach((value) => {
                     avg_confidence += Number(value.itemconf);
                     value.itemconf = Number(value.itemconf).toFixed(2);
                   });
@@ -766,7 +791,7 @@ export default {
                 resObj.code = item.items.length != 0 ? 0 : -1; //如果有数据，code=0
                 //计算平均准确度
                 let avg_confidence = 0.0;
-                item.items.forEach(value => {
+                item.items.forEach((value) => {
                   avg_confidence += Number(value.itemconf);
                   value.itemconf = Number(value.itemconf).toFixed(2);
                 });
@@ -784,7 +809,7 @@ export default {
                 resObj.text = this.handleGoogleOcrData(item);
                 // 平均值
                 let avg_confidence = 0.0;
-                resObj.text.forEach(value => {
+                resObj.text.forEach((value) => {
                   avg_confidence += Number(value.itemconf);
                   value.itemconf = Number(value.itemconf).toFixed(2);
                 });
@@ -844,7 +869,7 @@ export default {
             name: item.name,
             ocr_engine: item.ocr_engine,
             block: item.block,
-            image: imageData //保存到数据库或者本地，不需要保存这个字段数据
+            image: imageData, //保存到数据库或者本地，不需要保存这个字段数据
           };
           // 绘制矩形框
           let oDiv = this.drawRect(block.x, block.y, block.width, block.height);
@@ -858,7 +883,7 @@ export default {
           obj.request_id = nowTime;
           if (item.ocr_engine == "postcode") {
             obj.options = {
-              "options.scene": "postcode"
+              "options.scene": "postcode",
             };
           }
           obj.type = "nri_" + item.ocr_engine;
@@ -886,12 +911,7 @@ export default {
       let minute = date.getMinutes();
       let second = date.getSeconds();
       let str = y + m + d + h + minute + second;
-      return (
-        str +
-        Math.random()
-          .toString(36)
-          .substr(2)
-      );
+      return str + Math.random().toString(36).substr(2);
     },
     /**
      * @name: getImageByPointsInfo
@@ -924,7 +944,7 @@ export default {
      */
     handleConfirmCustomBlockOcr(formName) {
       //动态生成唯一id
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           // 将本次用户自定区域数据加入到对象数组中记录
           //判断是否修改，如果是，则修改对应数据，而不是push
@@ -936,7 +956,7 @@ export default {
               name: this.customBlockForm.name,
               ocr_engine: this.customBlockForm.OCR_engine,
               block: pointsInfo,
-              image: imageData //保存到数据库或者本地，不需要保存这个字段数据
+              image: imageData, //保存到数据库或者本地，不需要保存这个字段数据
             };
             this.curDiv.setAttribute("id", blockItem.block_id);
             this.TemplateData.push(blockItem);
@@ -1007,12 +1027,12 @@ export default {
       let oBox = this.$refs.imgEdit;
       let temp_id = oBox.getAttribute("data-temp_id");
       if (this.editImageArr.length) {
-        let blockData = this.TemplateData.map(item => {
+        let blockData = this.TemplateData.map((item) => {
           return {
             block_id: item.block_id,
             name: item.name,
             ocr_engine: item.ocr_engine,
-            block: item.block
+            block: item.block,
           };
         });
         // 用户原图转换base64
@@ -1026,14 +1046,14 @@ export default {
         let templateData = {
           temp_id: temp_id || this.uuid(),
           blockItem: blockData,
-          image: imgbase64 //用户上传图片base64数据
+          image: imgbase64, //用户上传图片base64数据
         };
         // 本地保存一份，数据库保存一份或者更新一份
         const templateDataArr = storeSession.get("templateData") || [];
         // 寻找当前保存的模板数据中是否有和temp_id相同的，有则更新替换
         let tempItem = null;
         if (temp_id) {
-          tempItem = templateDataArr.find(item => {
+          tempItem = templateDataArr.find((item) => {
             return (item.temp_id = temp_id);
           });
         }
@@ -1052,12 +1072,12 @@ export default {
         storeSession.set("templateData", templateDataArr);
         this.$notify({
           title: this.$t("tip-text"),
-          message: this.$t("save-succ")
+          message: this.$t("save-succ"),
         });
       } else {
         this.$notify({
           title: this.$t("tip-text"),
-          message: this.$t("no-cur-area")
+          message: this.$t("no-cur-area"),
         });
       }
     },
@@ -1068,7 +1088,7 @@ export default {
      * @return:
      */
     handleClearArea() {
-      this.btnList.map(item => {
+      this.btnList.map((item) => {
         return (item.flag = false);
       });
       //清除盒子下新增的子节点
@@ -1099,7 +1119,7 @@ export default {
           let block = blocksArr[i];
           let obj = {
             itemstring: "",
-            itemconf: ""
+            itemconf: "",
           };
           // confidence
           if (block["property"] && block["property"]["detectedLanguages"]) {
@@ -1112,7 +1132,7 @@ export default {
           let words = paragraphs.words;
           obj.itemstring = words.reduce((total, word) => {
             let symbols = word.symbols;
-            symbols.forEach(element => {
+            symbols.forEach((element) => {
               total += element.text;
             });
             return total;
@@ -1137,7 +1157,7 @@ export default {
         this.$notify({
           title: this.$t("warning-text"),
           type: "warning",
-          message: this.$t("at-least-one-area")
+          message: this.$t("at-least-one-area"),
         });
         return;
       }
@@ -1154,7 +1174,7 @@ export default {
         obj.session_id = nowTime;
         if (item.ocr_engine == "postcode") {
           obj.options = {
-            "options.scene": "postcode"
+            "options.scene": "postcode",
           };
         }
         obj.type = "nri_" + item.ocr_engine;
@@ -1231,7 +1251,7 @@ export default {
         this.scaleMax = 1;
         this.$notify({
           title: this.$t("tip-text"),
-          message: this.$t("scale-max-tip")
+          message: this.$t("scale-max-tip"),
         });
         return false;
       }
@@ -1252,7 +1272,7 @@ export default {
         this.scaleMax = 1;
         this.$notify({
           title: this.$t("tip-text"),
-          message: this.$t("scale-min-tip")
+          message: this.$t("scale-min-tip"),
         });
 
         return false;
@@ -1268,8 +1288,8 @@ export default {
      */
     handleChangeSelect(type) {
       this.type = type;
-    }
-  }
+    },
+  },
 };
 </script>
 
