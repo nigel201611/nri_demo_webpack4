@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-07-29 14:19:04
+ * @LastEditTime: 2020-07-30 14:10:14
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -250,8 +250,9 @@ export default {
       isRequesting: false, //控制请求次数和加载状态
       imageUrl: "",
       btnList: [
-        { flag: false, text: "express-bill-dectect", type: "expressbill" },
-        { flag: false, text: "postcode-dectect", type: "postcode" },
+        { flag: false, text: "address_bill_dectect", type: "expressbill" },
+        { flag: false, text: "postcode_dectect", type: "postcode" },
+        { flag: false, text: "name_dectect", type: "name" },
         { flag: false, text: "T_general", type: "T_general" },
         { flag: false, text: "G_general", type: "G_general" },
       ], //用于保存类型功能按钮
@@ -585,14 +586,15 @@ export default {
         // 如果图片的宽或者高大于图片的最大宽高
         if (imgWidth > maxWidth || imgHeight > maxHeight) {
           // 宽大于高
+
           if (imgWidth / imgHeight > maxWidth / maxHeight) {
             targetWidth = maxWidth;
-            targetHeight = Math.round(maxWidth * (imgWidth / imgHeight));
+            targetHeight = Math.round(maxWidth * (imgHeight / imgWidth));
           }
           // 宽小于高
           else {
             targetHeight = maxHeight;
-            targetWidth = Math.round(maxHeight * (imgHeight / imgWidth));
+            targetWidth = Math.round(maxHeight * (imgWidth / imgHeight));
           }
         }
         myCanvas.width = targetWidth; //canvas的宽=图片的宽

@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-07-29 14:35:20
+ * @LastEditTime: 2020-07-30 13:50:32
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -312,12 +312,12 @@ export default {
           // 宽大于高
           if (imgWidth / imgHeight > maxWidth / maxHeight) {
             targetWidth = maxWidth;
-            targetHeight = Math.round(maxWidth * (imgWidth / imgHeight));
+            targetHeight = Math.round(maxWidth * (imgHeight / imgWidth));
           }
           // 宽小于高
           else {
             targetHeight = maxHeight;
-            targetWidth = Math.round(maxHeight * (imgHeight / imgWidth));
+            targetWidth = Math.round(maxHeight * (imgWidth / imgHeight));
           }
         }
         myCanvas.width = targetWidth; //canvas的宽=图片的宽
