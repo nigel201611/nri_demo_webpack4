@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-07-30 13:50:32
+ * @LastEditTime: 2020-07-31 11:21:09
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -232,7 +232,13 @@ export default {
       for (let j = 0; j < blockItems.length; j++) {
         // 添加新模板上自定区域
         let block = blockItems[j].block;
-        let oDiv = this.drawRect(block.x, block.y, block.width, block.height);
+        let oDiv = this.drawRect(
+          block.x,
+          block.y,
+          block.width,
+          block.height,
+          blockItems[j].ocr_engine
+        );
         oDiv.setAttribute("id", blockItems[j].block_id);
         oBox.appendChild(oDiv);
       }
@@ -469,7 +475,7 @@ export default {
             obj.session_id = nowTime;
             if (item.ocr_engine == "postcode") {
               obj.options = {
-                "options.scene": "postcode",
+                scene: "postcode",
               };
             }
             obj.type = "nri_" + item.ocr_engine;
@@ -604,16 +610,55 @@ export default {
         };
       });
     },
-    drawRect(x1, y1, width, height) {
+    /**
+     * @name: changeCurDivBg
+     * @msg: 修改对应自定区域背景色和边框
+     * @param {type}
+     * @return:
+     */
+    changeCurDivBg(curDiv, OCR_engine) {
+      // console.log(curDiv, OCR_engine);
+      // { flag: false, text: "address_bill_dectect", type: "expressbill" },
+      // { flag: false, text: "postcode_dectect", type: "postcode" },
+      // { flag: false, text: "name_dectect", type: "name" },
+      // { flag: false, text: "T_general", type: "T_general" },
+      // { flag: false, text: "G_general", type: "G_general" },
+      let curDivBg = "rgba(64,158,255,0.4)";
+      let curBorder = "2px solid #409EFF";
+      switch (OCR_engine) {
+        case "expressbill":
+          curDivBg = "rgba(7,190,20,0.2)";
+          curBorder = "2px solid #07be14";
+          break;
+        case "postcode":
+          curDivBg = "rgba(214,1,253,0.2)";
+          curBorder = "2px solid #d601fd";
+          break;
+        case "name":
+          curDivBg = "rgba(253,1,1,0.2)";
+          curBorder = "2px solid #fd0101";
+          break;
+      }
+      curDiv.style.border = curBorder;
+      curDiv.style.background = curDivBg;
+    },
+    /**
+     * @name: drawRect
+     * @msg: 绘制自定区域
+     * @param {type}
+     * @return:
+     */
+    drawRect(x1, y1, width, height, ocr_engine) {
       let oDiv = document.createElement("div");
       oDiv.setAttribute("class", "rect_item");
       oDiv.style.left = x1 + "px";
       oDiv.style.top = y1 + "px";
       oDiv.style.width = width + "px";
       oDiv.style.height = height + "px";
-      oDiv.style.border = "2px solid #409EFF";
-      oDiv.style.background = "rgba(64,158,255,0.4)";
+      // oDiv.style.border = "2px solid #409EFF";
+      // oDiv.style.background = "rgba(64,158,255,0.4)";
       oDiv.style.position = "absolute";
+      this.changeCurDivBg(oDiv, ocr_engine);
       return oDiv;
     },
     resetArr() {
@@ -678,7 +723,7 @@ export default {
 
 <style lang="scss" scoped>
 .ocr-wrap {
-  padding: 30px 0 0 0;
+  padding: 30px 30px 0 20px;
   min-width: 1600px;
   overflow: hidden;
   .preview_btn {

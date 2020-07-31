@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-07-30 14:10:14
+ * @LastEditTime: 2020-07-31 11:11:33
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -117,7 +117,7 @@
       element-loading-background="rgba(0, 0, 0, 0.6)"
       class="usercustomize_area"
     >
-      <el-card class="img_background_wrap">
+      <div class="img_background_wrap">
         <div
           ref="imgEdit"
           :element-loading-text="$t('customize-area-loading-tip')"
@@ -126,7 +126,7 @@
           class="img-wrap"
           :style="imgObj"
         />
-      </el-card>
+      </div>
     </div>
     <!-- 展示自定义区域识别结果 -->
     <div v-if="resDetectDataArr.length" class="result_wrap">
@@ -368,7 +368,7 @@ export default {
       //rect_item
       oBox.onclick = (ev) => {
         let { target } = ev;
-        if (target.className == "rect_item") {
+        if (target.className.indexOf("rect_item") > -1) {
           //可以重新打开自动区域编辑模态框
           this.curId = target.id;
           this.blockItem = this.TemplateData.find(function (item) {
@@ -376,6 +376,8 @@ export default {
           });
           this.customBlockForm.name = this.blockItem.name;
           this.customBlockForm.OCR_engine = this.blockItem.ocr_engine;
+          // this.changeCurDivBg(target, this.customBlockForm.OCR_engine);
+          this.curDiv = target;
           this.dialogCustomBlockVisible = true;
           this.editCustomBlockFlag = true;
         }
@@ -586,7 +588,6 @@ export default {
         // 如果图片的宽或者高大于图片的最大宽高
         if (imgWidth > maxWidth || imgHeight > maxHeight) {
           // 宽大于高
-
           if (imgWidth / imgHeight > maxWidth / maxHeight) {
             targetWidth = maxWidth;
             targetHeight = Math.round(maxWidth * (imgHeight / imgWidth));
@@ -885,7 +886,7 @@ export default {
           obj.request_id = nowTime;
           if (item.ocr_engine == "postcode") {
             obj.options = {
-              "options.scene": "postcode",
+              scene: "postcode",
             };
           }
           obj.type = "nri_" + item.ocr_engine;
@@ -938,6 +939,33 @@ export default {
       // 将canvas转化base64
       return canvas.toDataURL("image/jpeg");
     },
+    // 根据用户选择不同ocr引擎，显示不同颜色区域，邮编-紫色，地址-绿色，姓名-红色
+    changeCurDivBg(curDiv, OCR_engine) {
+      // console.log(curDiv, OCR_engine);
+      // { flag: false, text: "address_bill_dectect", type: "expressbill" },
+      // { flag: false, text: "postcode_dectect", type: "postcode" },
+      // { flag: false, text: "name_dectect", type: "name" },
+      // { flag: false, text: "T_general", type: "T_general" },
+      // { flag: false, text: "G_general", type: "G_general" },
+      let curDivBg = "rgba(64,158,255,0.4)";
+      let curBorder = "2px solid #409EFF";
+      switch (OCR_engine) {
+        case "expressbill":
+          curDivBg = "rgba(7,190,20,0.2)";
+          curBorder = "2px solid #07be14";
+          break;
+        case "postcode":
+          curDivBg = "rgba(214,1,253,0.2)";
+          curBorder = "2px solid #d601fd";
+          break;
+        case "name":
+          curDivBg = "rgba(253,1,1,0.2)";
+          curBorder = "2px solid #fd0101";
+          break;
+      }
+      curDiv.style.border = curBorder;
+      curDiv.style.background = curDivBg;
+    },
     /**
      * @name: handleConfirmCustomBlockOcr
      * @msg: 自定区域ocr编辑确认,将本次用户编辑的信息加入模板对象中保存,{id,name,ocr_engine,image,block:{x,y,width,height}}
@@ -961,12 +989,14 @@ export default {
               image: imageData, //保存到数据库或者本地，不需要保存这个字段数据
             };
             this.curDiv.setAttribute("id", blockItem.block_id);
+            this.changeCurDivBg(this.curDiv, this.customBlockForm.OCR_engine);
             this.TemplateData.push(blockItem);
             this.editImageArr.push(pointsInfo);
           } else {
             //找到对应需要修改的数据，修改对应name和ocr_engine
             this.blockItem.name = this.customBlockForm.name;
             this.blockItem.ocr_engine = this.customBlockForm.OCR_engine;
+            this.changeCurDivBg(this.curDiv, this.customBlockForm.OCR_engine);
           }
           this.dialogCustomBlockVisible = false;
         } else {
@@ -1176,7 +1206,7 @@ export default {
         obj.session_id = nowTime;
         if (item.ocr_engine == "postcode") {
           obj.options = {
-            "options.scene": "postcode",
+            scene: "postcode",
           };
         }
         obj.type = "nri_" + item.ocr_engine;
@@ -1299,7 +1329,7 @@ export default {
 .ocr-wrap {
   min-width: 1440px;
   box-sizing: border-box;
-  padding: 30px 0 0 30px;
+  padding: 30px 0 0 20px;
   overflow: hidden;
   .preview_btn {
     margin: 0 10px 0 0;
@@ -1321,6 +1351,9 @@ export default {
       height: 80vh;
       box-sizing: border-box;
       overflow: auto;
+      background-color: #fff;
+      border: 1px solid #ebeef5;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     }
     .img_background_wrap::-webkit-scrollbar {
       /*滚动条整体样式*/
@@ -1414,15 +1447,14 @@ export default {
   // 结果展示
   .result_wrap {
     float: left;
-    border: 1px solid #ebeef5;
-    background-color: #fff;
-    padding: 30px;
     box-sizing: border-box;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    // border: 1px solid #ebeef5;
+    // box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     width: 600px;
     height: 80vh;
     overflow: auto;
-    margin: 0 0 0 10px;
+    margin: 0 0 0 20px;
     // margin: 0 0 0 30px;
   }
   .result_wrap::-webkit-scrollbar {

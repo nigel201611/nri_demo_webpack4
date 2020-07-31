@@ -277,6 +277,7 @@ $upload-height: 410px;
 }
 .result-details {
   float: left;
+  margin: 0 0 0 20px;
 }
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;

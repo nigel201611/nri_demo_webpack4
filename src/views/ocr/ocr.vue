@@ -45,6 +45,11 @@
         style="width: 400px"
         :empty-text="$t('no_data')"
       >
+        <!-- <el-table-column :label="$t('recog_code')">
+          <template slot-scope="scope">
+            <span>{{ $t(scope.row.rowName) }}</span>
+          </template>
+        </el-table-column>-->
         <el-table-column prop="rowName" :label="$t('recog_code')" />
         <el-table-column prop="itemstring" :label="$t('recog_result')" />
         <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
@@ -208,6 +213,13 @@ export default {
                   } else {
                     that.tableData = [
                       {
+                        rowName: "postcode",
+                        itemstring:
+                          ocrResponse.postcode && ocrResponse.postcode["text"],
+                        itemconf:
+                          ocrResponse.postcode && ocrResponse.postcode["score"],
+                      },
+                      {
                         rowName: "address",
                         itemstring:
                           ocrResponse.address && ocrResponse.address["text"],
@@ -219,13 +231,6 @@ export default {
                         itemstring:
                           ocrResponse.name && ocrResponse.name["text"],
                         itemconf: ocrResponse.name && ocrResponse.name["score"],
-                      },
-                      {
-                        rowName: "postcode",
-                        itemstring:
-                          ocrResponse.postcode && ocrResponse.postcode["text"],
-                        itemconf:
-                          ocrResponse.postcode && ocrResponse.postcode["score"],
                       },
                     ];
                   }
@@ -276,6 +281,7 @@ $upload-height: 410px;
 }
 .result-details {
   float: left;
+  margin: 0 0 0 20px;
 }
 
 .avatar {
