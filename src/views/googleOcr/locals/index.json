@@ -26,7 +26,7 @@
         "input_url_tip": "Use network picture, please paste picture URL",
         "customize-area-loading-tip": "During upload",
         "tip-text": "Tips",
-        "input_url-tip": "The network picture is illegal. Please enter a network picture starting with http: / / or HTTPS: / /",
+        "input_url-tip": "The network picture is illegal. Please enter a network picture starting with http: // or HTTPS: //",
         "during-recognition": "Desperately identifying~",
         "nodata": "no data",
         "confidence": "confidence"

@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-07-31 11:21:09
+ * @LastEditTime: 2020-08-10 18:44:47
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -76,10 +76,10 @@
             </el-badge>
           </div>
           <div class="text item">
-            <img :src="item.imgUrl" />
+            <!-- 根据类型，加上对应区分边框 -->
+            <img :class="'block_bg'+' border_'+item.type" :src="item.imgUrl" />
             <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
             <p v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'">
-              <!-- {{ item.text }} -->
               <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
                 <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
@@ -801,6 +801,18 @@ export default {
     float: left;
     width: 500px;
     // margin: 0 0 0 30px;
+    .block_bg {
+      border: 2px solid #409eff;
+    }
+    .border_nri_postcode {
+      border: 2px solid #d601fd;
+    }
+    .border_nri_expressbill {
+      border: 2px solid #07be14;
+    }
+    .border_nri_name {
+      border: 2px solid #fd0101;
+    }
   }
   .text {
     font-size: 14px;

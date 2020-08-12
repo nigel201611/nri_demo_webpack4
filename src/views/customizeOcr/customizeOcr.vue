@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-07-31 11:11:33
+ * @LastEditTime: 2020-08-11 15:02:47
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -141,7 +141,7 @@
           </el-badge>
         </div>
         <div class="text item">
-          <img :src="item.imgUrl" />
+          <img :class="'block_bg'+' border_'+item.type" :src="item.imgUrl" />
           <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
           <p v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'">
             <!-- {{ item.text }} -->
@@ -1455,6 +1455,18 @@ export default {
     height: 80vh;
     overflow: auto;
     margin: 0 0 0 20px;
+    .block_bg {
+      border: 2px solid #409eff;
+    }
+    .border_nri_postcode {
+      border: 2px solid #d601fd;
+    }
+    .border_nri_expressbill {
+      border: 2px solid #07be14;
+    }
+    .border_nri_name {
+      border: 2px solid #fd0101;
+    }
     // margin: 0 0 0 30px;
   }
   .result_wrap::-webkit-scrollbar {

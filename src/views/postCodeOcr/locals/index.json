@@ -11,7 +11,7 @@
         "result-fail": "识别失败，请检查网络是否正常~",
         "no_data": "暂无数据",
         "recog_result": "识别结果",
-        "recog_confidence": "准确度",
+        "recog_confidence": "置信度",
         "recog_code": "识别字段"
     },
     "en": {
@@ -26,7 +26,7 @@
         "result-fail": "Recognition failed, please check whether the network is normal~",
         "no_data": "No data available",
         "recog_result": "Recognition result",
-        "recog_confidence": "Accuracy",
+        "recog_confidence": "Confidence",
         "recog_code": "Identification field"
     },
     "ja": {
@@ -41,7 +41,7 @@
         "result-fail": "認識に失敗しました。ネットワークが正常かどうか確認してください~",
         "no_data": "データがありません",
         "recog_result": "識別結果",
-        "recog_confidence": "正確さ",
+        "recog_confidence": "信頼度",
         "recog_code": "フィールドの識別"
     }
 }

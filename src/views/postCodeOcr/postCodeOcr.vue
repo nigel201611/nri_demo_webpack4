@@ -42,13 +42,13 @@
       <el-table
         align="left"
         :data="tableData"
-        height="436"
-        style="width: 400px"
+        height="536"
+        style="width: 600px"
         :empty-text="$t('no_data')"
       >
-        <el-table-column prop="rowName" :label="$t('recog_code')" />
+        <el-table-column width="160" prop="rowName" :label="$t('recog_code')" />
         <el-table-column prop="itemstring" :label="$t('recog_result')" />
-        <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+        <el-table-column width="120" prop="itemconf" :label="$t('recog_confidence')" align="left" />
       </el-table>
     </div>
   </div>
@@ -64,8 +64,8 @@ export default {
       isRequesting: false, //控制请求次数和加载状态
       imageUrl: "",
       confidence: "", //識別準確率
-      bill_width: "400", //上次運單默認寬度
-      bill_height: "410", //上次運單默認高度
+      bill_width: "500", //上次運單默認寬度
+      bill_height: "510", //上次運單默認高度
       imgObj: {
         backgroundImage: `url(${this.imageUrl})`,
       },
@@ -259,8 +259,8 @@ export default {
 .el-button [class*="fa-"] + span {
   margin-left: 5px;
 }
-$upload-width: 400px;
-$upload-height: 410px;
+$upload-width: 500px;
+$upload-height: 510px;
 .avatar-uploader {
   text-align: center;
   margin: 30px auto 40px;
@@ -292,8 +292,8 @@ $upload-height: 410px;
 }
 .avatar {
   display: inline-block;
-  width: 400px;
-  height: 410px;
+  width: $upload-width;
+  height: $upload-height;
   box-sizing: border-box;
   background-position: center center;
   background-size: contain;
