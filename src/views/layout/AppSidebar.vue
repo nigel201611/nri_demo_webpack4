@@ -1,6 +1,6 @@
 <i18n src="./locals/AppSidebar.json"></i18n>
 <template>
-  <aside :class="collapsed?'menu-collapsed':'menu-expanded'">
+  <aside class="sidebar_menu" :class="collapsed?'menu-collapsed':'menu-expanded'">
     <el-menu
       theme="dark"
       :default-active="$route.path"
@@ -166,6 +166,11 @@ aside {
       background: rgba(0, 0, 0, 0.2);
     }
   }
+}
+
+.sidebar_menu{
+  position: relative;
+  z-index: 9999999;
 }
 
 .menu-collapsed {

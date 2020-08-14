@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-08-11 15:02:47
+ * @LastEditTime: 2020-08-14 16:28:50
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -131,45 +131,81 @@
     <!-- 展示自定义区域识别结果 -->
     <div v-if="resDetectDataArr.length" class="result_wrap">
       <el-card v-for="(item,index) in resDetectDataArr" :key="index" class="box-card">
-        <div slot="header" class="clearfix box-card_header">
+        <!-- <div slot="header" class="clearfix box-card_header">
           <span>{{ $t(resTitleArr[item.type]) }}</span>
-          <el-badge v-if="item.confidence!=0" :value="item.confidence+'%'" class="confidence">
-            <span>{{ $t('result-confidence') }}</span>
-          </el-badge>
-          <el-badge v-else value="0" class="confidence">
-            <span>{{ $t('result-confidence') }}</span>
-          </el-badge>
-        </div>
+        </div>-->
         <div class="text item">
-          <img :class="'block_bg'+' border_'+item.type" :src="item.imgUrl" />
+          <div class="item_img">
+            <!-- <span>{{ $t(resTitleArr[item.type]) }}</span> -->
+            <img :class="'block_bg'+' border_'+item.type" :src="item.imgUrl" />
+          </div>
+
           <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
           <p v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'">
-            <!-- {{ item.text }} -->
             <el-table :data="item.text" style="width: 100%">
               <el-table-column type="index" width="50" />
               <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-              <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              <!-- <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" /> -->
+              <el-table-column
+                width="120"
+                prop="itemconf"
+                :label="$t('recog_confidence')"
+                align="left"
+              >
+                <template slot-scope="scope">
+                  <span>{{ scope.row.itemconf }}%</span>
+                </template>
+              </el-table-column>
             </el-table>
           </p>
           <p v-else-if="item.code==0&&item.type=='nri_T_general'">
             <el-table :data="item.text" style="width: 100%">
               <el-table-column type="index" width="50" />
               <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-              <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              <!-- <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" /> -->
+              <el-table-column
+                width="120"
+                prop="itemconf"
+                :label="$t('recog_confidence')"
+                align="left"
+              >
+                <template slot-scope="scope">
+                  <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
+                </template>
+              </el-table-column>
             </el-table>
           </p>
           <p v-else-if="item.code==0&&item.type=='nri_G_general'">
             <el-table :data="item.text" style="width: 100%">
               <el-table-column type="index" width="50" />
               <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-              <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              <!-- <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" /> -->
+              <el-table-column
+                width="120"
+                prop="itemconf"
+                :label="$t('recog_confidence')"
+                align="left"
+              >
+                <template slot-scope="scope">
+                  <span>{{ scope.row.itemconf }}%</span>
+                </template>
+              </el-table-column>
             </el-table>
           </p>
           <p v-else-if="item.code==1&&item.type=='nri_G_general'">
             <el-table :data="item.text" style="width: 100%">
               <el-table-column type="index" width="50" />
               <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-              <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" />
+              <el-table-column
+                width="120"
+                prop="itemconf"
+                :label="$t('recog_confidence')"
+                align="left"
+              >
+                <template slot-scope="scope">
+                  <span>{{ scope.row.itemconf }}%</span>
+                </template>
+              </el-table-column>
             </el-table>
           </p>
           <p v-else-if="item.code==-1" class="error">{{ $t('reuslt-error') }}</p>
@@ -723,15 +759,16 @@ export default {
      * @param {x1,y1,width,height}
      * @return:
      */
-    drawRect(x1, y1, width, height) {
+    drawRect(x1, y1, width, height, type) {
       let oDiv = document.createElement("div");
       oDiv.setAttribute("class", "rect_item");
       oDiv.style.left = x1 + "px";
       oDiv.style.top = y1 + "px";
       oDiv.style.width = width + "px";
       oDiv.style.height = height + "px";
-      oDiv.style.border = "2px solid #409EFF";
-      oDiv.style.background = "rgba(64,158,255,0.4)";
+      this.changeCurDivBg(oDiv, type);
+      // oDiv.style.border = "2px solid #409EFF";
+      // oDiv.style.background = "rgba(64,158,255,0.4)";
       oDiv.style.position = "absolute";
       return oDiv;
     },
@@ -875,7 +912,13 @@ export default {
             image: imageData, //保存到数据库或者本地，不需要保存这个字段数据
           };
           // 绘制矩形框
-          let oDiv = this.drawRect(block.x, block.y, block.width, block.height);
+          let oDiv = this.drawRect(
+            block.x,
+            block.y,
+            block.width,
+            block.height,
+            item.ocr_engine
+          );
           oDiv.setAttribute("id", item.block_id);
           oBox.appendChild(oDiv);
           templateData.push(blockItem);

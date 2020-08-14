@@ -124,7 +124,11 @@
             </p>
           </template>
         </el-table-column>
-        <el-table-column width="120" prop="itemconf" :label="$t('recog_confidence')" align="left" />
+        <el-table-column width="120" prop="itemconf" :label="$t('recog_confidence')" align="left">
+          <template slot-scope="scope">
+            <span>{{ scope.row.itemconf }}%</span>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
   </div>
