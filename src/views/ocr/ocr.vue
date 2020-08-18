@@ -195,18 +195,70 @@ export default {
     // this.scaleX = 1.0; //绘制选区对应比例
     // this.scaleY = 1.0;
     // this.clearCanvasContent();
+    let content_container = document.getElementById("content_container");
+    content_container.addEventListener("scroll", this.handleScroll);
+    this.scrollTop = 0;
+    this.scrollLeft = 0;
+    this.postcodeOfPoints = [];
+    this.addressOfPoints = [];
+    this.nameOfPoints = [];
+    this.postcodePoints_start_x = 0;
+    this.postcodePoints_end_x = 0;
+    this.addressPoints_start_x = 0;
+    this.addressPoints_end_x = 0;
+    this.namePoints_start_x = 0;
+    this.namePoints_end_x = 0;
   },
   created() {
     //运单识别生成的唯一标识，用于请求参数
     // this.request_id = uuidv4();
   },
   methods: {
+    handleScroll(ev) {
+      let scrollTop = ev.target.scrollTop;
+      let scrollLeft = ev.target.scrollLeft;
+      this.scrollTop = scrollTop;
+      this.scrollLeft = scrollLeft;
+
+
+      // console.log(this.scrollTop,this.scrollLeft);
+
+      //重新计算polygon的坐标
+      //postcode
+      if (this.postcodeOfPoints.length) {
+        this.postcodePoints.start.x = this.postcodePoints_start_x - scrollLeft;
+        this.postcodePoints.end.x = this.postcodePoints_end_x - scrollLeft;
+        // console.log(this.postcodePoints_start_x);
+      }
+      //address
+      if (this.addressOfPoints.length) {
+        this.addressPoints.start.x = this.addressPoints_start_x - scrollLeft;
+        this.addressPoints.end.x = this.addressPoints_end_x - scrollLeft;
+      }
+      //name
+      if (this.nameOfPoints.length) {
+        this.namePoints.start.x = this.namePoints_start_x - scrollLeft;
+        this.namePoints.end.x = this.namePoints_end_x - scrollLeft;
+      }
+    },
     clearCanvasContent() {
       let source_w = this.bill_width;
       let source_h = this.bill_height;
       this.myCanvas.width = source_w;
       this.myCanvas.height = source_h;
       this.myCtx.clearRect(0, 0, source_w, source_h);
+    },
+    // 获取元素绝对位置
+    getPointAb(node) {
+      let x = 0;
+      let y = 0;
+      // console.log(node);如果node绝对定位
+      while (node) {
+        x += node.offsetLeft;
+        y += node.offsetTop;
+        node = node.offsetParent;
+      }
+      return { x: x, y: y };
     },
     computeSvgSize(postcodePoints, addressPoints, namePoints) {
       let source_w = this.bill_width;
@@ -256,44 +308,50 @@ export default {
         let postcodeElemBoundingClient = this.$refs.border_postcode.getBoundingClientRect();
         let addressElemBoundingClient = this.$refs.border_address.getBoundingClientRect();
         let nameElemBoundingClient = this.$refs.border_name.getBoundingClientRect();
+        // getBoundingClientRect获取的是针对当前窗口的相对位置
+        let polygonPostcodeBounding = this.$refs.polygonPostcode.getBoundingClientRect();
+        let polygonAddressBounding = this.$refs.polygonAddress.getBoundingClientRect();
+        let polygonNameBounding = this.$refs.polygonName.getBoundingClientRect();
 
-        let polygonPostcodeElem = this.$refs.polygonPostcode.getBoundingClientRect();
-        let polygonAddressElem = this.$refs.polygonAddress.getBoundingClientRect();
-        let polygonNameElem = this.$refs.polygonName.getBoundingClientRect();
-
+        //增加对scroll事件的处理
         //postcode
         if (postcodePoints.length) {
           this.postcodePoints.start = {
-            x: polygonPostcodeElem.x + polygonPostcodeElem.width,
-            y: polygonPostcodeElem.y - 55,
+            x: polygonPostcodeBounding.x + polygonPostcodeBounding.width,
+            y: polygonPostcodeBounding.y - 55,
           };
           this.postcodePoints.end = {
             x: postcodeElemBoundingClient.x,
             y: postcodeElemBoundingClient.y - 60,
           };
+          this.postcodePoints_start_x = this.postcodePoints.start.x;
+          this.postcodePoints_end_x = this.postcodePoints.end.x;
         }
         //address
         if (addressPoints.length) {
           this.addressPoints.start = {
-            x: polygonAddressElem.x + polygonAddressElem.width,
-            y: polygonAddressElem.y - 55,
+            x: polygonAddressBounding.x + polygonAddressBounding.width,
+            y: polygonAddressBounding.y - 55,
           };
           this.addressPoints.end = {
             x: addressElemBoundingClient.x,
             y: addressElemBoundingClient.y - 60,
           };
+          this.addressPoints_start_x = this.addressPoints.start.x;
+          this.addressPoints_end_x = this.addressPoints.end.x;
         }
-
         //name
         if (namePoints.length) {
           this.namePoints.start = {
-            x: polygonNameElem.x + polygonNameElem.width,
-            y: polygonNameElem.y - 55,
+            x: polygonNameBounding.x + polygonNameBounding.width,
+            y: polygonNameBounding.y - 55,
           };
           this.namePoints.end = {
             x: nameElemBoundingClient.x,
             y: nameElemBoundingClient.y - 60,
           };
+          this.namePoints_start_x = this.namePoints.start.x;
+          this.namePoints_end_x = this.namePoints.end.x;
         }
       });
     },
@@ -464,6 +522,14 @@ export default {
                   // that.dashedLineCtx.clearRect(0, 0, width, height);
                   // 绘制虚线连接效果--svg
                   // 绘制选区--svg
+                  that.postcodeOfPoints =
+                    (ocrResponse.postcode && ocrResponse.postcode["bbox"]) ||
+                    [];
+                  that.addressOfPoints =
+                    (ocrResponse.address && ocrResponse.address["bbox"]) || [];
+                  that.nameOfPoints =
+                    (ocrResponse.name && ocrResponse.name["bbox"]) || [];
+
                   that.computeSvgSize(
                     (ocrResponse.postcode && ocrResponse.postcode["bbox"]) ||
                       [],
@@ -636,6 +702,7 @@ $upload-height: 510px;
   overflow: hidden;
   padding: 30px;
   box-sizing: border-box;
+  min-width: 1200px;
   // position: relative;
   .lineCanvas,
   .lineSvg {
@@ -644,8 +711,8 @@ $upload-height: 510px;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 90%;
-    height: 100%;
+    width: 100%;
+    height: 95%;
     z-index: 1;
   }
   .preview_btn {

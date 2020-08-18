@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-08-14 16:29:36
+ * @LastEditTime: 2020-08-14 19:36:01
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -68,7 +68,7 @@
         <el-card v-for="(item,index) in resDetectDataArr" :key="index" class="box-card">
           <!-- <div slot="header" class="clearfix box-card_header">
             <span>{{ $t(resTitleArr[item.type]) }}</span>
-          </div> -->
+          </div>-->
           <div class="text item">
             <!-- 根据类型，加上对应区分边框 -->
             <!-- <span>{{ $t(resTitleArr[item.type]) }}</span> -->
@@ -120,7 +120,7 @@
                   align="left"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.itemconf }}%</span>
+                    <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
                   </template>
                 </el-table-column>
               </el-table>
@@ -137,7 +137,7 @@
                   align="left"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.itemconf }}%</span>
+                    <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
                   </template>
                 </el-table-column>
               </el-table>
@@ -543,7 +543,10 @@ export default {
             for (let i = 0; i < resDataArr.length; i++) {
               let item = resDataArr[i];
               let resObj = {};
-              if (item.type != "nri_T_general") {
+              if (
+                item.type != "nri_T_general" &&
+                item.type != "nri_G_general"
+              ) {
                 //针对腾讯优图通用返回不一样数据结构处理
                 resObj.type = item.type;
                 resObj.text = item.items;

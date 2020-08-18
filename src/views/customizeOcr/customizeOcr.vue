@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-08-14 16:28:50
+ * @LastEditTime: 2020-08-14 19:33:18
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -187,7 +187,7 @@
                 align="left"
               >
                 <template slot-scope="scope">
-                  <span>{{ scope.row.itemconf }}%</span>
+                  <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -203,7 +203,7 @@
                 align="left"
               >
                 <template slot-scope="scope">
-                  <span>{{ scope.row.itemconf }}%</span>
+                  <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -805,7 +805,10 @@ export default {
             for (let i = 0; i < resDataArr.length; i++) {
               let item = resDataArr[i];
               let resObj = {};
-              if (item.type != "nri_T_general") {
+              if (
+                item.type != "nri_T_general" &&
+                item.type != "nri_G_general"
+              ) {
                 //针对腾讯优图通用返回不一样数据结构处理
                 // console.log(item);
                 resObj.type = item.type;

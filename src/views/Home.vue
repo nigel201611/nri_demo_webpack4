@@ -1,3 +1,8 @@
+<!--
+ * @Author: nigel
+ * @Date: 2020-03-19 17:42:36
+ * @LastEditTime: 2020-08-18 17:58:18
+-->
 <template>
   <el-row class="containerVue">
     <app-header />
@@ -6,7 +11,7 @@
       class="main"
     >
       <app-sidebar />
-      <section class="content-container">
+      <section id="content_container" ref="content_container" class="content-container">
         <!-- <app-breadcrumb></app-breadcrumb> -->
         <el-col
           :span="24"
