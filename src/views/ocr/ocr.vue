@@ -137,6 +137,7 @@
 <script>
 import { mapState } from "vuex";
 import api from "../../api";
+// import _ from 'lodash';
 export default {
   components: {},
   data() {
@@ -196,18 +197,26 @@ export default {
     // this.scaleY = 1.0;
     // this.clearCanvasContent();
     let content_container = document.getElementById("content_container");
+    this.content_container = content_container;
     content_container.addEventListener("scroll", this.handleScroll);
+    // content_container.addEventListener(
+    //   "scroll",
+    //   _.throttle(this.handleScroll, 100)
+    // );
     this.scrollTop = 0;
     this.scrollLeft = 0;
     this.postcodeOfPoints = [];
     this.addressOfPoints = [];
     this.nameOfPoints = [];
-    this.postcodePoints_start_x = 0;
-    this.postcodePoints_end_x = 0;
-    this.addressPoints_start_x = 0;
-    this.addressPoints_end_x = 0;
-    this.namePoints_start_x = 0;
-    this.namePoints_end_x = 0;
+    // 分别记录postcode,address,name起点和终点坐标，用于计算鼠标滚动时，重新计算对应虚线两点坐标
+    this.postcodePoints_start = { x: 0, y: 0 };
+    this.postcodePoints_end = { x: 0, y: 0 };
+    this.addressPoints_start = { x: 0, y: 0 };
+    this.addressPoints_end = { x: 0, y: 0 };
+    this.namePoints_start = { x: 0, y: 0 };
+    this.namePoints_end = { x: 0, y: 0 };
+    this.origin_scrollLeft = 0;
+    this.origin_scrollTop = 0;
   },
   created() {
     //运单识别生成的唯一标识，用于请求参数
@@ -219,26 +228,90 @@ export default {
       let scrollLeft = ev.target.scrollLeft;
       this.scrollTop = scrollTop;
       this.scrollLeft = scrollLeft;
+      // console.log(this.scrollTop, this.scrollLeft);
+      let diffX = Math.abs(this.origin_scrollLeft - scrollLeft);
+      let diffY = Math.abs(this.origin_scrollTop - scrollTop);
 
-
-      // console.log(this.scrollTop,this.scrollLeft);
-
+      console.log(this.origin_scrollTop, scrollTop);
       //重新计算polygon的坐标
       //postcode
       if (this.postcodeOfPoints.length) {
-        this.postcodePoints.start.x = this.postcodePoints_start_x - scrollLeft;
-        this.postcodePoints.end.x = this.postcodePoints_end_x - scrollLeft;
-        // console.log(this.postcodePoints_start_x);
+        // 横坐标处理
+        if (this.origin_scrollLeft > scrollLeft) {
+          // this.postcodePoints.start = {
+          //   x: this.postcodePoints_start.x + diffX,
+          //   y: this.postcodePoints_start.y + diffY,
+          // };
+          // this.postcodePoints.end = {
+          //   x: this.postcodePoints_end.x + diffX,
+          //   y: this.postcodePoints_end.y + diffY,
+          // };
+          this.postcodePoints.start.x = this.postcodePoints_start.x + diffX;
+          this.postcodePoints.end.x = this.postcodePoints_end.x + diffX;
+        } else {
+          this.postcodePoints.start.x = this.postcodePoints_start.x - diffX;
+          this.postcodePoints.end.x = this.postcodePoints_end.x - diffX;
+        }
+
+        if (this.origin_scrollTop > scrollTop) {
+          this.postcodePoints.start.y = this.postcodePoints_start.y + diffY;
+          this.postcodePoints.end.y = this.postcodePoints_end.y + diffY;
+        } else {
+          this.postcodePoints.start.y = this.postcodePoints_start.y - diffY;
+          this.postcodePoints.end.y = this.postcodePoints_end.y - diffY;
+        }
       }
       //address
       if (this.addressOfPoints.length) {
-        this.addressPoints.start.x = this.addressPoints_start_x - scrollLeft;
-        this.addressPoints.end.x = this.addressPoints_end_x - scrollLeft;
+        if (this.origin_scrollLeft > scrollLeft) {
+          // this.addressPoints.start = {
+          //   x: this.addressPoints_start.x + diffX,
+          //   y: this.addressPoints_start.y + diffY,
+          // };
+          // this.addressPoints.end = {
+          //   x: this.addressPoints_end.x + diffX,
+          //   y: this.addressPoints_end.y + diffY,
+          // };
+          this.addressPoints.start.x = this.addressPoints_start.x + diffX;
+          this.addressPoints.end.x = this.addressPoints_end.x + diffX;
+        } else {
+          this.addressPoints.start.x = this.addressPoints_start.x - diffX;
+          this.addressPoints.end.x = this.addressPoints_end.x - diffX;
+        }
+
+        if (this.origin_scrollTop > scrollTop) {
+          this.addressPoints.start.y = this.addressPoints_start.y + diffY;
+          this.addressPoints.end.y = this.addressPoints_end.y + diffY;
+        } else {
+          this.addressPoints.start.y = this.addressPoints_start.y - diffY;
+          this.addressPoints.end.y = this.addressPoints_end.y - diffY;
+        }
       }
       //name
       if (this.nameOfPoints.length) {
-        this.namePoints.start.x = this.namePoints_start_x - scrollLeft;
-        this.namePoints.end.x = this.namePoints_end_x - scrollLeft;
+        if (this.origin_scrollLeft > scrollLeft) {
+          // this.namePoints.start = {
+          //   x: this.namePoints_start.x + diffX,
+          //   y: this.namePoints_start.y + diffY,
+          // };
+          // this.namePoints.end = {
+          //   x: this.namePoints_end.x + diffX,
+          //   y: this.namePoints_end.y + diffY,
+          // };
+          this.namePoints.start.x = this.namePoints_start.x + diffX;
+          this.namePoints.end.x = this.namePoints_end.x + diffX;
+        } else {
+          this.namePoints.start.x = this.namePoints_start.x - diffX;
+          this.namePoints.end.x = this.namePoints_end.x - diffX;
+        }
+
+        if (this.origin_scrollTop > scrollTop) {
+          this.namePoints.start.y = this.namePoints_start.y + diffY;
+          this.namePoints.end.y = this.namePoints_end.y + diffY;
+        } else {
+          this.namePoints.start.y = this.namePoints_start.y - diffY;
+          this.namePoints.end.y = this.namePoints_end.y - diffY;
+        }
       }
     },
     clearCanvasContent() {
@@ -305,53 +378,102 @@ export default {
 
       // 获取三个选区坐标
       this.$nextTick(() => {
-        let postcodeElemBoundingClient = this.$refs.border_postcode.getBoundingClientRect();
-        let addressElemBoundingClient = this.$refs.border_address.getBoundingClientRect();
-        let nameElemBoundingClient = this.$refs.border_name.getBoundingClientRect();
+        let postcodeElemBoundingClient =
+          this.$refs.border_postcode &&
+          this.$refs.border_postcode.getBoundingClientRect();
+        let addressElemBoundingClient =
+          this.$refs.border_address &&
+          this.$refs.border_address.getBoundingClientRect();
+        let nameElemBoundingClient =
+          this.$refs.border_name &&
+          this.$refs.border_name.getBoundingClientRect();
         // getBoundingClientRect获取的是针对当前窗口的相对位置
-        let polygonPostcodeBounding = this.$refs.polygonPostcode.getBoundingClientRect();
-        let polygonAddressBounding = this.$refs.polygonAddress.getBoundingClientRect();
-        let polygonNameBounding = this.$refs.polygonName.getBoundingClientRect();
+        let polygonPostcodeBounding =
+          this.$refs.polygonPostcode &&
+          this.$refs.polygonPostcode.getBoundingClientRect();
+        let polygonAddressBounding =
+          this.$refs.polygonAddress &&
+          this.$refs.polygonAddress.getBoundingClientRect();
+        let polygonNameBounding =
+          this.$refs.polygonName &&
+          this.$refs.polygonName.getBoundingClientRect();
 
         //增加对scroll事件的处理
         //postcode
+        // 获取this.content_container开始滚动坐标
+        this.origin_scrollLeft = this.content_container.scrollLeft;
+        this.origin_scrollTop = this.content_container.scrollTop;
+        console.log(this.origin_scrollTop);
         if (postcodePoints.length) {
-          this.postcodePoints.start = {
-            x: polygonPostcodeBounding.x + polygonPostcodeBounding.width,
-            y: polygonPostcodeBounding.y - 55,
+          let postcodeStartXY = {
+            x:
+              polygonPostcodeBounding &&
+              polygonPostcodeBounding.x + polygonPostcodeBounding.width,
+            y: polygonPostcodeBounding && polygonPostcodeBounding.y - 55,
           };
-          this.postcodePoints.end = {
-            x: postcodeElemBoundingClient.x,
-            y: postcodeElemBoundingClient.y - 60,
+          this.postcodePoints.start = postcodeStartXY;
+          let postcodeEndXY = {
+            x: postcodeElemBoundingClient && postcodeElemBoundingClient.x,
+            y: postcodeElemBoundingClient && postcodeElemBoundingClient.y - 60,
           };
-          this.postcodePoints_start_x = this.postcodePoints.start.x;
-          this.postcodePoints_end_x = this.postcodePoints.end.x;
+          this.postcodePoints.end = postcodeEndXY;
+          // 记录第一次的原始值
+          this.postcodePoints_start = {
+            x: postcodeStartXY.x || 0,
+            y: postcodeStartXY.y || 0,
+          };
+          this.postcodePoints_end = {
+            x: postcodeEndXY.x || 0,
+            y: postcodeEndXY.y || 0,
+          };
         }
         //address
         if (addressPoints.length) {
-          this.addressPoints.start = {
-            x: polygonAddressBounding.x + polygonAddressBounding.width,
-            y: polygonAddressBounding.y - 55,
+          let addressStartXY = {
+            x:
+              polygonAddressBounding &&
+              polygonAddressBounding.x + polygonAddressBounding.width,
+            y: polygonAddressBounding && polygonAddressBounding.y - 55,
           };
-          this.addressPoints.end = {
-            x: addressElemBoundingClient.x,
-            y: addressElemBoundingClient.y - 60,
+          this.addressPoints.start = addressStartXY;
+          let addressEndXY = {
+            x: addressElemBoundingClient && addressElemBoundingClient.x,
+            y: addressElemBoundingClient && addressElemBoundingClient.y - 60,
           };
-          this.addressPoints_start_x = this.addressPoints.start.x;
-          this.addressPoints_end_x = this.addressPoints.end.x;
+          this.addressPoints.end = addressEndXY;
+          // record origin points
+          this.addressPoints_start = {
+            x: addressStartXY.x || 0,
+            y: addressStartXY.y || 0,
+          };
+          this.addressPoints_end = {
+            x: addressEndXY.x || 0,
+            y: addressEndXY.y || 0,
+          };
         }
         //name
         if (namePoints.length) {
-          this.namePoints.start = {
-            x: polygonNameBounding.x + polygonNameBounding.width,
-            y: polygonNameBounding.y - 55,
+          let nameStartXY = {
+            x:
+              polygonNameBounding &&
+              polygonNameBounding.x + polygonNameBounding.width,
+            y: polygonNameBounding && polygonNameBounding.y - 55,
           };
-          this.namePoints.end = {
-            x: nameElemBoundingClient.x,
-            y: nameElemBoundingClient.y - 60,
+          this.namePoints.start = nameStartXY;
+          let nameEndXY = {
+            x: nameElemBoundingClient && nameElemBoundingClient.x,
+            y: nameElemBoundingClient && nameElemBoundingClient.y - 60,
           };
-          this.namePoints_start_x = this.namePoints.start.x;
-          this.namePoints_end_x = this.namePoints.end.x;
+          this.namePoints.end = nameEndXY;
+          // record origin points
+          this.namePoints_start = {
+            x: nameStartXY.x || 0,
+            y: nameStartXY.y || 0,
+          };
+          this.namePoints_end = {
+            x: nameEndXY.x || 0,
+            y: nameEndXY.y || 0,
+          };
         }
       });
     },
@@ -711,7 +833,7 @@ $upload-height: 510px;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
+    width: 98%;
     height: 95%;
     z-index: 1;
   }

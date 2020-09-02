@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-08-14 19:33:18
+ * @LastEditTime: 2020-09-01 19:41:46
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -89,7 +89,7 @@
       </el-row>
     </div>
     <!-- 如果匹配到了模板，提示给用户，由用户决定是否直接识别显示结果 -->
-    <el-dialog
+    <!-- <el-dialog
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :title="$t('confirm-dialog-title')"
@@ -106,7 +106,7 @@
           @click="handleConfirmMatching"
         >{{ $t('dialog-confirm-btn') }}</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 保存用户上传的原图 -->
     <img ref="imgElem" class="imgElem" :height="bill_height" :width="bill_width" :src="imageUrl" />
     <!-- 可以供用户自定义区域 -->
@@ -317,7 +317,7 @@ export default {
       }, //鼠标刚开始按下的点
       deg: 0, //旋转的角度，默认从0度开始
       uploadImgLoading: false, //用于控制图片上传时有一个加载动效
-      endpoint: { x: 0, y: 0 }, //鼠标移动后终点坐标
+      // endpoint: { x: 0, y: 0 }, //鼠标移动后终点坐标
       resDetectDataArr: [], //自定区域识别后返回的数据
       tempMatchingDialog: false, //用于控制是否加载上次保存过的自定义区域数据标识
       calibrating: false,
@@ -337,7 +337,7 @@ export default {
     this.editImageArr = []; //保存用户自定区域坐标原点和宽高{x:0,y:0,width:100,height:100}
     this.userCustomizeArr = []; //保存用户自定区域相关参数
     this.userDataImage = []; //保存用户自定区域base64数据,后面用于拼接到resDetectDataArr，展示数据
-    this.TemplateData = []; //保存模板数据，代表当前用户正在编辑的模板，模板里可能包含多个自定区域数据
+    this.TemplateData = []; //保存模板数据，模板里可能包含多个自定区域数据 blockItem:[{"block_id":"20200901181925pwxa1jykfid","name":"地址","ocr_engine":"expressbill","block":{"x":93,"y":176,"width":235,"height":113}}]
     this.curPoints = null; //当前用户自定区域数据{x,y,width,height}
     this.startXY = { x: 0, y: 0 }; //保存用户按下鼠标起点x,y注意和offsetX区别
     this.endXY = { x: 0, y: 0 }; //保存用户按下鼠标终点x,y注意和offsetX区别，和startXY一起用于准确计算宽高
@@ -457,8 +457,8 @@ export default {
           oBox.onmousemove = (e) => {
             // 会不断触发
             e = e || window.event;
-            let x2 = e.offsetX;
-            let y2 = e.offsetY;
+            // let x2 = e.offsetX;
+            // let y2 = e.offsetY;
             this.endXY = {
               x: e.x,
               y: e.y,
@@ -481,10 +481,10 @@ export default {
             oDiv.style.border = "2px solid #409EFF";
             oDiv.style.background = "rgba(64,158,255,0.4)";
             oDiv.style.position = "absolute";
-            this.endpoint = {
-              x: x2,
-              y: y2,
-            };
+            // this.endpoint = {
+            //   x: x2,
+            //   y: y2,
+            // };
             oBox.appendChild(oDiv);
             if (width <= 30) {
               oBox.removeChild(oDiv);
@@ -774,16 +774,16 @@ export default {
     },
     /**
      * @name:handleConfirmMatching
-     * @msg:确认模板匹配,处理识别结果,是否有必要??每次用户上传图片,弹出这个会不会有点多余??
+     * @msg:确认模板匹配,处理识别结果,是否有必要?每次用户上传图片,弹出这个会不会有点多余?,该页面已去掉
      * @param {type}
      * @return:
      */
-    handleConfirmMatching() {
-      let blockItems = this.matchTemplateItem.blockItem;
-      // 调用识别引擎识别显示结果
-      this.requestOcrEngine(blockItems);
-      this.tempMatchingDialog = false;
-    },
+    // handleConfirmMatching() {
+    //   let blockItems = this.matchTemplateItem.blockItem;
+    //   // 调用识别引擎识别显示结果
+    //   this.requestOcrEngine(blockItems);
+    //   this.tempMatchingDialog = false;
+    // },
     /**
      * @name: wrapOcrEngine
      * @msg: ocr引擎请求统一封装
@@ -1085,9 +1085,9 @@ export default {
      */
     resetArr() {
       this.removeEditableFunc();
-      this.editImageArr = []; //用于保存用户自定义类型的区域坐标原点和宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}--目前只考虑每个类型只能自定义一个区域
-      this.userCustomizeArr = []; //用于保存用户自定义区域图片转换处理后相关接口请求参数
-      this.resDetectDataArr = []; //自定义区域图片识别后返回的数据
+      this.editImageArr = []; //自定区域坐标原点、宽高以及类型{type:'expressbill',x:0,y:0,width:100,height:100}
+      this.userCustomizeArr = []; //用户自定区域图片转换处理后相关接口请求参数
+      this.resDetectDataArr = []; //自定区域图片识别后返回的数据
       this.TemplateData = [];
     },
     /**
@@ -1126,7 +1126,7 @@ export default {
           blockItem: blockData,
           image: imgbase64, //用户上传图片base64数据
         };
-        // 本地保存一份，数据库保存一份或者更新一份
+        // 本地保存一份，数据库保存一份或者更新一份!!!!
         const templateDataArr = storeSession.get("templateData") || [];
         // 寻找当前保存的模板数据中是否有和temp_id相同的，有则更新替换
         let tempItem = null;
@@ -1147,6 +1147,8 @@ export default {
         }
         oBox.setAttribute("data-temp_id", templateData.temp_id);
         // 如果用户当前保存太多模板数据，由于原图base64较大，有可能造成本地缓存不够，需要考虑下是否限制保存的数量
+        // 限制保存5个模板，后面如果需要再开启更多
+        // 将数据添加到数据库里
         storeSession.set("templateData", templateDataArr);
         this.$notify({
           title: this.$t("tip-text"),
