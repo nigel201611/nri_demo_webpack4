@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-09-01 19:41:46
+ * @LastEditTime: 2020-09-02 19:00:53
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -106,7 +106,7 @@
           @click="handleConfirmMatching"
         >{{ $t('dialog-confirm-btn') }}</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>-->
     <!-- 保存用户上传的原图 -->
     <img ref="imgElem" class="imgElem" :height="bill_height" :width="bill_width" :src="imageUrl" />
     <!-- 可以供用户自定义区域 -->
@@ -1128,6 +1128,10 @@ export default {
         };
         // 本地保存一份，数据库保存一份或者更新一份!!!!
         const templateDataArr = storeSession.get("templateData") || [];
+        // 保存templateData到数据库中
+        api.userTemplateApi.saveTemplate(templateData).then((res) => {
+          console.log(res);
+        });
         // 寻找当前保存的模板数据中是否有和temp_id相同的，有则更新替换
         let tempItem = null;
         if (temp_id) {
@@ -1147,7 +1151,7 @@ export default {
         }
         oBox.setAttribute("data-temp_id", templateData.temp_id);
         // 如果用户当前保存太多模板数据，由于原图base64较大，有可能造成本地缓存不够，需要考虑下是否限制保存的数量
-        // 限制保存5个模板，后面如果需要再开启更多
+        // 限制保存10个模板，后面如果需要再开启更多
         // 将数据添加到数据库里
         storeSession.set("templateData", templateDataArr);
         this.$notify({
