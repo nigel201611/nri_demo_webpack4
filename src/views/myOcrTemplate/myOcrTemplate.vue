@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-05-11 10:31:38
- * @LastEditTime: 2020-05-12 18:22:59
+ * @LastEditTime: 2020-09-03 19:42:47
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -46,28 +46,56 @@
 
 <script>
 import { mapState } from "vuex";
-// import api from "../../api";
+import api from "../../api";
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
     };
   },
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
-    this.tableData = storeSession.get("templateData") || [];
+    // this.tableData = storeSession.get("templateData") || [];
+    this.selectUserTemplate();
   },
   destroyed() {},
   methods: {
+    /**
+     * @name: selectUserTemplate
+     * @msg: 查找登录用户的所有模板
+     * @param {type}
+     * @return {type}
+     */
+    selectUserTemplate() {
+      api.userTemplateApi.selectTemplate().then((res) => {
+        let { status, data } = res;
+        if (status == 200) {
+          if (data.data !== null) {
+            let templateDataArr = data.data;
+
+            templateDataArr.forEach((item, index) => {
+              let blockItem = item.blockItem;
+              blockItem = blockItem.replace(/\\/, "");
+              templateDataArr[index].blockItem = JSON.parse(blockItem);
+            });
+
+            this.tableData = templateDataArr;
+          } else {
+            //提示没有模板数据
+          }
+        }
+        // this.tableData
+      });
+    },
     /**
      * @name: handleEdit
      * @msg: 编辑我的模板
@@ -77,7 +105,7 @@ export default {
     handleEdit(row) {
       this.$router.push({
         name: "customizeOcr",
-        params: row
+        params: row,
       });
     },
     /**
@@ -90,20 +118,20 @@ export default {
       this.$confirm(this.$t("confirm_text"), this.$t("Tips"), {
         confirmButtonText: this.$t("determine"),
         cancelButtonText: this.$t("cancel"),
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           this.tableData.splice(index, 1);
           storeSession.set("templateData", this.tableData);
           this.$message({
             type: "success",
-            message: this.$t("cancel_succ")
+            message: this.$t("cancel_succ"),
           });
         })
         .catch(() => {
           console.log("cancel delete");
         });
-    }
-  }
+    },
+  },
 };
 </script>

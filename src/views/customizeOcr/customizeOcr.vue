@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-09-02 19:00:53
+ * @LastEditTime: 2020-09-03 19:54:46
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -1127,37 +1127,52 @@ export default {
           image: imgbase64, //用户上传图片base64数据
         };
         // 本地保存一份，数据库保存一份或者更新一份!!!!
-        const templateDataArr = storeSession.get("templateData") || [];
+        // const templateDataArr = storeSession.get("templateData") || [];
         // 保存templateData到数据库中
         api.userTemplateApi.saveTemplate(templateData).then((res) => {
-          console.log(res);
+          //保存成功给出提示
+          let { status, data } = res;
+          if (status == 200) {
+            if (data.data == 1) {
+              this.$notify({
+                title: this.$t("tip-text"),
+                message: this.$t("save-succ"),
+              });
+            } else {
+              //提示保存失败，请尝试重新保存！！！！
+              this.$notify({
+                title: this.$t("tip-text"),
+                message: this.$t("save-fail"),
+              });
+            }
+          }
         });
         // 寻找当前保存的模板数据中是否有和temp_id相同的，有则更新替换
-        let tempItem = null;
-        if (temp_id) {
-          tempItem = templateDataArr.find((item) => {
-            return (item.temp_id = temp_id);
-          });
-        }
-        //说明找到该项,替换
-        if (tempItem) {
-          tempItem.temp_id = temp_id;
-          tempItem.blockItem = templateData.blockItem;
-          tempItem.image = templateData.image;
-        } else {
-          //没有找到，直接推入
-          // console.log('新增');
-          templateDataArr.push(templateData);
-        }
+        // let tempItem = null;
+        // if (temp_id) {
+        //   tempItem = templateDataArr.find((item) => {
+        //     return (item.temp_id = temp_id);
+        //   });
+        // }
+        // //说明找到该项,替换
+        // if (tempItem) {
+        //   tempItem.temp_id = temp_id;
+        //   tempItem.blockItem = templateData.blockItem;
+        //   tempItem.image = templateData.image;
+        // } else {
+        //   //没有找到，直接推入
+        //   // console.log('新增');
+        //   templateDataArr.push(templateData);
+        // }
         oBox.setAttribute("data-temp_id", templateData.temp_id);
         // 如果用户当前保存太多模板数据，由于原图base64较大，有可能造成本地缓存不够，需要考虑下是否限制保存的数量
         // 限制保存10个模板，后面如果需要再开启更多
         // 将数据添加到数据库里
-        storeSession.set("templateData", templateDataArr);
-        this.$notify({
-          title: this.$t("tip-text"),
-          message: this.$t("save-succ"),
-        });
+        // storeSession.set("templateData", templateDataArr);
+        // this.$notify({
+        //   title: this.$t("tip-text"),
+        //   message: this.$t("save-succ"),
+        // });
       } else {
         this.$notify({
           title: this.$t("tip-text"),
