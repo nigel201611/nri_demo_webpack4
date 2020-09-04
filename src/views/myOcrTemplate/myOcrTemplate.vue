@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-05-11 10:31:38
- * @LastEditTime: 2020-09-03 19:42:47
+ * @LastEditTime: 2020-09-04 19:04:46
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -121,12 +121,35 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.tableData.splice(index, 1);
-          storeSession.set("templateData", this.tableData);
-          this.$message({
-            type: "success",
-            message: this.$t("cancel_succ"),
-          });
+          let temp_id = this.tableData[index].temp_id;
+          api.userTemplateApi
+            .deleteTemplate({ temp_id: temp_id })
+            .then((res) => {
+              let { status, data } = res;
+              // console.log(data);{ errno: 0, errmsg: "", data: 1 }
+              if (status == 200) {
+                if (data.errno == 0) {
+                  let deleteCode = data.data;
+                  if (deleteCode == 1) {
+                    // 删除成功
+                    this.tableData.splice(index, 1);
+                    this.$message({
+                      type: "success",
+                      message: this.$t("cancel_succ"),
+                    });
+                  }else{
+                    //提示用户删除失败，检查网络是否正常
+                     this.$message({
+                      type: "error",
+                      message: this.$t("cancel_fail"),
+                    });
+                  }
+                } else {
+                  //提示没有模板数据
+                }
+              }
+              // this.tableData
+            });
         })
         .catch(() => {
           console.log("cancel delete");

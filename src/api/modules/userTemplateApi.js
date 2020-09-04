@@ -1,7 +1,7 @@
 /*
  * @Author: nigel
  * @Date: 2020-09-02 18:38:07
- * @LastEditTime: 2020-09-03 19:43:26
+ * @LastEditTime: 2020-09-04 18:59:05
  */
 import axios from '../axiosWrapper';
 let prefix = process.env.API_ROOT;
@@ -35,6 +35,21 @@ export const selectTemplate = () => {
     };
     let url = `${prefix}/api/saveTemplate/selectUserTemplate`;
     return axios.post(url, {}, config);
+};
+/**
+ * @name: deleteTemplate
+ * @msg: 删除用户模板
+ * @param {type} 
+ * @return {type} 
+ */
+export const deleteTemplate = (params) => {
+    let config = {
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+    };
+    let url = `${prefix}/api/saveTemplate/deleteUserTemplate`;
+    return axios.post(url, params, config);
 };
 
 

@@ -13,6 +13,7 @@
         "determine": "确定",
         "cancel": "取消",
         "cancel_succ": "删除成功",
+        "cancel_fail":"删除失败，检查网络是否正常",
         "no_data": "暂无数据"
     },
     "en": {
@@ -29,6 +30,7 @@
         "determine": "confirm",
         "cancel": "cancel",
         "cancel_succ": "Delete succeeded",
+        "cancel_fail":"Deletion failed. Check whether the network is normal",
         "no_data": "No data available"
     },
     "ja": {
@@ -45,6 +47,7 @@
         "determine": "を選択します",
         "cancel": "キャンセル",
         "cancel_succ": "削除に成功しました",
+        "cancel_fail":"削除に失敗しました。ネットワークが正常かどうかを確認します。",
         "no_data": "データがありません"
     }
 }
