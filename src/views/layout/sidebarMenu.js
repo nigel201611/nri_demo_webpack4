@@ -60,16 +60,6 @@ export const menudata = [
         permDesc: "zipcode-recognition"
     },
     {
-        id: 74,
-        permName: "nri_general_ocr",
-        parentPermId: 71,
-        permCode: "",
-        permType: "MENU",
-        permUrl: "/drawImg",
-        iconClass: "fa fa-bell-o",
-        permDesc: "nri_general_ocr"
-    },
-    {
         id: 75,
         permName: "self-defined-ocr",
         parentPermId: 71,
@@ -79,6 +69,16 @@ export const menudata = [
         iconClass: "fa fa-bell-o",
         permDesc: "self-defined-ocr"
     },
+    {
+        id: 74,
+        permName: "nri_general_ocr",
+        parentPermId: 71,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "/drawImg",
+        iconClass: "fa fa-bell-o",
+        permDesc: "nri_general_ocr"
+    },  
     {
         id: 76,
         permName: "tencent-general",

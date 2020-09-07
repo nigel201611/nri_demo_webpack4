@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-09-03 19:54:46
+ * @LastEditTime: 2020-09-07 10:58:41
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -1133,10 +1133,16 @@ export default {
           //保存成功给出提示
           let { status, data } = res;
           if (status == 200) {
-            if (data.data == 1) {
+            if (data.data > 0) {
               this.$notify({
                 title: this.$t("tip-text"),
                 message: this.$t("save-succ"),
+              });
+            } else if (data.data == -1) {
+              //提示已经超过保存模板数量限制，最多保存10个模板，请删除旧再试
+              this.$notify({
+                title: this.$t("tip-text"),
+                message: this.$t("over_limit"),
               });
             } else {
               //提示保存失败，请尝试重新保存！！！！

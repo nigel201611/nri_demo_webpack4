@@ -52,7 +52,8 @@
         "custom_region_edit": "自定区域编辑",
         "area_name": "区域名称",
         "OCR_engine": "OCR引擎",
-        "select_ocr_engine": "请选择活动区域"
+        "select_ocr_engine": "请选择活动区域",
+        "over_limit":"已超过保存模板数量限制，最多保存10个模板，请删除旧的再试！"
     },
     "en": {
         "hello": "hello world!",
@@ -107,7 +108,8 @@
         "custom_region_edit": "Custom region edit",
         "area_name": "Area name",
         "OCR_engine": "OCR engine",
-        "select_ocr_engine": "Please select the activity area"
+        "select_ocr_engine": "Please select the activity area",
+        "over_limit":"You have exceeded the limit of saving templates. You can save up to 10 templates. Please delete the old ones and try again"
     },
     "ja": {
         "hello": "こんにちは、世界！",
@@ -162,6 +164,7 @@
         "custom_region_edit": "自定エリア編集",
         "area_name": "エリア名",
         "OCR_engine": "OCRエンジン",
-        "select_ocr_engine": "アクティブエリアを選択してください"
+        "select_ocr_engine": "アクティブエリアを選択してください",
+        "over_limit":"保存テンプレートの数制限を超えました。最大10個のテンプレートを保存します。古いものを削除して再試行してください。"
     }
 }
