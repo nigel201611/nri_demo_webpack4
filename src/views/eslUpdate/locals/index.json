@@ -27,15 +27,15 @@
     },
     "ja": {
         "esl-loading-text": "ロード中~",
-        "no-empty-tip": "数量は空ではないです",
-        "number-tip": "数は必ず数値でなければなりません。",
+        "no-empty-tip": "数量の入力は必須です",
+        "number-tip": "数量は数値で入力してください",
         "submit-text": "送信",
         "tip-text": "ヒント",
-        "qty-tip": "Qtyは修正されていません。増加または減少できます。",
+        "qty-tip": "数量が修正されていません。追加、削減が可能です。",
         "success-text": "成功",
         "update-succ": "更新成功！",
         "update-fail": "更新失敗！",
         "warning-text": "警告",
-        "no-related-result": "該当番号のデータが見つかりませんでした。"
+        "no-related-result": "該当番号のデータが見つかりませんでした"
     }
 }

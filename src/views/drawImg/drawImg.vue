@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-08-14 19:36:01
+ * @LastEditTime: 2020-09-08 09:32:00
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -438,41 +438,76 @@ export default {
         1
       ); //canvas导出成为base64
     },
+
     /**
      * @name: templateMatching
      * @msg: 模板匹配接口，匹配到直接识别显示结果,从缓存获取templateData,没有则从数据库里读取
      * @param {type}
      * @return:
      */
-    templateMatching() {
+    async templateMatching() {
       // 优先和本地保存的模板进行匹配
-      let templateDataArr = storeSession.get("templateData") || [];
-      if (templateDataArr.length) {
-        this.templateDataArr = templateDataArr;
-        this.template_id = templateDataArr[0].temp_id;
-        //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
-        let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
-        this.templateObj = templateItem;
-        this.matchTemplateItem = templateItem;
-        let blockItems = this.matchTemplateItem.blockItem;
-        this.drawCustomArea(blockItems);
-        // 调用识别引擎识别显示结果
-        this.requestOcrEngine(blockItems);
-        // 弹出模板匹配确认提示模态框
-      } else {
-        //提醒用户新增模板
-        this.$confirm(this.$t("add_template_tip"), this.$t("tip-text"), {
-          confirmButtonText: this.$t("confirm"),
-          cancelButtonText: this.$t("cancel"),
-          type: "warning",
+      // 后台读取模板数据
+      // let templateDataArr = storeSession.get("templateData") || [];
+
+      api.userTemplateApi
+        .selectTemplate()
+        .then((res) => {
+          this.isRequesting = false;
+          let { status, data } = res;
+          if (status == 200) {
+            if (data.data !== null) {
+              let templateDataArr = data.data;
+              // console.log(templateDataArr);
+              if (templateDataArr.length) {
+                templateDataArr.forEach((item, index) => {
+                  let blockItem = item.blockItem;
+                  blockItem = blockItem.replace(/\\/, "");
+                  templateDataArr[index].blockItem = JSON.parse(blockItem);
+                });
+                this.templateDataArr = templateDataArr;
+                //判断当前用户模板数量，如果只有一个，默认匹配第一个，否则，由用户选择模板，模板定义是加个名字，让用户可以根据自己之前定义的名字来选择
+                //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
+                if (templateDataArr.length == 1) {
+                  this.template_id = templateDataArr[0].temp_id;
+                  let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
+                  this.templateObj = templateItem;
+                  this.matchTemplateItem = templateItem;
+                  let blockItems = this.matchTemplateItem.blockItem;
+                  this.drawCustomArea(blockItems);
+                  // 调用识别引擎识别显示结果
+                  this.requestOcrEngine(blockItems);
+                }
+
+                // 弹出模板匹配确认提示模态框
+              } else {
+                //提醒用户新增模板
+                this.$confirm(
+                  this.$t("add_template_tip"),
+                  this.$t("tip-text"),
+                  {
+                    confirmButtonText: this.$t("confirm"),
+                    cancelButtonText: this.$t("cancel"),
+                    type: "warning",
+                  }
+                )
+                  .then(() => {
+                    return this.$router.push({
+                      name: "customizeOcr",
+                    });
+                  })
+                  .catch(() => {});
+              }
+            } else {
+              //提示获取模板错误
+            }
+          }
+          // this.tableData
         })
-          .then(() => {
-            return this.$router.push({
-              name: "customizeOcr",
-            });
-          })
-          .catch(() => {});
-      }
+        .catch((err) => {
+          console.log(err);
+          this.isRequesting = false;
+        });
     },
     /**
      * @name: requestOcrEngine

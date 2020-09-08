@@ -20,10 +20,10 @@
     "ja": {
         "loading-text": "ロード中~",
         "smoke-detect": "煙の識別",
-        "age-detect": "性別年齢の識別",
+        "age-detect": "性別・年齢の識別",
         "nozzle-detect": "ノズル識別",
         "gesture-detect": "ジェスチャー認識",
-        "detect-result": "識別結果:",
-        "result-fail": "認識に失敗しました。ネットワークが正常かどうか確認してください~"
+        "detect-result": "結果:",
+        "result-fail": "識別に失敗しました。ネットワークが正常かどうか確認してください"
     }
 }

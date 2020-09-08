@@ -29,16 +29,16 @@
     },
     "ja": {
         "analyse-btn": "分析",
-        "ch_en_ex": "中国語と英語の体験",
-        "ch_en_vtx_detect": "中国語と英語の多角度体験",
-        "ch_en_ex_other": "その他の言語体験",
-        "number": "番号付け",
-        "recog_result": "識別結果",
+        "ch_en_ex": "中国語 英語の識別体験",
+        "ch_en_vtx_detect": "中国語 英語の識別体験(マルチアングル)",
+        "ch_en_ex_other": "その他言語の体験",
+        "number": "番号",
+        "recog_result": "結果",
         "upload-btn-text": "ローカル写真をアップロード",
-        "input_url_tip": "ネット画像を使用して、写真URLを貼り付けてください。",
+        "input_url_tip": "ネット画像を使用する場合、該当URLを入力してください",
         "customize-area-loading-tip": "アップロード中",
         "tip-text": "ヒント",
-        "input_url-tip": "ネット画像は合法的ではありません。http:/またはhttps:/先頭のネット画像を入力してください",
-        "during-recognition": "一生懸命認識しています~"
+        "input_url-tip": "入力されたURLは不適切です。http://またはhttps://より始まるURLを入力してください",
+        "during-recognition": "識別中"
     }
 }

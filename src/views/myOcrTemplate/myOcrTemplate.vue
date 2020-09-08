@@ -1,12 +1,18 @@
 <!--
  * @Author: nigel
  * @Date: 2020-05-11 10:31:38
- * @LastEditTime: 2020-09-04 19:04:46
+ * @LastEditTime: 2020-09-07 18:00:13
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
   <div class="template_wrap">
-    <el-table :data="tableData" border style="width: 100%" :empty-text="$t('no_data')">
+    <el-table
+      v-loading="isRequesting"
+      :data="tableData"
+      border
+      style="width: 100%"
+      :empty-text="$t('no_data')"
+    >
       <el-table-column prop="temp_id" :label="$t('temp_id')" width="220"></el-table-column>
       <el-table-column prop="image" :label="$t('temp_image')">
         <template slot-scope="scope">
@@ -51,6 +57,7 @@ export default {
   data() {
     return {
       tableData: [],
+      isRequesting: false,
     };
   },
   computed: {
@@ -76,25 +83,33 @@ export default {
      * @return {type}
      */
     selectUserTemplate() {
-      api.userTemplateApi.selectTemplate().then((res) => {
-        let { status, data } = res;
-        if (status == 200) {
-          if (data.data !== null) {
-            let templateDataArr = data.data;
+      this.isRequesting = true;
+      api.userTemplateApi
+        .selectTemplate()
+        .then((res) => {
+          this.isRequesting = false;
+          let { status, data } = res;
+          if (status == 200) {
+            if (data.data !== null) {
+              let templateDataArr = data.data;
 
-            templateDataArr.forEach((item, index) => {
-              let blockItem = item.blockItem;
-              blockItem = blockItem.replace(/\\/, "");
-              templateDataArr[index].blockItem = JSON.parse(blockItem);
-            });
+              templateDataArr.forEach((item, index) => {
+                let blockItem = item.blockItem;
+                blockItem = blockItem.replace(/\\/, "");
+                templateDataArr[index].blockItem = JSON.parse(blockItem);
+              });
 
-            this.tableData = templateDataArr;
-          } else {
-            //提示没有模板数据
+              this.tableData = templateDataArr;
+            } else {
+              //提示没有模板数据
+            }
           }
-        }
-        // this.tableData
-      });
+          // this.tableData
+        })
+        .catch((err) => { 
+          console.log(err);
+          this.isRequesting = false;
+        });
     },
     /**
      * @name: handleEdit
@@ -137,9 +152,9 @@ export default {
                       type: "success",
                       message: this.$t("cancel_succ"),
                     });
-                  }else{
+                  } else {
                     //提示用户删除失败，检查网络是否正常
-                     this.$message({
+                    this.$message({
                       type: "error",
                       message: this.$t("cancel_fail"),
                     });
