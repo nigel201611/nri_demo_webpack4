@@ -5,7 +5,6 @@
     class="ocr-wrap"
     :element-loading-text="$t('loading-text')"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.6)"
   >
     <!-- <canvas ref="dashedLine:Canvas" class="lineCanvas"></canvas> -->
     <svg class="lineSvg" viewPort="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -228,11 +227,10 @@ export default {
       let scrollLeft = ev.target.scrollLeft;
       this.scrollTop = scrollTop;
       this.scrollLeft = scrollLeft;
-      // console.log(this.scrollTop, this.scrollLeft);
       let diffX = Math.abs(this.origin_scrollLeft - scrollLeft);
       let diffY = Math.abs(this.origin_scrollTop - scrollTop);
 
-      console.log(this.origin_scrollTop, scrollTop);
+      // console.log(this.origin_scrollTop, scrollTop);
       //重新计算polygon的坐标
       //postcode
       if (this.postcodeOfPoints.length) {
@@ -403,7 +401,6 @@ export default {
         // 获取this.content_container开始滚动坐标
         this.origin_scrollLeft = this.content_container.scrollLeft;
         this.origin_scrollTop = this.content_container.scrollTop;
-        console.log(this.origin_scrollTop);
         if (postcodePoints.length) {
           let postcodeStartXY = {
             x:
@@ -801,7 +798,7 @@ $upload-height: 510px;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform-origin: 50% 50%;
+    transform: translate(-50%, -50%);
     z-index: 4;
   }
   .ocrCanvas,

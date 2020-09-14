@@ -5,7 +5,6 @@
     class="postCodeOcr-wrap"
     :element-loading-text="$t('loading-text')"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.6)"
   >
     <div v-if="canPreview" class="preview_image">
       <img :height="bill_height" :width="bill_width" :src="imageUrl" />
@@ -35,8 +34,9 @@
       :on-success="handleUploadSuccess"
     >
       <!-- <img v-if="imageUrl" :height="bill_height" :width="bill_width" :src="imageUrl" class="avatar" /> -->
-      <div v-if="imageUrl" class="avatar" :style="imgObj"></div>
-      <i v-else class="el-icon-plus avatar-uploader-icon" />
+      <div class="avatar" :style="imgObj">
+        <i v-show="!imageUrl" class="el-icon-plus avatar-uploader-icon" />
+      </div>
     </el-upload>
     <div class="result-details">
       <el-table
@@ -302,6 +302,16 @@ $upload-height: 510px;
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
+  position: relative;
+  .avatar-uploader-icon {
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    // transform-origin: -50% -50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+  }
 }
 .avatar-uploader:hover {
   border-color: #409eff;

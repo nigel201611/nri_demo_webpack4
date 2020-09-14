@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-09-07 10:58:41
+ * @LastEditTime: 2020-09-08 10:47:28
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -38,6 +38,7 @@
           :disabled="!imageUrl"
           type="primary"
           size="small"
+          :loading="isSaving"
           @click="saveCustomize"
         >{{ $t('save-current') }}</el-button>
         <el-button
@@ -284,6 +285,7 @@ export default {
         ],
       },
       isRequesting: false, //控制请求次数和加载状态
+      isSaving: false, //标识当前是否正在保存模板状态中
       imageUrl: "",
       btnList: [
         { flag: false, text: "address_bill_dectect", type: "expressbill" },
@@ -1129,30 +1131,37 @@ export default {
         // 本地保存一份，数据库保存一份或者更新一份!!!!
         // const templateDataArr = storeSession.get("templateData") || [];
         // 保存templateData到数据库中
-        api.userTemplateApi.saveTemplate(templateData).then((res) => {
-          //保存成功给出提示
-          let { status, data } = res;
-          if (status == 200) {
-            if (data.data > 0) {
-              this.$notify({
-                title: this.$t("tip-text"),
-                message: this.$t("save-succ"),
-              });
-            } else if (data.data == -1) {
-              //提示已经超过保存模板数量限制，最多保存10个模板，请删除旧再试
-              this.$notify({
-                title: this.$t("tip-text"),
-                message: this.$t("over_limit"),
-              });
-            } else {
-              //提示保存失败，请尝试重新保存！！！！
-              this.$notify({
-                title: this.$t("tip-text"),
-                message: this.$t("save-fail"),
-              });
+        this.isSaving = true;
+        api.userTemplateApi
+          .saveTemplate(templateData)
+          .then((res) => {
+            //保存成功给出提示
+            this.isSaving = false;
+            let { status, data } = res;
+            if (status == 200) {
+              if (data.data > 0) {
+                this.$notify({
+                  title: this.$t("tip-text"),
+                  message: this.$t("save-succ"),
+                });
+              } else if (data.data == -1) {
+                //提示已经超过保存模板数量限制，最多保存10个模板，请删除旧再试
+                this.$notify({
+                  title: this.$t("tip-text"),
+                  message: this.$t("over_limit"),
+                });
+              } else {
+                //提示保存失败，请尝试重新保存！！！！
+                this.$notify({
+                  title: this.$t("tip-text"),
+                  message: this.$t("save-fail"),
+                });
+              }
             }
-          }
-        });
+          })
+          .catch(() => {
+            this.isSaving = false;
+          });
         // 寻找当前保存的模板数据中是否有和temp_id相同的，有则更新替换
         // let tempItem = null;
         // if (temp_id) {
