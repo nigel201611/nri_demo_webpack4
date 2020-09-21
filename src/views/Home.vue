@@ -1,31 +1,29 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-08-18 17:58:18
+ * @LastEditTime: 2020-09-21 16:32:56
 -->
 <template>
   <el-row class="containerVue">
     <app-header />
-    <el-col
-      :span="24"
-      class="main"
-    >
+    <el-col :span="24" class="main">
       <app-sidebar />
       <section id="content_container" ref="content_container" class="content-container">
-        <!-- <app-breadcrumb></app-breadcrumb> -->
-        <el-col
-          :span="24"
-          class="content-wrapper"
-        >
-          <transition
-            name="fade"
-            mode="out-in"
-          >
+        <el-col :span="24" class="content-wrapper">
+          <transition name="fade" mode="out-in">
             <router-view />
           </transition>
         </el-col>
       </section>
     </el-col>
+    <!-- <app-sidebar />
+    <section id="content_container" ref="content_container" class="content-container">
+      <el-col :span="24" class="content-wrapper">
+        <transition name="fade" mode="out-in">
+          <router-view />
+        </transition>
+      </el-col>
+    </section>-->
   </el-row>
 </template>
 
@@ -37,9 +35,9 @@ import AppSidebar from "./layout/AppSidebar.vue";
 export default {
   components: {
     AppHeader,
-    AppSidebar
+    AppSidebar,
   },
-  created() {}
+  created() {},
 };
 </script>
 
@@ -61,6 +59,7 @@ export default {
       overflow-y: auto;
       padding: 16px;
       padding-top: 0;
+      float: left;
       .breadcrumb-container {
         .title {
           width: 200px;

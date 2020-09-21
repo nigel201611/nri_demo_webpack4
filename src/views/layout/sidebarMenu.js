@@ -49,16 +49,16 @@ export const menudata = [
         iconClass: "fa fa-bell-o",
         permDesc: "waybill-recognition"
     },
-    {
-        id: 73,
-        permName: "zipcode-recognition",
-        parentPermId: 71,
-        permCode: "",
-        permType: "MENU",
-        permUrl: "/postCodeOcr",
-        iconClass: "fa fa-bell-o",
-        permDesc: "zipcode-recognition"
-    },
+    // {
+    //     id: 73,
+    //     permName: "zipcode-recognition",
+    //     parentPermId: 71,
+    //     permCode: "",
+    //     permType: "MENU",
+    //     permUrl: "/postCodeOcr",
+    //     iconClass: "fa fa-bell-o",
+    //     permDesc: "zipcode-recognition"
+    // },
     {
         id: 75,
         permName: "self-defined-ocr",

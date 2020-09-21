@@ -42,16 +42,16 @@ export default {
   data() {
     return {
       menus: null,
-      openedIndex: []
+      openedIndex: [],
     };
   },
   computed: {
     ...mapState({
-      collapsed: state => state.menuStore.collapsed
+      collapsed: (state) => state.menuStore.collapsed,
     }),
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     //解决menu收缩后在展开，子菜单不展开的问题
@@ -62,16 +62,16 @@ export default {
           return;
         }
         this.openMenu();
-      }
+      },
     },
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   created() {
     let tempMenus = [];
     const sidebarMenus = menudata;
-    sidebarMenus.forEach(function(element) {
+    sidebarMenus.forEach(function (element) {
       //菜单映射
       let temp = {};
       temp.id = element.id;
@@ -86,7 +86,7 @@ export default {
 
     let treeData = util.listToTree(tempMenus, { parentKey: "parentPermId" });
 
-    treeData.forEach(element => {
+    treeData.forEach((element) => {
       if (!element.children || element.children.length == 0) {
         element.leaf = true;
       }
@@ -128,7 +128,7 @@ export default {
       this.menus.forEach((element, index) => {
         if (element.children) {
           //找到要展开的标签
-          element.children.forEach(ele => {
+          element.children.forEach((ele) => {
             if (ele.path == this.$route.path) {
               this.openedIndex.push(index + "");
             }
@@ -141,8 +141,8 @@ export default {
     },
     handleopen() {},
     handleclose() {},
-    handleselect() {}
-  }
+    handleselect() {},
+  },
 };
 </script>
 
@@ -150,11 +150,16 @@ export default {
 @import "~scss_vars";
 
 aside {
-  flex: 0 0 $sidebar-width;
-  width: $sidebar-width;
+  // flex: 0 0 $sidebar-width;vh
+  // flex-basis: auto;
+  // flex: 1;
+  // width: $sidebar-width;
+  height: 100vh;
+  height: 100%;
   .el-menu {
     height: 100%;
     overflow-y: auto;
+    float: left;
     &::-webkit-scrollbar {
       /*滚动条整体样式*/
       width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
@@ -168,9 +173,10 @@ aside {
   }
 }
 
-.sidebar_menu{
+.sidebar_menu {
   position: relative;
   z-index: 9999999;
+  float: left;
 }
 
 .menu-collapsed {
@@ -181,10 +187,10 @@ aside {
   }
 }
 
-.menu-expanded {
-  flex: 0 0 $sidebar-width;
-  width: $sidebar-width;
-}
+// .menu-expanded {
+//   flex: 0 0 $sidebar-width;
+//   width: $sidebar-width;
+// }
 
 .el-menu {
   overflow: hidden;

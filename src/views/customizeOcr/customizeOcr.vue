@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-09-08 10:47:28
+ * @LastEditTime: 2020-09-21 17:05:05
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -347,6 +347,8 @@ export default {
       width: 0,
       height: 0,
     };
+    this.fixSizeW = 2048; //控制用户上传图片宽度，宽大于1024，固定尺寸为1024,小于1024，原图片显示。
+    this.fixSizeH = 2048;
     // 提前创建好canvas元素
     this.myCanvas = document.createElement("canvas");
     this.myCtx = this.myCanvas.getContext("2d");
@@ -618,12 +620,12 @@ export default {
       imgElem.onload = () => {
         let imgWidth = imgElem.width, //上传图片的宽
           imgHeight = imgElem.height, //上传图片的高
-          maxWidth = 1024, //图片最大宽
-          maxHeight = 1024, //图片最大高
+          maxWidth = this.fixSizeW, //图片最大宽
+          maxHeight = this.fixSizeH, //图片最大高
           targetWidth = imgWidth, //最后图片的宽
           targetHeight = imgHeight; //最后图片的高
         // console.log(imgWidth, imgHeight);
-        // 如果图片的宽或者高大于图片的最大宽高
+        // 如果图片的宽或者高大于限定的最大宽高
         if (imgWidth > maxWidth || imgHeight > maxHeight) {
           // 宽大于高
           if (imgWidth / imgHeight > maxWidth / maxHeight) {
