@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-09-08 09:32:00
+ * @LastEditTime: 2020-09-23 19:06:55
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -31,7 +31,8 @@
           v-model="template_id"
           size="small"
           :no-data-text="$t('no_data')"
-          :disabled="!imageUrl"
+          :loading="isRequestingTemp"
+          :loading-text="$t('uploading_Template')"
           class="detectionList"
           :placeholder="$t('upload-placehoder')"
           @change="handleChangeSelect"
@@ -158,6 +159,7 @@ export default {
   data() {
     return {
       isRequesting: false, //控制请求次数和加载状态
+      isRequestingTemp: false, //控制模板数据加载状态
       calibrating: false,
       uploadImgLoading: false, //用于控制图片上传时有一个加载动效
       imageUrl: "",
@@ -204,6 +206,11 @@ export default {
     this.imageType = "image/jpeg";
     this.matchTemplateItem = [];
     this.templateObj = null;
+
+    this.fixSizeW = 2048; //控制用户上传图片宽度，宽大于1024，固定尺寸为1024,小于1024，原图片显示。
+    this.fixSizeH = 2048;
+    // 加载模板数据
+    // this.templateMatching();
   },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
@@ -332,7 +339,7 @@ export default {
       };
     },
     // 校准图片
-    calibrationImage(file) {
+    async calibrationImage(file) {
       // 加载图片校准
       if (this.calibrating) {
         return;
@@ -341,11 +348,11 @@ export default {
       let myCanvas = this.myCanvas;
       let myCtx = this.myCtx;
       imgElem.src = this.imageUrl;
-      imgElem.onload = () => {
+      imgElem.onload = async () => {
         let imgWidth = imgElem.width, //上传图片的宽
           imgHeight = imgElem.height, //上传图片的高
-          maxWidth = 1024, //图片最大宽
-          maxHeight = 1024, //图片最大高
+          maxWidth = this.fixSizeW, //图片最大宽
+          maxHeight = this.fixSizeH, //图片最大高
           targetWidth = imgWidth, //最后图片的宽
           targetHeight = imgHeight; //最后图片的高
         // 如果图片的宽或者高大于图片的最大宽高
@@ -376,7 +383,32 @@ export default {
           height: targetHeight + "px",
           transform: "rotate(0)",
         };
-        this.templateMatching();
+
+        if (this.templateDataArr.length == 0) {
+          await this.templateMatching();
+        }
+
+        if (this.templateDataArr.length == 1) {
+          this.template_id = this.templateDataArr[0].temp_id;
+          let templateItem = this.templateDataArr[0]; //这里暂时默认模拟匹配到第一个
+          this.templateObj = templateItem;
+          this.matchTemplateItem = templateItem;
+          let blockItems = this.matchTemplateItem.blockItem;
+          this.drawCustomArea(blockItems);
+          // 调用识别引擎识别显示结果
+          this.requestOcrEngine(blockItems);
+        } else {
+          this.template_id = "";
+        }
+        //判断当前用户模板数量，如果只有一个，默认匹配第一个，否则，由用户选择模板，
+        //模板定义是加个名字，让用户可以根据自己之前定义的名字来选择，目前暂时不做
+        //图片上传成功了，但是模板数据可能还在加载中，如何处理
+        // if (this.templateDataArr.length == 1) {
+        //   let blockItems = this.matchTemplateItem.blockItem;
+        //   this.drawCustomArea(blockItems);
+        //   // 调用识别引擎识别显示结果
+        //   this.requestOcrEngine(blockItems);
+        // }
         // 调用dll校准
         // this.callCalibrateDll(myCanvas,file);
       };
@@ -449,11 +481,14 @@ export default {
       // 优先和本地保存的模板进行匹配
       // 后台读取模板数据
       // let templateDataArr = storeSession.get("templateData") || [];
-
-      api.userTemplateApi
+      if (this.isRequestingTemp) {
+        return;
+      }
+      this.isRequestingTemp = true;
+      await api.userTemplateApi
         .selectTemplate()
         .then((res) => {
-          this.isRequesting = false;
+          this.isRequestingTemp = false;
           let { status, data } = res;
           if (status == 200) {
             if (data.data !== null) {
@@ -468,16 +503,16 @@ export default {
                 this.templateDataArr = templateDataArr;
                 //判断当前用户模板数量，如果只有一个，默认匹配第一个，否则，由用户选择模板，模板定义是加个名字，让用户可以根据自己之前定义的名字来选择
                 //目前模板匹配接口需要借助python，假设匹配到一个模板 ??? template = [{temp_id,image,blockItem}]
-                if (templateDataArr.length == 1) {
-                  this.template_id = templateDataArr[0].temp_id;
-                  let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
-                  this.templateObj = templateItem;
-                  this.matchTemplateItem = templateItem;
-                  let blockItems = this.matchTemplateItem.blockItem;
-                  this.drawCustomArea(blockItems);
-                  // 调用识别引擎识别显示结果
-                  this.requestOcrEngine(blockItems);
-                }
+                // if (templateDataArr.length == 1) {
+                //   this.template_id = templateDataArr[0].temp_id;
+                //   let templateItem = templateDataArr[0]; //这里暂时默认模拟匹配到第一个
+                //   this.templateObj = templateItem;
+                //   this.matchTemplateItem = templateItem;
+                //   // let blockItems = this.matchTemplateItem.blockItem;
+                //   // this.drawCustomArea(blockItems);
+                //   // // 调用识别引擎识别显示结果
+                //   // this.requestOcrEngine(blockItems);
+                // }
 
                 // 弹出模板匹配确认提示模态框
               } else {
@@ -506,7 +541,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-          this.isRequesting = false;
+          this.isRequestingTemp = false;
         });
     },
     /**

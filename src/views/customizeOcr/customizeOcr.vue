@@ -2,7 +2,7 @@
  * @Descripttion: 用户自定区域识别OCR
  * @Author: nigel
  * @Date: 2020-05-06 18:09:34
- * @LastEditTime: 2020-09-21 17:05:05
+ * @LastEditTime: 2020-09-21 18:05:42
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -645,7 +645,7 @@ export default {
         myCtx.clearRect(0, 0, targetWidth, targetHeight); //清理canvas
         myCtx.drawImage(imgElem, 0, 0, targetWidth, targetHeight); //canvas绘图
         // 去掉dll校准，添加此处代码，否则注释掉
-        this.imageUrl = myCanvas.toDataURL(file.raw.type);
+        this.imageUrl = myCanvas.toDataURL(file.raw.type, 1.0);
         this.imgObj = {
           background: `url(${this.imageUrl}) no-repeat 0 0`,
           backgroundSize: "cover",
@@ -987,7 +987,7 @@ export default {
       // 裁剪图片
       ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
       // 将canvas转化base64
-      return canvas.toDataURL("image/jpeg");
+      return canvas.toDataURL("image/jpeg", 1.0);
     },
     // 根据用户选择不同ocr引擎，显示不同颜色区域，邮编-紫色，地址-绿色，姓名-红色
     changeCurDivBg(curDiv, OCR_engine) {
@@ -1123,7 +1123,7 @@ export default {
         this.myCanvas.width = width;
         this.myCanvas.height = height;
         this.myCtx.drawImage(imgElem, 0, 0, width, height);
-        let imgbase64 = this.myCanvas.toDataURL("image/jpeg");
+        let imgbase64 = this.myCanvas.toDataURL("image/jpeg", 1.0);
         // 模板数据
         let templateData = {
           temp_id: temp_id || this.uuid(),
@@ -1324,7 +1324,7 @@ export default {
       this.myCtx.drawImage(imgElem, 0, 0, width, height);
       this.myCtx.restore();
       // 再将canvas转换图片
-      return this.myCanvas.toDataURL("image/jpeg");
+      return this.myCanvas.toDataURL("image/jpeg", 1.0);
     },
     /**
      * @name: handleClockwise
