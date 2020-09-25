@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-04-13 13:56:58
- * @LastEditTime: 2020-07-20 17:36:02
+ * @LastEditTime: 2020-09-24 16:57:12
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -9,29 +9,32 @@
     <el-row class="imgtype_selector">
       <el-button-group>
         <el-button
-          :type="isCurrentType=='ch_en_ex'?'primary':''"
+          :type="isCurrentType == 'ch_en_ex' ? 'primary' : ''"
           round
           @click="handleClickSelector('ch_en_ex')"
-        >{{ $t('ch_en_ex') }}</el-button>
+          >{{ $t("ch_en_ex") }}</el-button
+        >
         <el-button
-          :type="isCurrentType=='ch_en_vtx_detect'?'primary':''"
+          :type="isCurrentType == 'ch_en_vtx_detect' ? 'primary' : ''"
           round
           @click="handleClickSelector('ch_en_vtx_detect')"
-        >{{ $t('ch_en_vtx_detect') }}</el-button>
+          >{{ $t("ch_en_vtx_detect") }}</el-button
+        >
         <el-button
-          :type="isCurrentType=='ch_en_ex_other'?'primary':''"
+          :type="isCurrentType == 'ch_en_ex_other' ? 'primary' : ''"
           round
           @click="handleClickSelector('ch_en_ex_other')"
-        >{{ $t('ch_en_ex_other') }}</el-button>
+          >{{ $t("ch_en_ex_other") }}</el-button
+        >
       </el-button-group>
     </el-row>
     <el-row class="picture-container">
       <img
-        v-for="(item,index) in imgArr"
+        v-for="(item, index) in imgArr"
         :key="index"
         :src="item.url"
-        :class="[curentIndex==index ? 'pic-item_active' : '', 'pic-item']"
-        @click="handleClickImg(item.url,index)"
+        :class="[curentIndex == index ? 'pic-item_active' : '', 'pic-item']"
+        @click="handleClickImg(item.url, index)"
       />
     </el-row>
     <el-row class="input_form">
@@ -43,12 +46,14 @@
         :on-success="handleUploadSuccess"
         :before-upload="beforeRead"
       >
-        <el-button type="primary">{{ $t('upload-btn-text') }}</el-button>
+        <el-button type="primary">{{ $t("upload-btn-text") }}</el-button>
       </el-upload>
       <div class="url_input">
         <el-input v-model="input_url" :placeholder="$t('input_url_tip')" />
       </div>
-      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">{{ $t('analyse-btn') }}</el-button>
+      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">{{
+        $t("analyse-btn")
+      }}</el-button>
     </el-row>
     <el-row class="ocr-result">
       <img
@@ -70,9 +75,18 @@
         <canvas ref="myCanvas" class="ocrGeneralCanvas" />
       </div>
       <div class="result-details">
-        <el-table v-loading="isRequesting" :data="tableData" height="400" style="width: 100%">
+        <el-table
+          v-loading="isRequesting"
+          :data="tableData"
+          height="400"
+          style="width: 100%"
+        >
           <el-table-column type="index" align="left" />
-          <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+          <el-table-column
+            prop="itemstring"
+            :label="$t('recog_result')"
+            align="left"
+          />
         </el-table>
       </div>
     </el-row>
@@ -86,7 +100,7 @@ const imgArrOrigin = [
   { url: "/static/images/ocr_common07.jpg" },
   { url: "/static/images/ocr_common08.jpg" },
   { url: "/static/images/ocr_common05.jpg" },
-  { url: "/static/images/ocr_common06.jpg" }
+  { url: "/static/images/ocr_common06.jpg" },
 ];
 const imgArrAuto = [
   { url: "/static/images/other_auto/ocr_other_auto_1.jpg" },
@@ -94,7 +108,7 @@ const imgArrAuto = [
   { url: "/static/images/other_auto/ocr_other_auto_3.jpg" },
   { url: "/static/images/other_auto/ocr_other_auto_4.jpg" },
   { url: "/static/images/ocr_common05.jpg" },
-  { url: "/static/images/ocr_common06.jpg" }
+  { url: "/static/images/ocr_common06.jpg" },
 ];
 const imgArrVtx = [
   { url: "/static/images/vtx_dectect/vtx_dectect_1.jpg" },
@@ -102,7 +116,7 @@ const imgArrVtx = [
   { url: "/static/images/vtx_dectect/vtx_dectect_3.jpg" },
   { url: "/static/images/vtx_dectect/vtx_dectect_4.jpg" },
   { url: "/static/images/ocr_common03.jpg" },
-  { url: "/static/images/ocr_common04.jpg" }
+  { url: "/static/images/ocr_common04.jpg" },
 ];
 import { mapState } from "vuex";
 import api from "../../api";
@@ -115,24 +129,24 @@ export default {
       img_height: "",
       img_width: "",
       imgObj: {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       },
       input_url: "",
       imgArr: imgArrOrigin,
       curentIndex: 0,
       isCurrentType: "ch_en_ex", //标识当前通用识别类型，分中英文体验，中英文多角度体验，其他语种体验
-      tableData: []
+      tableData: [],
     };
   },
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
     this.imgOptions = {}; //中引文体验，多角度，其他语种体验不同选项
@@ -144,7 +158,7 @@ export default {
     // this.init(this.imgArr[0].url);
     this.imageUrl = this.imgArr[0].url;
     this.imgObj = {
-      backgroundImage: `url(${this.imageUrl})`
+      backgroundImage: `url(${this.imageUrl})`,
     };
   },
   destroyed() {
@@ -166,18 +180,18 @@ export default {
           //目前对网络图片的框图有些问题，估计没有读取到正确的宽高
           this.imageUrl = url;
           this.imgObj = {
-            backgroundImage: `url(${this.imageUrl})`
+            backgroundImage: `url(${this.imageUrl})`,
           };
           this.clearCanvasContent();
           this.tengxunGeneralOcr({ url: this.input_url }, this.imgOptions);
         } else {
           this.$notify({
             title: this.$t("tip-text"),
-            message: this.$t("input_url-tip")
+            message: this.$t("input_url-tip"),
           });
         }
       } else {
-        this.getImageToBase64Data(this.imageUrl).then(params => {
+        this.getImageToBase64Data(this.imageUrl).then((params) => {
           //默认第一张图,调用接口返回数据
           this.tengxunGeneralOcr(params, this.imgOptions);
         });
@@ -262,7 +276,7 @@ export default {
       this.isRequesting = true;
       api.tengxunApi
         .generalocr(params)
-        .then(res => {
+        .then((res) => {
           this.isRequesting = false;
           if (res.status == 200) {
             let resData = res.data.data;
@@ -271,7 +285,7 @@ export default {
               this.tableData = resData.items;
               //coordpoint 文本行对应在原图上的四点坐标
               //使用canvas绘制识别出的文本行在原图中矩形框
-              let coordpointArr = resData.items.map(value => {
+              let coordpointArr = resData.items.map((value) => {
                 return value.coordpoint;
               });
               this.drawRectangleByCanvas(coordpointArr);
@@ -279,7 +293,7 @@ export default {
             }
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.isRequesting = false;
           this.result = this.$t("recognition-fail");
@@ -295,7 +309,7 @@ export default {
           //构造接口请求参数，前端只需要传image或者url即可
           let pramas = {
             image: img_base64,
-            url: ""
+            url: "",
           };
           //返回接口请求需要的参数
           this.img_width = imgElem.width;
@@ -322,7 +336,7 @@ export default {
     //**blob to dataURL**
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
-      filereader.onload = function(e) {
+      filereader.onload = function (e) {
         callback(e.target.result);
       };
       filereader.readAsDataURL(fileblob);
@@ -352,7 +366,7 @@ export default {
       this.imageUrl = this.imgArr[0].url;
       this.curentIndex = 0;
       this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       };
       this.clearCanvasContent();
       // this.init();
@@ -369,7 +383,7 @@ export default {
       this.clearCanvasContent();
       this.imageUrl = image;
       this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       };
       this.init();
     },
@@ -396,7 +410,7 @@ export default {
       this.base64ImageData = "";
       // 上传成功重置类型为空,默认运单识别
       this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       };
       //上传成功，将图片转换base64，调用ocr识别接口
       this.init();
@@ -409,14 +423,14 @@ export default {
         this.exceedSize = true;
         this.$notify({
           title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-tip")
+          message: this.$t("upload-size-tip"),
         });
         return false;
       }
       this.exceedSize = false;
-      this.blobToDataURL(file, function(dataurl) {
+      this.blobToDataURL(file, function (dataurl) {
         let image = new Image();
-        image.onload = function() {
+        image.onload = function () {
           this.img_width = image.width;
           this.img_height = image.height;
           //限制图片宽
@@ -428,8 +442,8 @@ export default {
     },
     afterRead() {
       // console.log(file);
-    }
-  }
+    },
+  },
 };
 </script>
 
