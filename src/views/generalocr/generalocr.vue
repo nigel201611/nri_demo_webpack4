@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-04-13 13:56:58
- * @LastEditTime: 2020-09-24 16:57:12
+ * @LastEditTime: 2020-10-15 16:08:24
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -12,20 +12,17 @@
           :type="isCurrentType == 'ch_en_ex' ? 'primary' : ''"
           round
           @click="handleClickSelector('ch_en_ex')"
-          >{{ $t("ch_en_ex") }}</el-button
-        >
+        >{{ $t("ch_en_ex") }}</el-button>
         <el-button
           :type="isCurrentType == 'ch_en_vtx_detect' ? 'primary' : ''"
           round
           @click="handleClickSelector('ch_en_vtx_detect')"
-          >{{ $t("ch_en_vtx_detect") }}</el-button
-        >
+        >{{ $t("ch_en_vtx_detect") }}</el-button>
         <el-button
           :type="isCurrentType == 'ch_en_ex_other' ? 'primary' : ''"
           round
           @click="handleClickSelector('ch_en_ex_other')"
-          >{{ $t("ch_en_ex_other") }}</el-button
-        >
+        >{{ $t("ch_en_ex_other") }}</el-button>
       </el-button-group>
     </el-row>
     <el-row class="picture-container">
@@ -274,6 +271,7 @@ export default {
         return;
       }
       this.isRequesting = true;
+      // console.log(params);
       api.tengxunApi
         .generalocr(params)
         .then((res) => {

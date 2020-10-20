@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-05-12 14:33:04
- * @LastEditTime: 2020-05-19 16:28:48
+ * @LastEditTime: 2020-10-19 13:56:38
  -->
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -29,7 +29,9 @@
       <div class="url_input">
         <el-input v-model="input_url" :placeholder="$t('input_url_tip')" />
       </div>
-      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">{{ $t("analyse-btn") }}</el-button>
+      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">{{
+        $t("analyse-btn")
+      }}</el-button>
     </el-row>
     <el-row class="ocr-result">
       <img
@@ -51,9 +53,18 @@
         <canvas ref="myCanvas" class="ocrGeneralCanvas" />
       </div>
       <div class="result-details">
-        <el-table v-loading="isRequesting" :data="tableData" height="400" style="width: 100%">
+        <el-table
+          v-loading="isRequesting"
+          :data="tableData"
+          height="400"
+          style="width: 100%"
+        >
           <el-table-column type="index" align="left" />
-          <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+          <el-table-column
+            prop="itemstring"
+            :label="$t('recog_result')"
+            align="left"
+          />
         </el-table>
       </div>
     </el-row>
@@ -167,7 +178,7 @@ const imgArrOrigin = [
   { url: "/static/images/ocr_common07.jpg" },
   { url: "/static/images/ocr_common08.jpg" },
   { url: "/static/images/ocr_common05.jpg" },
-  { url: "/static/images/ocr_common06.jpg" }
+  { url: "/static/images/ocr_common06.jpg" },
 ];
 import { mapState } from "vuex";
 import api from "../../api";
@@ -180,23 +191,23 @@ export default {
       img_height: "",
       img_width: "",
       imgObj: {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       },
       input_url: "",
       imgArr: imgArrOrigin,
       curentIndex: 0,
-      tableData: []
+      tableData: [],
     };
   },
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
     this.imgOptions = {}; //中引文体验，多角度，其他语种体验不同选项
@@ -207,7 +218,7 @@ export default {
     //默认使用第一张图片
     this.imageUrl = this.imgArr[0].url;
     this.imgObj = {
-      backgroundImage: `url(${this.imageUrl})`
+      backgroundImage: `url(${this.imageUrl})`,
     };
   },
   destroyed() {
@@ -230,18 +241,18 @@ export default {
           //目前对网络图片的框图有些问题，估计没有读取到正确的宽高
           this.imageUrl = url;
           this.imgObj = {
-            backgroundImage: `url(${this.imageUrl})`
+            backgroundImage: `url(${this.imageUrl})`,
           };
           this.clearCanvasContent();
           this.googleGeneralOcr({ url: this.input_url }, this.imgOptions);
         } else {
           this.$notify({
             title: this.$t("tip-text"),
-            message: this.$t("input_url-tip")
+            message: this.$t("input_url-tip"),
           });
         }
       } else {
-        this.getImageToBase64Data(this.imageUrl).then(params => {
+        this.getImageToBase64Data(this.imageUrl).then((params) => {
           //默认第一张图,调用接口返回数据
           this.googleGeneralOcr(params, this.imgOptions);
         });
@@ -330,9 +341,8 @@ export default {
       this.isRequesting = true;
       api.googleOcrApi
         .generalocr(params)
-        .then(res => {
+        .then((res) => {
           this.isRequesting = false;
-          res;
           this.tableData = [];
           if (res.status == 200) {
             if (res.data.errno === 0) {
@@ -354,7 +364,7 @@ export default {
                   let obj = {
                     itemstring: "",
                     itemconf: "",
-                    coordpoint: []
+                    coordpoint: [],
                   };
                   // confidence
                   obj.itemconf = block["property"]
@@ -367,7 +377,7 @@ export default {
                   let words = paragraphs.words;
                   obj.itemstring = words.reduce((total, word) => {
                     let symbols = word.symbols;
-                    symbols.forEach(element => {
+                    symbols.forEach((element) => {
                       total += element.text;
                     });
                     return total;
@@ -388,7 +398,7 @@ export default {
             }
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.isRequesting = false;
           this.result = this.$t("recognition-fail");
@@ -404,7 +414,7 @@ export default {
           //构造接口请求参数，前端只需要传image或者url即可
           let pramas = {
             image: img_base64,
-            url: ""
+            url: "",
           };
           //返回接口请求需要的参数
           this.img_width = imgElem.width;
@@ -431,7 +441,7 @@ export default {
     //**blob to dataURL**
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
-      filereader.onload = function(e) {
+      filereader.onload = function (e) {
         callback(e.target.result);
       };
       filereader.readAsDataURL(fileblob);
@@ -448,7 +458,7 @@ export default {
       this.clearCanvasContent();
       this.imageUrl = image;
       this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       };
       this.init();
     },
@@ -475,7 +485,7 @@ export default {
       this.base64ImageData = "";
       // 上传成功重置类型为空,默认运单识别
       this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       };
       //上传成功，将图片转换base64，调用ocr识别接口
       this.init();
@@ -488,14 +498,14 @@ export default {
         this.exceedSize = true;
         this.$notify({
           title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-tip")
+          message: this.$t("upload-size-tip"),
         });
         return false;
       }
       this.exceedSize = false;
-      this.blobToDataURL(file, function(dataurl) {
+      this.blobToDataURL(file, function (dataurl) {
         let image = new Image();
-        image.onload = function() {
+        image.onload = function () {
           this.img_width = image.width;
           this.img_height = image.height;
           //限制图片宽
@@ -504,7 +514,7 @@ export default {
       });
       this.clearCanvasContent();
       this.uploadImgLoading = true;
-    }
-  }
+    },
+  },
 };
 </script>
