@@ -357,7 +357,7 @@ export default {
           this.imgArr = imgArrVtx;
           break;
         case "ch_en_ex_other":
-          this.imgOptions = { language: "auto" };
+          this.imgOptions = { language: "jap" };
           this.imgArr = imgArrAuto;
           break;
       }

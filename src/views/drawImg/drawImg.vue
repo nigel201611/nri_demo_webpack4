@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-09-23 19:06:55
+ * @LastEditTime: 2020-10-28 14:17:36
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -21,8 +21,8 @@
         class="upload_btn"
         size="small"
         type="primary"
-      >{{ $t('upload-btn-text') }}</el-button>
-      <span class="tip">{{ $t('upload-btn-tip') }}</span>
+      >{{ $t("upload-btn-text") }}</el-button>
+      <span class="tip">{{ $t("upload-btn-tip") }}</span>
     </el-upload>
 
     <div class="btn-list">
@@ -51,7 +51,7 @@
           type="success"
           size="small"
           @click="confirmDetect"
-        >{{ $t('confirm-detect') }}</el-button>
+        >{{ $t("confirm-detect") }}</el-button>
       </el-row>
     </div>
 
@@ -66,20 +66,36 @@
       <div ref="imgEdit" class="img-wrap" :style="imgObj" />
       <!-- 展示自定义区域识别结果 -->
       <div v-if="resDetectDataArr.length" class="result_wrap">
-        <el-card v-for="(item,index) in resDetectDataArr" :key="index" class="box-card">
+        <el-card
+          v-for="(item, index) in resDetectDataArr"
+          :key="index"
+          class="box-card"
+        >
           <!-- <div slot="header" class="clearfix box-card_header">
             <span>{{ $t(resTitleArr[item.type]) }}</span>
           </div>-->
           <div class="text item">
             <!-- 根据类型，加上对应区分边框 -->
             <!-- <span>{{ $t(resTitleArr[item.type]) }}</span> -->
-            <img :class="'block_bg'+' border_'+item.type" :src="item.imgUrl" />
+            <img
+              :class="'block_bg' + ' border_' + item.type"
+              :src="item.imgUrl"
+            />
             <!-- item.code=0,有时候返回的text是空的，要做下处理 -->
-            <p v-if="item.code==0&&item.type!='nri_T_general'&&item.type!='nri_G_general'">
+            <p
+              v-if="
+                item.code == 0 &&
+                  item.type != 'nri_T_general' &&
+                  item.type != 'nri_G_general'
+              "
+            >
               <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-                <!-- <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" /> -->
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
                 <el-table-column
                   width="120"
                   prop="itemconf"
@@ -92,10 +108,14 @@
                 </el-table-column>
               </el-table>
             </p>
-            <p v-else-if="item.code==0&&item.type=='nri_T_general'">
+            <p v-else-if="item.code == 0 && item.type == 'nri_T_general'">
               <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
                 <!-- <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" /> -->
                 <el-table-column
                   width="120"
@@ -104,16 +124,19 @@
                   align="left"
                 >
                   <template slot-scope="scope">
-                    <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
+                    <span>{{ (scope.row.itemconf * 100).toFixed(2) }}%</span>
                   </template>
                 </el-table-column>
               </el-table>
             </p>
-            <p v-else-if="item.code==0&&item.type=='nri_G_general'">
+            <p v-else-if="item.code == 0 && item.type == 'nri_G_general'">
               <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-                <!-- <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" /> -->
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
                 <el-table-column
                   width="120"
                   prop="itemconf"
@@ -121,16 +144,19 @@
                   align="left"
                 >
                   <template slot-scope="scope">
-                    <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
+                    <span>{{ (scope.row.itemconf * 100).toFixed(2) }}%</span>
                   </template>
                 </el-table-column>
               </el-table>
             </p>
-            <p v-else-if="item.code==1&&item.type=='nri_G_general'">
+            <p v-else-if="item.code == 1 && item.type == 'nri_G_general'">
               <el-table :data="item.text" style="width: 100%">
                 <el-table-column type="index" width="50" />
-                <el-table-column prop="itemstring" :label="$t('recog_result')" align="left" />
-                <!-- <el-table-column prop="itemconf" :label="$t('recog_confidence')" align="left" /> -->
+                <el-table-column
+                  prop="itemstring"
+                  :label="$t('recog_result')"
+                  align="left"
+                />
                 <el-table-column
                   width="120"
                   prop="itemconf"
@@ -138,13 +164,15 @@
                   align="left"
                 >
                   <template slot-scope="scope">
-                    <span>{{ (scope.row.itemconf *100).toFixed(2) }}%</span>
+                    <span>{{ (scope.row.itemconf * 100).toFixed(2) }}%</span>
                   </template>
                 </el-table-column>
               </el-table>
             </p>
-            <p v-else-if="item.code==-1" class="error">{{ $t('reuslt-error') }}</p>
-            <p v-else class="error">{{ $t('backend_error') }}</p>
+            <p v-else-if="item.code == -1" class="error">
+              {{ $t("reuslt-error") }}
+            </p>
+            <p v-else class="error">{{ $t("backend_error") }}</p>
           </div>
         </el-card>
       </div>
