@@ -43,7 +43,7 @@ export default {
     return {
       src: null,
       resolvingPowerX: 3840,
-      resolvingPowerY: 2160
+      resolvingPowerY: 2160,
     };
   },
 
@@ -56,14 +56,14 @@ export default {
 
   computed: {
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
 
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
 
   mounted() {
@@ -81,8 +81,8 @@ export default {
         {
           video: {
             width: { ideal: this.resolvingPowerX },
-            height: { ideal: this.resolvingPowerY }
-          }
+            height: { ideal: this.resolvingPowerY },
+          },
         },
         this.success,
         this.error
@@ -91,7 +91,7 @@ export default {
       this.$notify({
         title: this.$t("warning-text"),
         type: "warning",
-        message: this.$t("no-surport")
+        message: this.$t("no-surport"),
       });
     }
 
@@ -101,16 +101,16 @@ export default {
   methods: {
     getUserMedia(constraints, success, error) {
       if (navigator.mediaDevices.getUserMedia) {
-        console.log('mediaDevices');
+        console.log("mediaDevices");
         navigator.mediaDevices
           .getUserMedia(constraints)
           .then(success)
           .catch(error);
       } else if (navigator.webkitGetUserMedia) {
-        console.log('webkitGetUserMedia');
+        console.log("webkitGetUserMedia");
         navigator.webkitGetUserMedia(constraints, success, error);
       } else if (navigator.mozGetUserMedia) {
-        console.log('mozGetUserMedia');
+        console.log("mozGetUserMedia");
         navigator.mozGetUserMedia(constraints, success, error);
       } else if (navigator.getUserMedia) {
         navigator.getUserMedia(constraints, success, error);
@@ -142,12 +142,12 @@ export default {
       this.isRequesting = true;
       api.opencameraApi
         .opencamera(myform)
-        .then(res => {
+        .then((res) => {
           this.isRequesting = false;
           console.log(res);
           //提示每半个小时将当前图片成功保存本地
         })
-        .catch(error => {
+        .catch((error) => {
           this.isRequesting = false;
           console.log(error);
           //提示用户检查网络连接是否正常
@@ -163,13 +163,12 @@ export default {
         this.video.srcObject = stream;
       }
       // this.src = window.URL.createObjectURL(stream);
-      this.video.onloadedmetadata = event => {
+      this.video.onloadedmetadata = (event) => {
         this.snap();
         window.setInterval(() => {
           this.snap();
         }, this.interval);
       };
-      // this.video.play();
     },
     //失败回调
     error(error) {
@@ -177,12 +176,12 @@ export default {
       this.$notify({
         title: this.$t("warning-text"),
         type: "warning",
-        message: this.$t("opencamera-fail")
+        message: this.$t("opencamera-fail"),
       });
-    }
+    },
 
     //实现拍照的功能
-  }
+  },
 };
 </script>
 
