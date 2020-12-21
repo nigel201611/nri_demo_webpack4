@@ -55,7 +55,7 @@ export default {
             return {
                 isShow: false,
                 target: ''
-            }
+            };
     },
     mounted () {
         this.target = document.querySelector(".content-container");
@@ -82,8 +82,8 @@ export default {
                     clearInterval(timer);
                     this.isShow = false;
                 }
-            }, 20)
+            }, 20);
         }
     }
-}
+};
 </script>

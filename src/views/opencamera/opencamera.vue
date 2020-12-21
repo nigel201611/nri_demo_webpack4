@@ -47,23 +47,21 @@ export default {
     };
   },
 
-  created() {
-    this.imgWidth = 1280;
-    this.imgHeight = 720;
-    this.interval = 1000 * 60 * 30;
-    this.isRequesting = false;
-  },
-
   computed: {
     ...mapState({
       locals: (state) => state.menuStore.locals,
     }),
   },
-
   watch: {
     locals(val) {
       this.$i18n.locale = val;
     },
+  },
+  created() {
+    this.imgWidth = 1280;
+    this.imgHeight = 720;
+    this.interval = 1000 * 60 * 30;
+    this.isRequesting = false;
   },
 
   mounted() {
@@ -163,7 +161,7 @@ export default {
         this.video.srcObject = stream;
       }
       // this.src = window.URL.createObjectURL(stream);
-      this.video.onloadedmetadata = (event) => {
+      this.video.onloadedmetadata = () => {
         this.snap();
         window.setInterval(() => {
           this.snap();

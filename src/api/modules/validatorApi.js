@@ -1,6 +1,6 @@
 import axios from '../axiosWrapper';
 
-let prefix = process.env.API_ROOT
+let prefix = process.env.API_ROOT;
 
 //系统页面相关接口
 export const getPageRulesList = params => {

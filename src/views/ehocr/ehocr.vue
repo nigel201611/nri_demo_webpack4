@@ -3,12 +3,12 @@
   <div class="generalocr_wrap">
     <el-row class="picture-container">
       <img
-        v-for="(item,index) in imgArr"
+        v-for="(item, index) in imgArr"
         :key="index"
         :src="item.url"
-        :class="[curentIndex==index ? 'pic-item_active' : '', 'pic-item']"
-        @click="handleClickImg(item.url,index)"
-      >
+        :class="[curentIndex == index ? 'pic-item_active' : '', 'pic-item']"
+        @click="handleClickImg(item.url, index)"
+      />
     </el-row>
     <el-row class="input_form">
       <el-upload
@@ -20,21 +20,14 @@
         :before-upload="beforeRead"
       >
         <el-button type="primary">
-          {{ $t('upload-btn-text') }}
+          {{ $t("upload-btn-text") }}
         </el-button>
       </el-upload>
       <div class="url_input">
-        <el-input
-          v-model="input_url"
-          :placeholder="$t('input_url_tip')"
-        />
+        <el-input v-model="input_url" :placeholder="$t('input_url_tip')" />
       </div>
-      <el-button
-        class="analyse-btn"
-        type="primary"
-        @click="handleAnalyse"
-      >
-        {{ $t('analyse-btn') }}
+      <el-button class="analyse-btn" type="primary" @click="handleAnalyse">
+        {{ $t("analyse-btn") }}
       </el-button>
     </el-row>
     <el-row class="ocr-result">
@@ -44,7 +37,7 @@
         :height="img_height"
         :width="img_width"
         :src="imageUrl"
-      >
+      />
       <div
         ref="imgEdit"
         v-loading="uploadImgLoading"
@@ -54,10 +47,7 @@
         class="ocr_image"
         :style="imgObj"
       >
-        <canvas
-          ref="myCanvas"
-          class="ocrGeneralCanvas"
-        />
+        <canvas ref="myCanvas" class="ocrGeneralCanvas" />
       </div>
       <div class="result-details">
         <el-table
@@ -184,9 +174,9 @@ const imgArrOrigin = [
   { url: "/static/images/ehocr/ehocr_2.jpg" },
   { url: "/static/images/ehocr/ehocr_3.jpg" },
   { url: "/static/images/ehocr/ehocr_4.jpg" },
-  { url: "/static/images/ehocr/ehocr_5.jpg" }
+  { url: "/static/images/ehocr/ehocr_5.jpg" },
 ];
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 import api from "../../api";
 export default {
   data() {
@@ -197,19 +187,24 @@ export default {
       img_height: "",
       img_width: "",
       imgObj: {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       },
       input_url: "",
       imgArr: imgArrOrigin,
       curentIndex: 0,
       isCurrentType: "ch_en_ex", //标识当前通用识别类型，分中英文体验，中英文多角度体验，其他语种体验
-      tableData: []
+      tableData: [],
     };
+  },
+  computed: {
+    ...mapState({
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   mounted() {
     this.imgOptions = {}; //中引文体验，多角度，其他语种体验不同选项
@@ -220,11 +215,6 @@ export default {
     //默认使用第一张图片
     this.init(this.imgArr[0].url);
   },
-  computed: {
-    ...mapState({
-      locals: state => state.menuStore.locals
-    })
-  },
   destroyed() {
     URL.revokeObjectURL(this.imageUrl);
   },
@@ -232,13 +222,13 @@ export default {
     init(url) {
       this.imageUrl = url;
       this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       };
       // 判断是否有网络图片地址，有的话以网络图片优先
       if (this.input_url != "") {
         this.tengxunEhOcr({ url: this.input_url }, this.imgOptions);
       } else {
-        this.getImageToBase64Data(this.imageUrl).then(params => {
+        this.getImageToBase64Data(this.imageUrl).then((params) => {
           this.tengxunEhOcr(params, this.imgOptions);
         });
       }
@@ -253,7 +243,7 @@ export default {
       this.isRequesting = true;
       api.tengxunApi
         .ehocr(params)
-        .then(res => {
+        .then((res) => {
           this.isRequesting = false;
           if (res.status == 200) {
             let resData = res.data.data;
@@ -263,7 +253,7 @@ export default {
             }
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.isRequesting = false;
           this.result = this.$t("recognition-fail");
@@ -279,7 +269,7 @@ export default {
           //构造接口请求参数，前端只需要传image或者url即可
           let pramas = {
             image: img_base64,
-            url: ""
+            url: "",
           };
           //返回接口请求需要的参数
           this.img_width = imgElem.width;
@@ -306,7 +296,7 @@ export default {
     //**blob to dataURL**
     blobToDataURL(fileblob, callback) {
       let filereader = new FileReader();
-      filereader.onload = function(e) {
+      filereader.onload = function (e) {
         callback(e.target.result);
       };
       filereader.readAsDataURL(fileblob);
@@ -333,7 +323,7 @@ export default {
       } else {
         this.$notify({
           title: this.$t("tip-text"),
-          message: this.$t("input_url-tip")
+          message: this.$t("input_url-tip"),
         });
       }
     },
@@ -345,7 +335,7 @@ export default {
       this.base64ImageData = "";
       // 上传成功重置类型为空,默认运单识别
       this.imgObj = {
-        backgroundImage: `url(${this.imageUrl})`
+        backgroundImage: `url(${this.imageUrl})`,
       };
       //上传成功，将图片转换base64，调用ocr识别接口
       this.init(this.imageUrl);
@@ -357,16 +347,16 @@ export default {
       if (imgSize > maxSize) {
         this.$notify({
           title: this.$t("upload-size-error"),
-          message: this.$t("upload-size-tip")
+          message: this.$t("upload-size-tip"),
         });
         return false;
       }
-      let type = file.type;
+      // let type = file.type;
       this.exceedSize = false;
-      let that = this;
-      this.blobToDataURL(file, function(dataurl) {
+      // let that = this;
+      this.blobToDataURL(file, function (dataurl) {
         let image = new Image();
-        image.onload = function() {
+        image.onload = function () {
           this.img_width = image.width;
           this.img_height = image.height;
           //限制图片宽
@@ -374,7 +364,7 @@ export default {
         image.src = dataurl;
       });
       this.uploadImgLoading = true;
-    }
-  }
+    },
+  },
 };
 </script>

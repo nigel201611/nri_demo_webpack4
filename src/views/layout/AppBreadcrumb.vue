@@ -21,13 +21,13 @@
 </template>
 
 <script>
-import routes from '../../routes'
+import routes from '../../routes';
 
 export default {
     data() {
         return {
             routes
-        }
+        };
     },
     methods: {
         getShowName(name) {
@@ -60,7 +60,7 @@ export default {
             return showName;
         }
     }
-}
+};
 
 
 </script>
