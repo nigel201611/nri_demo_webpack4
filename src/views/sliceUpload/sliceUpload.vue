@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-12-22 10:07:43
- * @LastEditTime: 2020-12-23 19:29:53
+ * @LastEditTime: 2020-12-23 20:59:35
 -->
 <template>
   <div class="sliceUpload-wrap">
@@ -50,7 +50,7 @@
 
 <script>
 import * as SparkMD5 from "spark-md5"; // 导入脚本
-const SIZE = 0.1 * 1024 * 1024; //10MB,100k用于测试
+const SIZE = 1024 * 1024; //1M用于测试，确保这里是整数
 const Status = {
   wait: "wait",
   pause: "pause",
@@ -139,6 +139,7 @@ export default {
       // 这里干嘛用呢？？？
       Object.assign(this.$data, this.$options.data());
       this.container.file = file;
+      console.log(this.container.file);
     },
     async handleUpload() {
       if (!this.container.file) return;
@@ -154,7 +155,6 @@ export default {
       );
       //没有需要上传的文件切片
       if (!shouldUpload) {
-        // this.$message.sucess("秒传：上传成功");
         this.$notify({
           type: "success",
           message: "秒传：上传成功",
@@ -257,7 +257,7 @@ export default {
       return JSON.parse(data);
     },
     async mergeRequest() {
-      await this.request({
+      const resData = await this.request({
         url: "http://127.0.0.1:80/api/sliceUpload/merge",
         headers: {
           "content-type": "application/json",
@@ -268,6 +268,7 @@ export default {
           filename: this.container.file.name,
         }),
       });
+      console.log(resData);
       this.$notify({
         type: "success",
         message: "上传成功",
