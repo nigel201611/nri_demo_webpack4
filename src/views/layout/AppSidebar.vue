@@ -1,6 +1,6 @@
 <i18n src="./locals/AppSidebar.json"></i18n>
 <template>
-  <aside :class="collapsed?'menu-collapsed':'menu-expanded'">
+  <aside :class="collapsed ? 'menu-collapsed' : 'menu-expanded'">
     <el-menu
       theme="dark"
       :default-active="$route.path"
@@ -16,22 +16,24 @@
       @close="handleclose"
       @select="handleselect"
     >
-      <template v-for="(item,index) in menus">
+      <template v-for="(item, index) in menus">
         <el-submenu
           v-if="!item.leaf && !item.hidden"
-          :key="index+''"
-          :index="index+''"
+          :key="index + ''"
+          :index="index + ''"
         >
           <template slot="title">
             <i :class="item.iconCls" />
-            <span slot="title">{{ $t(item.alias||item.name) }}</span>
+            <span slot="title">{{ $t(item.alias || item.name) }}</span>
           </template>
           <el-menu-item
             v-for="child in item.children"
             :key="child.path"
             :index="child.path"
           >
-            <span v-if="!child.hidden">{{ $t(child.alias||child.name) }}</span>
+            <span v-if="!child.hidden">{{
+              $t(child.alias || child.name)
+            }}</span>
           </el-menu-item>
         </el-submenu>
         <el-menu-item
@@ -40,7 +42,7 @@
           :index="item.path"
         >
           <i :class="item.iconCls" />
-          <span slot="title">{{ $t(item.alias||item.name) }}</span>
+          <span slot="title">{{ $t(item.alias || item.name) }}</span>
         </el-menu-item>
       </template>
     </el-menu>
@@ -54,16 +56,16 @@ export default {
   data() {
     return {
       menus: null,
-      openedIndex: []
+      openedIndex: [],
     };
   },
   computed: {
     ...mapState({
-      collapsed: state => state.menuStore.collapsed
+      collapsed: (state) => state.menuStore.collapsed,
     }),
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     //解决menu收缩后在展开，子菜单不展开的问题
@@ -74,11 +76,11 @@ export default {
           return;
         }
         this.openMenu();
-      }
+      },
     },
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   created() {
     let tempMenus = [];
@@ -91,7 +93,7 @@ export default {
         permType: "MENU",
         permUrl: "/eslUpdate?itemNo=009&Site=10-100&Location=010&LotNO=111",
         iconClass: "fa fa-android",
-        permDesc: "esl-update"
+        permDesc: "esl-update",
       },
       {
         id: 69,
@@ -101,7 +103,7 @@ export default {
         permType: "MENU",
         permUrl: "",
         iconClass: "fa fa-linux",
-        permDesc: "intelligent-identification-API"
+        permDesc: "intelligent-identification-API",
       },
       {
         id: 70,
@@ -111,7 +113,7 @@ export default {
         permType: "MENU",
         permUrl: "/dectectApi",
         iconClass: "",
-        permDesc: "smoke-face-recognition"
+        permDesc: "smoke-face-recognition",
       },
       {
         id: 71,
@@ -121,7 +123,7 @@ export default {
         permType: "MENU",
         permUrl: "",
         iconClass: "fa fa-bell-o",
-        permDesc: "ocr-recognition"
+        permDesc: "ocr-recognition",
       },
       {
         id: 72,
@@ -131,7 +133,7 @@ export default {
         permType: "MENU",
         permUrl: "/ocr",
         iconClass: "fa fa-bell-o",
-        permDesc: "waybill-recognition"
+        permDesc: "waybill-recognition",
       },
       {
         id: 73,
@@ -141,7 +143,7 @@ export default {
         permType: "MENU",
         permUrl: "/postCodeOcr",
         iconClass: "fa fa-bell-o",
-        permDesc: "zipcode-recognition"
+        permDesc: "zipcode-recognition",
       },
       {
         id: 74,
@@ -151,7 +153,7 @@ export default {
         permType: "MENU",
         permUrl: "/drawImg",
         iconClass: "fa fa-bell-o",
-        permDesc: "self-defined-area-recognition"
+        permDesc: "self-defined-area-recognition",
       },
       {
         id: 75,
@@ -161,7 +163,7 @@ export default {
         permType: "MENU",
         permUrl: "/customizeOcr",
         iconClass: "fa fa-bell-o",
-        permDesc: "self-defined-ocr"
+        permDesc: "self-defined-ocr",
       },
       // {
       //   id: 75,
@@ -181,7 +183,7 @@ export default {
         permType: "MENU",
         permUrl: "",
         iconClass: "iconfont icon-Penguin",
-        permDesc: "tencent-general"
+        permDesc: "tencent-general",
       },
       {
         id: 77,
@@ -191,7 +193,7 @@ export default {
         permType: "MENU",
         permUrl: "/generalocr",
         iconClass: "iconfont icon-Penguin",
-        permDesc: "printed-character-recog"
+        permDesc: "printed-character-recog",
       },
       {
         id: 82,
@@ -201,7 +203,7 @@ export default {
         permType: "MENU",
         permUrl: "",
         iconClass: "iconfont icon-google",
-        permDesc: "google-general"
+        permDesc: "google-general",
       },
       {
         id: 83,
@@ -211,60 +213,20 @@ export default {
         permType: "MENU",
         permUrl: "/googleOcr",
         iconClass: "",
-        permDesc: "printed-character-recog"
-      }
-      // {
-      //   id: 78,
-      //   permName: "handwriting_recog",
-      //   parentPermId: 76,
-      //   permCode: "",
-      //   permType: "MENU",
-      //   permUrl: "/handwritingocr",
-      //   iconClass: "iconfont icon-Penguin",
-      //   permDesc: "handwriting_recog"
-      // },
-      // {
-      //   id: 79,
-      //   permName: "ehocr_general",
-      //   parentPermId: 76,
-      //   permCode: "",
-      //   permType: "MENU",
-      //   permUrl: "/ehocr",
-      //   iconClass: "iconfont icon-Penguin",
-      //   permDesc: "ehocr_general"
-      // },
-      // {
-      //   id: 79,
-      //   permName: "hpgeneralocr",
-      //   parentPermId: 76,
-      //   permCode: "",
-      //   permType: "MENU",
-      //   permUrl: "/hpgeneralocr",
-      //   iconClass: "iconfont icon-Penguin",
-      //   permDesc: "hpgeneralocr"
-      // },
-      // {
-      //   id: 80,
-      //   permName: "seal_ocr",
-      //   parentPermId: 76,
-      //   permCode: "",
-      //   permType: "MENU",
-      //   permUrl: "/seal_ocr",
-      //   iconClass: "iconfont icon-Penguin",
-      //   permDesc: "seal_ocr"
-      // },
-      // {
-      //   id: 81,
-      //   permName: "worddetect",
-      //   parentPermId: 76,
-      //   permCode: "",
-      //   permType: "MENU",
-      //   permUrl: "/worddetect",
-      //   iconClass: "iconfont icon-Penguin",
-      //   permDesc: "worddetect"
-      // }
+        permDesc: "printed-character-recog",
+      },
+      {
+        id: 84,
+        permName: "slice-upload",
+        parentPermId: 0,
+        permCode: "",
+        permType: "MENU",
+        permUrl: "/sliceUpload",
+        iconClass: "",
+        permDesc: "slice-upload",
+      },
     ];
-    menudata.forEach(function(element) {
+    menudata.forEach(function (element) {
       //菜单映射
       let temp = {};
       temp.id = element.id;
@@ -279,7 +241,7 @@ export default {
 
     let treeData = util.listToTree(tempMenus, { parentKey: "parentPermId" });
 
-    treeData.forEach(element => {
+    treeData.forEach((element) => {
       if (!element.children || element.children.length == 0) {
         element.leaf = true;
       }
@@ -321,7 +283,7 @@ export default {
       this.menus.forEach((element, index) => {
         if (element.children) {
           //找到要展开的标签
-          element.children.forEach(ele => {
+          element.children.forEach((ele) => {
             if (ele.path == this.$route.path) {
               this.openedIndex.push(index + "");
             }
@@ -334,8 +296,8 @@ export default {
     },
     handleopen() {},
     handleclose() {},
-    handleselect() {}
-  }
+    handleselect() {},
+  },
 };
 </script>
 
