@@ -1,7 +1,7 @@
 /*
  * @Author: nigel
  * @Date: 2020-05-15 15:11:17
- * @LastEditTime: 2021-01-04 18:28:10
+ * @LastEditTime: 2021-01-07 17:10:06
  */
 let webpackDevConfig = require('./build/webpack.dev.conf.js')
 
@@ -17,7 +17,10 @@ module.exports = function (config) {
         reporters: ['spec', 'coverage'],
         coverageReporter: {
             dir: './coverage',
-            reporters: [{ type: 'lcov', subdir: '.' }, { type: 'text-summary' }]
+            reporters: [
+                { type: 'html', subdir: 'report-html' },
+                { type: 'lcov', subdir: 'report-lcov' },
+            ]
         }
     })
 }
