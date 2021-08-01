@@ -1,10 +1,12 @@
 /*
  * @Author: nigel
  * @Date: 2020-05-12 14:33:04
- * @LastEditTime: 2020-12-22 10:15:26
+ * @LastEditTime: 2021-08-01 19:25:42
  */
 /* eslint-disable */
-import babelpolyfill from "babel-polyfill";
+import babelpolyfill from "@babel/polyfill";
+// import "core-js/stable";
+// import "regenerator-runtime/runtime";
 import Vue from "vue";
 import VueI18n from "vue-i18n";
 import App from "./App";
