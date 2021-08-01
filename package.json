@@ -41,6 +41,7 @@
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
+    "@babel/compat-data": "^7.14.9",
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@intlify/vue-i18n-loader": "^0.6.1",
