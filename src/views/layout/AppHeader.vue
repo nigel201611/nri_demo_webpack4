@@ -1,14 +1,19 @@
 <!--
  * @Author: nigel
  * @Date: 2020-03-19 17:42:36
- * @LastEditTime: 2020-06-30 18:12:24
+ * @LastEditTime: 2021-08-19 21:14:06
  -->
 <i18n src="./locals/AppHeader.json"></i18n>
 <template>
   <el-col :span="24" class="header">
-    <el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-      {{ collapsed?sysName:'' }}
-      <img v-show="!collapsed" :src="logoSrc" />
+    <el-col
+      :span="10"
+      class="logo"
+      :class="collapsed ? 'logo-collapse-width' : 'logo-width'"
+    >
+      {{ collapsed ? sysName : "" }}
+      {{ sysName }}
+      <!-- <img v-show="!collapsed" :src="logoSrc" /> -->
     </el-col>
     <el-col :span="10">
       <div class="tools" @click.prevent="collapse">
@@ -35,7 +40,7 @@
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
-            v-for="(value,key) in languageMap"
+            v-for="(value, key) in languageMap"
             :key="key"
             :command="key"
           >{{ $t(value) }}</el-dropdown-item>
@@ -52,7 +57,7 @@ import logoSrc from "@/assets/logo.png";
 export default {
   data() {
     return {
-      sysName: "NRI",
+      sysName: "知鸣",
       activeIndex: "1",
       activeIndex2: "1",
       userName: "",
@@ -61,22 +66,22 @@ export default {
       languageMap: {
         "zh-CH": "chinese",
         en: "english",
-        ja: "japanese"
-      }
+        ja: "japanese",
+      },
     };
   },
   computed: {
     ...mapState({
-      collapsed: state => state.menuStore.collapsed
+      collapsed: (state) => state.menuStore.collapsed,
     }),
     ...mapState({
-      locals: state => state.menuStore.locals
-    })
+      locals: (state) => state.menuStore.locals,
+    }),
   },
   watch: {
     locals(val) {
       this.$i18n.locale = val;
-    }
+    },
   },
   created() {
     // this.userName = "nigel";
@@ -104,12 +109,12 @@ export default {
       this.$confirm(this.$t("exit_confirm"), this.$t("Tips"), {
         confirmButtonText: this.$t("confirm"),
         cancelButtonText: this.$t("cancel"),
-        type: "warning"
+        type: "warning",
       }).then(() => {
         localStorage.clear();
         sessionStorage.clear();
         this.$router.replace({
-          name: "login"
+          name: "login",
         });
       });
     },
@@ -121,10 +126,10 @@ export default {
      */
     goToMyTemplate() {
       this.$router.push({
-        name: "myOcrTemplate"
+        name: "myOcrTemplate",
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped lang="scss">

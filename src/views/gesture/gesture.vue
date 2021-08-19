@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2020-07-23 16:16:30
+ * @LastEditTime: 2021-08-19 21:27:03
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -16,34 +16,67 @@
       @change="handleChangeCarousel"
     >
       <el-carousel-item
-        v-for="(item,index) in imgArr"
+        v-for="(item, index) in imgArr"
         :key="index"
         class="carousel_item"
         :name="item.url"
       >
         <img :src="item.url" alt />
-        <div v-if="isConfirm && curIndex==index" class="product_detail">
+        <div v-if="isConfirm && curIndex == index" class="product_detail">
           <p class="header">Product Name</p>
-          <img src="/static/images/scancode.png" alt="Product purchase QR code" />
+          <img
+            src="/static/images/scancode.png"
+            alt="Product purchase QR code"
+          />
           <p class="footer">Stock: 110</p>
         </div>
       </el-carousel-item>
     </el-carousel>
 
     <div class="gesture_icon">
-      <i :class="[iconfontClass, gestureLeft,curGesture=='left'?'active':'']">
+      <i
+        :class="[
+          iconfontClass,
+          gestureLeft,
+          curGesture == 'left' ? 'active' : '',
+        ]"
+      >
         <span>Prev</span>
       </i>
-      <i :class="[iconfontClass, gestureCancel, curGesture=='stop'?'active':'']">
+      <i
+        :class="[
+          iconfontClass,
+          gestureCancel,
+          curGesture == 'stop' ? 'active' : '',
+        ]"
+      >
         <span>Cancel</span>
       </i>
-      <i :class="[iconfontClass, gestureHome, curGesture=='punch'?'active':'']">
+      <i
+        :class="[
+          iconfontClass,
+          gestureHome,
+          curGesture == 'punch' ? 'active' : '',
+        ]"
+      >
         <span>Home</span>
       </i>
-      <i :class="[iconfontClass, gestureConfirm, curGesture=='thumbs_up'?'active':'']">
+      <i
+        :class="[
+          iconfontClass,
+          gestureConfirm,
+          curGesture == 'thumbs_up' ? 'active' : '',
+        ]"
+      >
         <span>Confirm</span>
       </i>
-      <i :class="[iconfontClass, gestureRight, curGesture=='right'?'active':'']">
+      <i
+        :class="[
+          iconfontClass,
+          gestureRight,
+          curGesture == 'right' ? 'active' : '',
+        ]"
+      >
         <span>Next</span>
       </i>
     </div>
@@ -65,13 +98,13 @@ const imgArrOrigin = [
     stock: "120",
   },
   {
-    url: "/static/images/ocr_common07.jpg",
+    url: "/static/images/ocr_common03.jpg",
     price: "121.12",
     name: "商品3",
     stock: "120",
   },
   {
-    url: "/static/images/ocr_common08.jpg",
+    url: "/static/images/ocr_common04.jpg",
     price: "121.12",
     name: "商品4",
     stock: "120",
@@ -83,9 +116,9 @@ const imgArrOrigin = [
     stock: "120",
   },
   {
-    url: "/static/images/ocr_common06.jpg",
+    url: "/static/images/ocr_common07.jpg",
     price: "121.12",
-    name: "商品6",
+    name: "商品3",
     stock: "120",
   },
 ];
