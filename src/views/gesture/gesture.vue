@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2021-08-21 10:39:22
+ * @LastEditTime: 2021-08-21 10:41:12
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -232,7 +232,7 @@ export default {
       }
     },
     callGestrue() {
-      let socket = io("http://127.0.0.1:8094");
+      let socket = io("http://127.0.0.1:80");
       socket.on("opend", function (data) {
         console.log("opend:", data);
       });
