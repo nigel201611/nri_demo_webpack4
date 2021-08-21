@@ -1,7 +1,7 @@
 <!--
  * @Author: nigel
  * @Date: 2020-06-23 10:11:53
- * @LastEditTime: 2021-08-19 21:27:03
+ * @LastEditTime: 2021-08-21 10:39:22
 --> 
 <i18n src="./locals/index.json"></i18n>
 <template>
@@ -153,15 +153,16 @@ export default {
     },
   },
   mounted() {
+    this.product_carouselElem = this.$refs.product_carousel;
     this.callGestrue();
   },
   destroyed() {},
   methods: {
     prev() {
-      this.$refs.product_carousel.prev();
+      this.product_carouselElem.prev();
     },
     next() {
-      this.$refs.product_carousel.next();
+      this.product_carouselElem.next();
     },
     handleChangeCarousel(value) {
       this.curIndex = value;
@@ -211,7 +212,7 @@ export default {
         case "punch":
           //取消手势
           // console.log("return home or init to the first product");
-          this.$refs.product_carousel.setActiveItem(0);
+          this.product_carouselElem.setActiveItem(0);
           break;
         case "left":
           //取消手势
